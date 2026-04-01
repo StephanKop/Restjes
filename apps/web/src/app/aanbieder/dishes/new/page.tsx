@@ -1,0 +1,37 @@
+import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
+import { createServerComponentClient } from '@/lib/supabase-server'
+import { DishForm } from '@/components/DishForm'
+
+export const metadata: Metadata = {
+  title: 'Nieuw gerecht plaatsen',
+}
+
+export default async function NewDishPage() {
+  const supabase = await createServerComponentClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const { data: merchant } = await supabase
+    .from('merchants')
+    .select('id')
+    .eq('profile_id', user.id)
+    .single()
+
+  if (!merchant) {
+    redirect('/aanbieder/settings')
+  }
+
+  return (
+    <div>
+      <h1 className="mb-8 text-3xl font-extrabold text-warm-900">Nieuw gerecht plaatsen</h1>
+      <DishForm merchantId={merchant.id} />
+    </div>
+  )
+}

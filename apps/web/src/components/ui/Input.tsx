@@ -1,0 +1,40 @@
+import { type InputHTMLAttributes, forwardRef } from 'react'
+
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+  label?: string
+  error?: string
+}
+
+export const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ label, error, className = '', id, ...props }, ref) => {
+    const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined)
+
+    return (
+      <div>
+        {label && (
+          <label
+            htmlFor={inputId}
+            className="mb-1.5 block text-sm font-semibold text-warm-800"
+          >
+            {label}
+          </label>
+        )}
+        <input
+          ref={ref}
+          id={inputId}
+          className={`w-full rounded-xl border bg-white px-4 py-3 text-warm-800 placeholder:text-warm-400 transition-colors focus:outline-none focus:ring-2 ${
+            error
+              ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
+              : 'border-warm-200 focus:border-brand-400 focus:ring-brand-100'
+          } ${className}`}
+          {...props}
+        />
+        {error && (
+          <p className="mt-1 text-sm text-red-600">{error}</p>
+        )}
+      </div>
+    )
+  },
+)
+
+Input.displayName = 'Input'
