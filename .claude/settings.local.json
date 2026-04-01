@@ -46,7 +46,11 @@
       "Bash(grep -v \"^$\")",
       "Bash(ls /Users/stephankop/Documents/projects/Restjes/apps/web/src/app/'\\(auth\\)'/)",
       "Bash(ls /Users/stephankop/Documents/projects/Restjes/apps/web/src/app/'\\(consumer\\)'/)",
-      "Bash(ls /Users/stephankop/Documents/projects/Restjes/apps/web/src/app/'\\(auth\\)'/signup/)"
+      "Bash(ls /Users/stephankop/Documents/projects/Restjes/apps/web/src/app/'\\(auth\\)'/signup/)",
+      "Bash(git config:*)",
+      "Bash(gh auth:*)",
+      "Bash(ssh -T git@github.com-personal)",
+      "Bash(ssh-add:*)"
     ]
   }
 }
