@@ -7,6 +7,7 @@ import { DishCard, type DishCardData } from '@/components/DishCard'
 import { ReviewList, type ReviewData } from '@/components/ReviewList'
 import { StarRating } from '@/components/StarRating'
 import { JsonLd } from '@/components/JsonLd'
+import { StorefrontIcon, CheckBadgeIcon, DishIcon } from '@/components/icons'
 
 interface MerchantPageProps {
   params: Promise<{ id: string }>
@@ -196,7 +197,7 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
             />
           ) : (
             <div className="flex h-24 w-24 items-center justify-center rounded-2xl border-4 border-white bg-brand-100 shadow-card sm:h-28 sm:w-28">
-              <span className="text-4xl">🏪</span>
+              <StorefrontIcon className="h-10 w-10 text-brand-600" />
             </div>
           )}
         </div>
@@ -207,12 +208,7 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
               {merchant.business_name}
             </h1>
             {merchant.is_verified && (
-              <span
-                className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500 text-sm text-white"
-                title="Geverifieerd"
-              >
-                ✓
-              </span>
+              <CheckBadgeIcon className="h-6 w-6 text-brand-500" />
             )}
           </div>
 
@@ -256,7 +252,9 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
           </div>
         ) : (
           <div className="rounded-2xl bg-white p-12 text-center shadow-card">
-            <p className="mb-2 text-4xl">🍽️</p>
+            <div className="mb-2 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-warm-100 text-warm-400">
+              <DishIcon className="h-7 w-7" />
+            </div>
             <h3 className="mb-2 text-xl font-bold text-warm-900">
               Geen gerechten beschikbaar
             </h3>

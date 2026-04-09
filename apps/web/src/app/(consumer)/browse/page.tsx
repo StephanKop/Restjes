@@ -82,7 +82,9 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
       is_vegan,
       merchant:merchants!inner (
         business_name,
-        city
+        city,
+        latitude,
+        longitude
       ),
       dish_allergies (
         allergen
@@ -138,7 +140,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
 
   // Map to DishCardData
   const cards: DishCardData[] = filteredDishes.map((dish) => {
-    const merchant = dish.merchant as unknown as { business_name: string; city: string }
+    const merchant = dish.merchant as unknown as { business_name: string; city: string; latitude: number | null; longitude: number | null }
     return {
       id: dish.id,
       title: dish.title,
@@ -153,6 +155,8 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
       merchant: {
         business_name: merchant.business_name,
         city: merchant.city,
+        latitude: merchant.latitude,
+        longitude: merchant.longitude,
       },
       allergen_count: (dish.dish_allergies as { allergen: string }[]).length,
     }
@@ -176,14 +180,22 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
         {/* Main content */}
         <div className="min-w-0 flex-1">
           {/* Mobile filters — shown below lg */}
-          <details className="mb-6 rounded-2xl bg-white shadow-card lg:hidden">
-            <summary className="cursor-pointer px-5 py-3 text-sm font-semibold text-warm-700">
-              Filters
-              {(filterCity || hasLocation || vegetarian || vegan || excludeAllergens.length > 0) && (
-                <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-100 px-1.5 text-[10px] font-bold text-brand-700">
-                  !
-                </span>
-              )}
+          <details className="group mb-6 rounded-2xl bg-white shadow-card lg:hidden">
+            <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-3 text-sm font-semibold text-warm-700 [&::-webkit-details-marker]:hidden">
+              <span className="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4 text-warm-400">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+                </svg>
+                Filters
+                {(filterCity || hasLocation || vegetarian || vegan || excludeAllergens.length > 0) && (
+                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-100 px-1.5 text-[10px] font-bold text-brand-700">
+                    !
+                  </span>
+                )}
+              </span>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 text-warm-400 transition-transform group-open:rotate-180">
+                <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+              </svg>
             </summary>
             <div className="border-t border-warm-100 p-5">
               <BrowseFilters userCity={filterCity} />

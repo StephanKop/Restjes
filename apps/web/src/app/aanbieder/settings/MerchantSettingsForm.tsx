@@ -6,6 +6,7 @@ import { createBrowserClient } from '@supabase/ssr'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import Image from 'next/image'
+import { CameraIcon } from '@/components/icons'
 
 interface MerchantProfile {
   id: string
@@ -77,17 +78,45 @@ export function MerchantSettingsForm({ merchant, userId, displayName }: Merchant
         logoUrl = publicUrlData.publicUrl
       }
 
+      const addressLine1 = (formData.get('address_line1') as string) || null
+      const city = (formData.get('city') as string) || null
+      const postalCode = (formData.get('postal_code') as string) || null
+
+      // Geocode address to lat/lng for distance-based filtering
+      let latitude: number | null = null
+      let longitude: number | null = null
+      if (addressLine1 && city) {
+        try {
+          const geoRes = await fetch('/api/geocode', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              address: [addressLine1, postalCode, city, 'Nederland'].filter(Boolean).join(', '),
+            }),
+          })
+          if (geoRes.ok) {
+            const geo = await geoRes.json()
+            latitude = geo.latitude
+            longitude = geo.longitude
+          }
+        } catch {
+          // Geocoding failed silently — lat/lng will remain null
+        }
+      }
+
       const merchantData = {
         profile_id: userId,
         business_name: displayName || 'Aanbieder',
         description: (formData.get('description') as string) || null,
-        address_line1: (formData.get('address_line1') as string) || null,
+        address_line1: addressLine1,
         address_line2: (formData.get('address_line2') as string) || null,
-        city: (formData.get('city') as string) || null,
-        postal_code: (formData.get('postal_code') as string) || null,
+        city,
+        postal_code: postalCode,
         phone: (formData.get('phone') as string) || null,
         website: (formData.get('website') as string) || null,
         logo_url: logoUrl,
+        latitude,
+        longitude,
       }
 
       if (merchant) {
@@ -134,7 +163,7 @@ export function MerchantSettingsForm({ merchant, userId, displayName }: Merchant
             />
           ) : (
             <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-warm-100">
-              <span className="text-3xl">📸</span>
+              <CameraIcon className="h-8 w-8 text-warm-400" />
             </div>
           )}
           <div>

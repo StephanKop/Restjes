@@ -7,6 +7,7 @@ import { formatRelativeDate } from '@/lib/format'
 import { StatusBadge } from '@/components/StatusBadge'
 import { ReservationActions } from '@/components/ReservationActions'
 import { ReservationReviewSection } from '@/components/ReservationReviewSection'
+import { ClipboardIcon, CookingPotIcon } from '@/components/icons'
 
 export const metadata: Metadata = {
   title: 'Mijn reserveringen',
@@ -132,7 +133,9 @@ export default async function ConsumerReservationsPage({
 
       {filtered.length === 0 ? (
         <div className="rounded-2xl bg-white p-12 text-center shadow-card">
-          <p className="mb-2 text-4xl">📋</p>
+          <div className="mb-2 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-warm-100 text-warm-400">
+            <ClipboardIcon className="h-7 w-7" />
+          </div>
           <h2 className="mb-2 text-xl font-bold text-warm-900">
             {activeTab === 'alle'
               ? 'Je hebt nog geen reserveringen'
@@ -186,8 +189,8 @@ export default async function ConsumerReservationsPage({
                       sizes="112px"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-3xl text-warm-300">
-                      🍲
+                    <div className="flex h-full items-center justify-center text-warm-300">
+                      <CookingPotIcon className="h-8 w-8" />
                     </div>
                   )}
                 </div>

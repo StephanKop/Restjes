@@ -1,22 +1,29 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { DishCard, type DishCardData } from '@/components/DishCard'
 import { DishListItem } from '@/components/DishListItem'
+import { DishIcon, MapPinIcon } from '@/components/icons'
 
-type ViewMode = 'grid' | 'list'
+const DishMap = lazy(() => import('@/components/DishMapLazy'))
+
+type ViewMode = 'grid' | 'list' | 'map'
 
 interface BrowseResultsProps {
   dishes: DishCardData[]
 }
 
 export function BrowseResults({ dishes }: BrowseResultsProps) {
-  const [view, setView] = useState<ViewMode>('grid')
+  const [view, setView] = useState<ViewMode>(() =>
+    typeof window !== 'undefined' && window.innerWidth < 640 ? 'list' : 'grid'
+  )
 
   if (dishes.length === 0) {
     return (
       <div className="rounded-2xl bg-white p-12 text-center shadow-card">
-        <p className="mb-2 text-4xl">🍽️</p>
+        <div className="mb-2 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-warm-100 text-warm-400">
+          <DishIcon className="h-7 w-7" />
+        </div>
         <h2 className="mb-2 text-xl font-bold text-warm-900">
           Geen gerechten gevonden
         </h2>
@@ -65,6 +72,19 @@ export function BrowseResults({ dishes }: BrowseResultsProps) {
               <path fillRule="evenodd" d="M2 3.75A.75.75 0 0 1 2.75 3h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 3.75Zm0 4.167a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Zm0 4.166a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Zm0 4.167a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clipRule="evenodd" />
             </svg>
           </button>
+          <button
+            type="button"
+            onClick={() => setView('map')}
+            className={`rounded-lg p-2 transition-colors ${
+              view === 'map'
+                ? 'bg-brand-50 text-brand-600'
+                : 'text-warm-400 hover:text-warm-600'
+            }`}
+            aria-label="Kaartweergave"
+            title="Kaartweergave"
+          >
+            <MapPinIcon className="h-4 w-4" />
+          </button>
         </div>
       </div>
 
@@ -75,12 +95,22 @@ export function BrowseResults({ dishes }: BrowseResultsProps) {
             <DishCard key={dish.id} dish={dish} />
           ))}
         </div>
-      ) : (
+      ) : view === 'list' ? (
         <div className="space-y-3">
           {dishes.map((dish) => (
             <DishListItem key={dish.id} dish={dish} />
           ))}
         </div>
+      ) : (
+        <Suspense
+          fallback={
+            <div className="flex h-[500px] items-center justify-center rounded-2xl bg-white shadow-card">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
+            </div>
+          }
+        >
+          <DishMap dishes={dishes} />
+        </Suspense>
       )}
     </div>
   )

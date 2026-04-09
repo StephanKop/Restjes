@@ -5,6 +5,7 @@ import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
 import { DeleteDishButton } from '@/components/DeleteDishButton'
 import { Button } from '@/components/ui/Button'
+import { DishIcon, CookingPotIcon } from '@/components/icons'
 
 export const metadata: Metadata = {
   title: 'Mijn gerechten',
@@ -70,7 +71,9 @@ export default async function DishesPage() {
 
       {!dishes || dishes.length === 0 ? (
         <div className="rounded-2xl bg-white p-12 text-center shadow-card">
-          <p className="mb-2 text-4xl">🍽️</p>
+          <div className="mb-2 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-warm-100 text-warm-400">
+            <DishIcon className="h-7 w-7" />
+          </div>
           <h2 className="mb-2 text-xl font-bold text-warm-900">
             Je hebt nog geen gerechten geplaatst
           </h2>
@@ -102,8 +105,8 @@ export default async function DishesPage() {
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-4xl text-warm-300">
-                      🍲
+                    <div className="flex h-full items-center justify-center text-warm-300">
+                      <CookingPotIcon className="h-10 w-10" />
                     </div>
                   )}
                   <span

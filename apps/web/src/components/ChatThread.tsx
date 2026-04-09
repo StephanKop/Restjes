@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import { formatRelativeDate } from '@/lib/format'
 
@@ -29,49 +29,55 @@ export function ChatThread({
   const [newMessage, setNewMessage] = useState('')
   const [sending, setSending] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const messagesRef = useRef(messages)
+  messagesRef.current = messages
 
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  const supabase = useMemo(
+    () =>
+      createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      ),
+    [],
   )
+
+  // Reset messages when conversation changes (split-pane navigation)
+  useEffect(() => {
+    setMessages(initialMessages)
+    setNewMessage('')
+  }, [conversationId, initialMessages])
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [])
 
+  // Scroll to bottom on new messages
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages.length, scrollToBottom])
+
   // Mark unread messages as read
-  const markAsRead = useCallback(async () => {
-    const unreadIds = messages
+  useEffect(() => {
+    const unreadIds = messagesRef.current
       .filter((m) => m.sender_id !== currentUserId && !m.is_read)
       .map((m) => m.id)
 
     if (unreadIds.length === 0) return
 
-    await supabase
+    supabase
       .from('messages')
       .update({ is_read: true })
       .in('id', unreadIds)
+      .then(() => {
+        setMessages((prev) =>
+          prev.map((m) =>
+            unreadIds.includes(m.id) ? { ...m, is_read: true } : m,
+          ),
+        )
+      })
+  }, [messages.length, currentUserId, supabase])
 
-    setMessages((prev) =>
-      prev.map((m) =>
-        unreadIds.includes(m.id) ? { ...m, is_read: true } : m,
-      ),
-    )
-  }, [messages, currentUserId, supabase])
-
-  // Scroll to bottom on initial load and new messages
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages.length, scrollToBottom])
-
-  // Mark as read on mount and when messages change
-  useEffect(() => {
-    markAsRead()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messages.length])
-
-  // Realtime subscription
+  // Realtime subscription — stable deps, no re-subscribe on message changes
   useEffect(() => {
     const channel = supabase
       .channel(`messages:${conversationId}`)
@@ -86,7 +92,6 @@ export function ChatThread({
         (payload) => {
           const newMsg = payload.new as Message
           setMessages((prev) => {
-            // Skip if already in state
             if (prev.some((m) => m.id === newMsg.id)) return prev
             return [...prev, newMsg]
           })
@@ -113,7 +118,6 @@ export function ChatThread({
 
       if (!error) {
         setNewMessage('')
-        // Also update last_message_at on conversation
         await supabase
           .from('conversations')
           .update({ last_message_at: new Date().toISOString() })
@@ -131,22 +135,17 @@ export function ChatThread({
     }
   }
 
-  // Group messages by date for timestamp display
   const shouldShowTimestamp = (index: number): boolean => {
     if (index === 0) return true
     const prev = new Date(messages[index - 1].created_at)
     const curr = new Date(messages[index].created_at)
-    // Show timestamp if more than 30 minutes between messages
     return curr.getTime() - prev.getTime() > 30 * 60 * 1000
   }
 
   return (
     <div className="flex h-full flex-col">
       {/* Messages area */}
-      <div
-        ref={containerRef}
-        className="flex-1 overflow-y-auto px-4 py-6"
-      >
+      <div className="flex-1 overflow-y-auto px-4 py-6">
         {messages.length === 0 ? (
           <div className="flex h-full items-center justify-center">
             <p className="text-center text-warm-400">

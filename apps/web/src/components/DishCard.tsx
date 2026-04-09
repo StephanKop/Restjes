@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { formatPickupTime } from '@/lib/format'
+import { DishIcon, ClockIcon } from '@/components/icons'
 
 export interface DishCardData {
   id: string
@@ -16,6 +17,8 @@ export interface DishCardData {
   merchant: {
     business_name: string
     city: string
+    latitude?: number | null
+    longitude?: number | null
   }
   allergen_count?: number
 }
@@ -44,9 +47,7 @@ export function DishCard({ dish }: DishCardProps) {
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-400 to-brand-600">
-            <span className="text-5xl" role="img" aria-label="Gerecht">
-              🍽️
-            </span>
+            <DishIcon className="h-12 w-12 text-white/80" />
           </div>
         )}
       </div>
@@ -61,8 +62,8 @@ export function DishCard({ dish }: DishCardProps) {
         </p>
 
         {/* Pickup time */}
-        <p className="mb-3 text-sm font-medium text-warm-700">
-          <span className="mr-1.5" role="img" aria-label="Klok">🕐</span>
+        <p className="mb-3 flex items-center gap-1.5 text-sm font-medium text-warm-700">
+          <ClockIcon className="h-4 w-4 text-warm-400" />
           {pickupLabel}
         </p>
 

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { notFound, redirect } from 'next/navigation'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { ChatThread } from '@/components/ChatThread'
@@ -45,7 +46,6 @@ export default async function MerchantConversationPage({
     redirect('/login')
   }
 
-  // Get merchant for this user
   const { data: merchant } = await supabase
     .from('merchants')
     .select('id')
@@ -83,6 +83,12 @@ export default async function MerchantConversationPage({
   }
 
   const consumerName = consumer?.display_name ?? 'Onbekende gebruiker'
+  const initials = consumerName
+    .split(' ')
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
 
   const { data: messages } = await supabase
     .from('messages')
@@ -92,12 +98,12 @@ export default async function MerchantConversationPage({
     .limit(50)
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] flex-col">
+    <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="flex items-center gap-4 border-b border-warm-100 bg-white px-4 py-3 rounded-t-2xl shadow-card">
+      <div className="flex items-center gap-3 border-b border-warm-100 px-4 py-3">
         <Link
           href="/aanbieder/messages"
-          className="flex h-9 w-9 items-center justify-center rounded-xl text-warm-500 transition-colors hover:bg-warm-50 hover:text-warm-700"
+          className="flex h-9 w-9 items-center justify-center rounded-xl text-warm-500 transition-colors hover:bg-warm-50 hover:text-warm-700 lg:hidden"
           aria-label="Terug naar berichten"
         >
           <svg
@@ -113,30 +119,24 @@ export default async function MerchantConversationPage({
             />
           </svg>
         </Link>
-        <div className="flex items-center gap-3">
-          {consumer?.avatar_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={consumer.avatar_url}
-              alt={consumerName}
-              className="h-9 w-9 rounded-full object-cover"
-            />
-          ) : (
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-xs font-bold text-brand-700">
-              {consumerName
-                .split(' ')
-                .map((w) => w[0])
-                .join('')
-                .toUpperCase()
-                .slice(0, 2)}
-            </div>
-          )}
-          <h1 className="font-bold text-warm-800">{consumerName}</h1>
-        </div>
+        {consumer?.avatar_url ? (
+          <Image
+            src={consumer.avatar_url}
+            alt={consumerName}
+            width={36}
+            height={36}
+            className="h-9 w-9 rounded-full object-cover"
+          />
+        ) : (
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-xs font-bold text-brand-700">
+            {initials}
+          </div>
+        )}
+        <h1 className="font-bold text-warm-800">{consumerName}</h1>
       </div>
 
       {/* Chat */}
-      <div className="flex-1 overflow-hidden rounded-b-2xl bg-offwhite shadow-card">
+      <div className="flex-1 overflow-hidden bg-offwhite">
         <ChatThread
           conversationId={conversationId}
           currentUserId={user.id}

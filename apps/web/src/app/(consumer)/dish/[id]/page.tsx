@@ -7,6 +7,7 @@ import { formatPickupTime, allergenLabel } from '@/lib/format'
 import { ReserveButton } from '@/components/ReserveButton'
 import { StartChatButton } from '@/components/StartChatButton'
 import { JsonLd } from '@/components/JsonLd'
+import { DishIcon, ClockIcon, CubeIcon, ContainerIcon, LeafIcon, StorefrontIcon, CheckBadgeIcon } from '@/components/icons'
 
 interface DishPageProps {
   params: Promise<{ id: string }>
@@ -140,9 +141,7 @@ export default async function DishPage({ params }: DishPageProps) {
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-400 to-brand-600">
-            <span className="text-7xl" role="img" aria-label="Gerecht">
-              🍽️
-            </span>
+            <DishIcon className="h-20 w-20 text-white/80" />
           </div>
         )}
       </div>
@@ -169,22 +168,22 @@ export default async function DishPage({ params }: DishPageProps) {
           {/* Info grid */}
           <div className="grid gap-4 sm:grid-cols-2">
             <InfoItem
-              icon="🕐"
+              icon={<ClockIcon className="h-5 w-5" />}
               label="Ophaalmoment"
               value={pickupLabel}
             />
             <InfoItem
-              icon="📦"
+              icon={<CubeIcon className="h-5 w-5" />}
               label="Beschikbaar"
               value={`${dish.quantity_available} portie${dish.quantity_available !== 1 ? 's' : ''}`}
             />
             <InfoItem
-              icon="🥡"
+              icon={<ContainerIcon className="h-5 w-5" />}
               label="Eigen bakje meenemen"
               value={dish.bring_own_container ? 'Ja, graag!' : 'Niet nodig'}
             />
             <InfoItem
-              icon="🌱"
+              icon={<LeafIcon className="h-5 w-5" />}
               label="Dieet"
               value={
                 dish.is_vegan
@@ -249,7 +248,7 @@ export default async function DishPage({ params }: DishPageProps) {
                 />
               ) : (
                 <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-brand-100">
-                  <span className="text-2xl">🏪</span>
+                  <StorefrontIcon className="h-7 w-7 text-brand-600" />
                 </div>
               )}
               <div>
@@ -258,9 +257,7 @@ export default async function DishPage({ params }: DishPageProps) {
                     {merchant.business_name}
                   </h3>
                   {merchant.is_verified && (
-                    <span className="text-brand-500" title="Geverifieerd">
-                      ✓
-                    </span>
+                    <CheckBadgeIcon className="h-5 w-5 text-brand-500" />
                   )}
                 </div>
                 <p className="text-sm text-warm-500">{merchant.city}</p>
@@ -325,14 +322,16 @@ function InfoItem({
   label,
   value,
 }: {
-  icon: string
+  icon: React.ReactNode
   label: string
   value: string
 }) {
   return (
     <div className="rounded-2xl bg-white p-4 shadow-card">
       <div className="flex items-start gap-3">
-        <span className="text-xl">{icon}</span>
+        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+          {icon}
+        </div>
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-warm-400">
             {label}

@@ -204,7 +204,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
       }
     } catch (err) {
       console.error('Dish save error:', err)
-      alert('Er ging iets mis bij het opslaan. Probeer het opnieuw.')
+      setErrors({ submit: 'Er ging iets mis bij het opslaan. Probeer het opnieuw.' })
     } finally {
       setLoading(false)
     }
@@ -392,6 +392,12 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
           ))}
         </div>
       </div>
+
+      {errors.submit && (
+        <div className="rounded-xl bg-red-50 p-4 text-sm text-red-700">
+          {errors.submit}
+        </div>
+      )}
 
       {/* Submit */}
       <div className="flex gap-3">

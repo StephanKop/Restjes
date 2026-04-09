@@ -3,8 +3,8 @@
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import { ALL_ALLERGENS, allergenLabel } from '@/lib/format'
+import { MapPinIcon } from '@/components/icons'
 
-const RADIUS_OPTIONS = [1, 2, 5, 10, 25, 50]
 
 interface BrowseFiltersProps {
   userCity?: string
@@ -23,6 +23,7 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
   const currentRadius = searchParams.get('radius') ?? '5'
 
   const [searchValue, setSearchValue] = useState(searchParams.get('q') ?? '')
+  const [sliderValue, setSliderValue] = useState(Number(currentRadius))
   const [locating, setLocating] = useState(false)
   const [locationError, setLocationError] = useState<string | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -130,7 +131,7 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
         {hasLocation ? (
           <div className="space-y-3">
             <div className="flex items-center justify-between rounded-xl bg-brand-50 px-3 py-2.5">
-              <span className="text-sm font-medium text-brand-700">📍 Mijn locatie</span>
+              <span className="flex items-center gap-1.5 text-sm font-medium text-brand-700"><MapPinIcon className="h-4 w-4" /> Mijn locatie</span>
               <button
                 type="button"
                 onClick={clearLocation}
@@ -140,28 +141,86 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
               </button>
             </div>
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label htmlFor="radius-slider" className="text-xs text-warm-500">Straal</label>
-                <span className="text-xs font-semibold text-warm-700">{currentRadius} km</span>
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-xs text-warm-500">Straal</span>
+                <span className="rounded-lg bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">{sliderValue} km</span>
               </div>
               <input
-                id="radius-slider"
                 type="range"
-                min={0}
-                max={RADIUS_OPTIONS.length - 1}
+                min={1}
+                max={50}
                 step={1}
-                value={RADIUS_OPTIONS.indexOf(Number(currentRadius))}
+                value={sliderValue}
                 onChange={(e) => {
-                  const km = RADIUS_OPTIONS[Number(e.target.value)]
+                  const km = Number(e.target.value)
+                  setSliderValue(km)
                   updateParams({ radius: String(km) })
                 }}
-                className="w-full accent-brand-500"
+                className="radius-slider w-full"
               />
-              <div className="mt-1 flex justify-between text-[10px] text-warm-400">
-                {RADIUS_OPTIONS.map((km) => (
-                  <span key={km}>{km}</span>
-                ))}
+              <div className="mt-1.5 flex justify-between px-0.5 text-[10px] text-warm-400">
+                <span>1 km</span>
+                <span>50 km</span>
               </div>
+              <style>{`
+                .radius-slider {
+                  -webkit-appearance: none;
+                  appearance: none;
+                  height: 6px;
+                  border-radius: 999px;
+                  background: linear-gradient(
+                    to right,
+                    var(--color-brand-500) 0%,
+                    var(--color-brand-500) ${((sliderValue - 1) / 49) * 100}%,
+                    var(--color-warm-200) ${((sliderValue - 1) / 49) * 100}%,
+                    var(--color-warm-200) 100%
+                  );
+                  cursor: pointer;
+                }
+                .radius-slider::-webkit-slider-thumb {
+                  -webkit-appearance: none;
+                  appearance: none;
+                  width: 20px;
+                  height: 20px;
+                  border-radius: 50%;
+                  background: white;
+                  border: 3px solid var(--color-brand-500);
+                  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+                  transition: transform 0.15s ease, box-shadow 0.15s ease;
+                }
+                .radius-slider::-webkit-slider-thumb:hover {
+                  transform: scale(1.15);
+                  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+                }
+                .radius-slider::-webkit-slider-thumb:active {
+                  transform: scale(1.05);
+                  background: var(--color-brand-50);
+                }
+                .radius-slider::-moz-range-thumb {
+                  width: 20px;
+                  height: 20px;
+                  border-radius: 50%;
+                  background: white;
+                  border: 3px solid var(--color-brand-500);
+                  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+                  cursor: pointer;
+                }
+                .radius-slider::-moz-range-track {
+                  height: 6px;
+                  border-radius: 999px;
+                  background: var(--color-warm-200);
+                }
+                .radius-slider::-moz-range-progress {
+                  height: 6px;
+                  border-radius: 999px;
+                  background: var(--color-brand-500);
+                }
+                .radius-slider:focus-visible {
+                  outline: 2px solid var(--color-brand-300);
+                  outline-offset: 4px;
+                  border-radius: 999px;
+                }
+              `}</style>
             </div>
           </div>
         ) : (
@@ -172,7 +231,7 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
               disabled={locating}
               className="w-full rounded-xl border border-warm-200 px-3 py-2.5 text-sm font-medium text-warm-600 transition-colors hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-50"
             >
-              {locating ? 'Locatie ophalen...' : '📍 Gebruik mijn locatie'}
+              {locating ? 'Locatie ophalen...' : <><MapPinIcon className="inline h-4 w-4" /> Gebruik mijn locatie</>}
             </button>
             {locationError && (
               <p className="mt-2 text-xs text-red-600">{locationError}</p>
@@ -186,7 +245,7 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
         <div>
           <p className="mb-2 text-sm font-semibold text-warm-700">Stad</p>
           <div className="flex items-center justify-between rounded-xl bg-warm-50 px-3 py-2.5">
-            <span className="text-sm text-warm-600">📍 {userCity}</span>
+            <span className="flex items-center gap-1.5 text-sm text-warm-600"><MapPinIcon className="h-4 w-4" /> {userCity}</span>
             <button
               type="button"
               onClick={() => updateParams({ city: 'alle' })}

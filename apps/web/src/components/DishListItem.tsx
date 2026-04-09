@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { formatPickupTime } from '@/lib/format'
 import type { DishCardData } from '@/components/DishCard'
+import { DishIcon, ClockIcon } from '@/components/icons'
 
 interface DishListItemProps {
   dish: DishCardData
@@ -27,7 +28,7 @@ export function DishListItem({ dish }: DishListItemProps) {
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-400 to-brand-600">
-            <span className="text-3xl" role="img" aria-label="Gerecht">🍽️</span>
+            <DishIcon className="h-8 w-8 text-white/80" />
           </div>
         )}
       </div>
@@ -44,8 +45,8 @@ export function DishListItem({ dish }: DishListItemProps) {
         </div>
 
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
-          <span className="text-sm text-warm-600">
-            <span className="mr-1" role="img" aria-label="Klok">🕐</span>
+          <span className="flex items-center gap-1 text-sm text-warm-600">
+            <ClockIcon className="h-3.5 w-3.5 text-warm-400" />
             {pickupLabel}
           </span>
 
