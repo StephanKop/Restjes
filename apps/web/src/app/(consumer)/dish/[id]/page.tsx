@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { createServerComponentClient } from '@/lib/supabase-server'
+import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { formatPickupTime, allergenLabel } from '@/lib/format'
 import { ReserveButton } from '@/components/ReserveButton'
 import { StartChatButton } from '@/components/StartChatButton'
@@ -103,9 +103,7 @@ export default async function DishPage({ params }: DishPageProps) {
   const pickupLabel = formatPickupTime(dish.pickup_start, dish.pickup_end)
 
   // Check auth for reserve button
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getUser()
 
   const productJsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',

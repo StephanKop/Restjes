@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
-import { createServerComponentClient } from '@/lib/supabase-server'
+import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { ReviewList, type ReviewData } from '@/components/ReviewList'
 import { StarRating } from '@/components/StarRating'
 
@@ -9,16 +9,13 @@ export const metadata: Metadata = {
 }
 
 export default async function AanbiederReviewsPage() {
-  const supabase = await createServerComponentClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getUser()
 
   if (!user) {
     redirect('/login')
   }
 
+  const supabase = await createServerComponentClient()
   const { data: merchant } = await supabase
     .from('merchants')
     .select('id, avg_rating, review_count')

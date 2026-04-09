@@ -33,6 +33,9 @@ interface ConversationInfo {
     business_name: string
     profile_id: string
   }
+  consumer: {
+    display_name: string
+  }
 }
 
 export default function ChatScreen() {
@@ -52,14 +55,20 @@ export default function ChatScreen() {
   const fetchConversation = useCallback(async () => {
     const { data } = await supabase
       .from('conversations')
-      .select('id, merchant_id, consumer_id, merchant:merchants!merchant_id (business_name, profile_id)')
+      .select('id, merchant_id, consumer_id, merchant:merchants!merchant_id (business_name, profile_id), consumer:profiles!consumer_id (display_name)')
       .eq('id', conversationId)
       .single()
 
     if (data) {
       const info = data as unknown as ConversationInfo
       setConvo(info)
-      navigation.setOptions({ headerTitle: info.merchant.business_name })
+      // Show the other party's name
+      const isMerchantOwner = info.merchant.profile_id === user?.id
+      navigation.setOptions({
+        headerTitle: isMerchantOwner
+          ? info.consumer.display_name
+          : info.merchant.business_name,
+      })
     }
   }, [conversationId, navigation])
 
@@ -214,7 +223,7 @@ export default function ChatScreen() {
         contentContainerStyle={{ padding: 20, paddingBottom: 8 }}
         ListEmptyComponent={
           <View className="items-center justify-center py-20">
-            <Ionicons name="chatbubble-outline" size={48} color="#d1cbc4" />
+            <Ionicons name="chatbubble-outline" size={48} color="#c4bdb4" />
             <Text className="text-warm-400 text-base text-center mt-4">
               Stuur het eerste bericht
             </Text>
@@ -227,7 +236,7 @@ export default function ChatScreen() {
         <TextInput
           className="flex-1 bg-warm-100 rounded-xl px-4 py-3 text-base text-warm-800 max-h-24"
           placeholder="Schrijf een bericht..."
-          placeholderTextColor="#b0a89e"
+          placeholderTextColor="#9e9589"
           value={input}
           onChangeText={setInput}
           multiline
@@ -243,7 +252,7 @@ export default function ChatScreen() {
           <Ionicons
             name="send"
             size={18}
-            color={input.trim() ? '#ffffff' : '#b0a89e'}
+            color={input.trim() ? '#ffffff' : '#9e9589'}
           />
         </Pressable>
       </View>

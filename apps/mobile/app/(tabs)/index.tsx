@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../lib/auth-context'
 import { formatPickupTime } from '../../lib/format'
 
 interface Dish {
@@ -36,13 +37,32 @@ interface Dish {
 type DietFilter = 'vegetarisch' | 'veganistisch'
 
 export default function DiscoverScreen() {
+  const { user } = useAuth()
   const [dishes, setDishes] = useState<Dish[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [search, setSearch] = useState('')
   const [activeFilters, setActiveFilters] = useState<DietFilter[]>([])
+  const [userCity, setUserCity] = useState<string | null>(null)
+  const [cityLoaded, setCityLoaded] = useState(false)
+
+  // Fetch user's city from profile
+  useEffect(() => {
+    if (!user) return
+    supabase
+      .from('profiles')
+      .select('city')
+      .eq('id', user.id)
+      .single()
+      .then(({ data }) => {
+        setUserCity(data?.city ?? null)
+        setCityLoaded(true)
+      })
+  }, [user])
 
   const fetchDishes = useCallback(async () => {
+    if (!cityLoaded) return
+
     let query = supabase
       .from('dishes')
       .select(
@@ -55,6 +75,10 @@ export default function DiscoverScreen() {
       .eq('status', 'available')
       .gt('quantity_available', 0)
       .order('pickup_start', { ascending: true })
+
+    if (userCity) {
+      query = query.eq('merchant.city', userCity)
+    }
 
     if (search.trim()) {
       query = query.ilike('title', `%${search.trim()}%`)
@@ -73,7 +97,7 @@ export default function DiscoverScreen() {
         (data as unknown as Dish[]).filter((d) => d.merchant !== null)
       )
     }
-  }, [search, activeFilters])
+  }, [search, activeFilters, userCity, cityLoaded])
 
   useEffect(() => {
     setLoading(true)
@@ -115,13 +139,13 @@ export default function DiscoverScreen() {
           {item.title}
         </Text>
         <View className="flex-row items-center mt-1">
-          <Ionicons name="storefront-outline" size={14} color="#8a8680" />
+          <Ionicons name="storefront-outline" size={14} color="#736b62" />
           <Text className="text-sm text-warm-500 ml-1" numberOfLines={1}>
             {item.merchant.business_name} · {item.merchant.city}
           </Text>
         </View>
         <View className="flex-row items-center mt-1.5">
-          <Ionicons name="time-outline" size={14} color="#8a8680" />
+          <Ionicons name="time-outline" size={14} color="#736b62" />
           <Text className="text-sm text-warm-500 ml-1">
             {formatPickupTime(item.pickup_start, item.pickup_end)}
           </Text>
@@ -158,13 +182,33 @@ export default function DiscoverScreen() {
         <Text className="text-2xl font-bold text-warm-800 mb-1">
           Ontdekken
         </Text>
-        <Text className="text-base text-warm-500 mb-4">
-          Bekijk wat er bij jou in de buurt beschikbaar is
-        </Text>
+        <Pressable
+          className="flex-row items-center mb-4"
+          onPress={() => setUserCity(userCity ? null : (userCity ?? null))}
+        >
+          <Ionicons name="location-outline" size={16} color="#736b62" />
+          {userCity ? (
+            <Text className="text-base text-warm-500 ml-1">
+              {userCity}
+            </Text>
+          ) : (
+            <Text className="text-base text-warm-500 ml-1">
+              Alle plaatsen
+            </Text>
+          )}
+          {userCity && (
+            <Pressable
+              onPress={() => setUserCity(null)}
+              className="ml-2 bg-warm-100 rounded-lg px-2 py-0.5"
+            >
+              <Text className="text-xs text-warm-600">Alle plaatsen</Text>
+            </Pressable>
+          )}
+        </Pressable>
 
         {/* Search */}
         <View className="flex-row items-center bg-white border border-warm-200 rounded-xl px-4 py-3 mb-3">
-          <Ionicons name="search-outline" size={20} color="#b0a89e" />
+          <Ionicons name="search-outline" size={20} color="#9e9589" />
           <TextInput
             className="flex-1 ml-2 text-base text-warm-800"
             placeholder="Zoek gerechten..."
@@ -175,7 +219,7 @@ export default function DiscoverScreen() {
           />
           {search.length > 0 && (
             <Pressable onPress={() => setSearch('')}>
-              <Ionicons name="close-circle" size={20} color="#b0a89e" />
+              <Ionicons name="close-circle" size={20} color="#9e9589" />
             </Pressable>
           )}
         </View>
@@ -241,7 +285,7 @@ export default function DiscoverScreen() {
             }
             ListEmptyComponent={
               <View className="flex-1 items-center justify-center py-20">
-                <Ionicons name="restaurant-outline" size={48} color="#d1cbc4" />
+                <Ionicons name="restaurant-outline" size={48} color="#c4bdb4" />
                 <Text className="text-warm-400 text-base text-center mt-4">
                   Geen gerechten beschikbaar
                 </Text>

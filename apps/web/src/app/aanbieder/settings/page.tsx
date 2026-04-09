@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { createServerComponentClient } from '@/lib/supabase-server'
+import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { MerchantSettingsForm } from './MerchantSettingsForm'
 
 export const metadata = {
@@ -7,16 +7,13 @@ export const metadata = {
 }
 
 export default async function MerchantSettingsPage() {
-  const supabase = await createServerComponentClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getUser()
 
   if (!user) {
     redirect('/login')
   }
 
+  const supabase = await createServerComponentClient()
   const { data: profile } = await supabase
     .from('profiles')
     .select('display_name')

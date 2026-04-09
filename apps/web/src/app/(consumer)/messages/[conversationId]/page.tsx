@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
-import { createServerComponentClient } from '@/lib/supabase-server'
+import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { ChatThread } from '@/components/ChatThread'
 
 interface ConversationPageProps {
@@ -37,9 +37,7 @@ export default async function ConsumerConversationPage({
   const { conversationId } = await params
   const supabase = await createServerComponentClient()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getUser()
 
   if (!user) {
     redirect('/login')

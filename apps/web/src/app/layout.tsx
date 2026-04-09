@@ -1,5 +1,7 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { Nunito } from 'next/font/google'
+import { NavigationProgress } from '@/components/NavigationProgress'
 import './globals.css'
 
 const nunito = Nunito({
@@ -20,7 +22,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="nl" className={nunito.variable}>
-      <body className="min-h-screen bg-offwhite text-warm-800 antialiased">{children}</body>
+      <body suppressHydrationWarning className="min-h-screen bg-offwhite text-warm-800 antialiased">
+        <Suspense>
+          <NavigationProgress />
+        </Suspense>
+        {children}
+      </body>
     </html>
   )
 }

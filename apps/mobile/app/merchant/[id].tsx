@@ -54,7 +54,7 @@ function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
     } else if (i - 0.5 <= rating) {
       stars.push(<Ionicons key={i} name="star-half" size={size} color="#f59e0b" />)
     } else {
-      stars.push(<Ionicons key={i} name="star-outline" size={size} color="#d1cbc4" />)
+      stars.push(<Ionicons key={i} name="star-outline" size={size} color="#c4bdb4" />)
     }
   }
   return <View className="flex-row">{stars}</View>

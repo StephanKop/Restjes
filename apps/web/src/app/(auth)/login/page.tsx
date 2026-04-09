@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { SocialAuthButtons } from '@/components/SocialAuthButtons'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -52,6 +53,17 @@ export default function LoginPage() {
       <h1 className="mb-6 text-center text-2xl font-bold text-warm-800">
         Welkom terug!
       </h1>
+
+      <SocialAuthButtons />
+
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-warm-200" />
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="bg-cream px-3 text-warm-400">of met e-mail</span>
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input

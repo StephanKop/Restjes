@@ -120,6 +120,42 @@ export default function DishDetailScreen() {
     }
   }
 
+  const handleChat = async () => {
+    if (!dish || !user) return
+
+    // Check for existing conversation about this dish
+    const { data: existing } = await supabase
+      .from('conversations')
+      .select('id')
+      .eq('merchant_id', dish.merchant.id)
+      .eq('consumer_id', user.id)
+      .eq('dish_id', dish.id)
+      .single()
+
+    if (existing) {
+      router.push(`/chat/${existing.id}`)
+      return
+    }
+
+    // Create a new conversation
+    const { data: created, error } = await supabase
+      .from('conversations')
+      .insert({
+        merchant_id: dish.merchant.id,
+        consumer_id: user.id,
+        dish_id: dish.id,
+      })
+      .select('id')
+      .single()
+
+    if (error || !created) {
+      Alert.alert('Fout', 'Kon het gesprek niet starten. Probeer het opnieuw.')
+      return
+    }
+
+    router.push(`/chat/${created.id}`)
+  }
+
   if (loading) {
     return (
       <View className="flex-1 bg-offwhite items-center justify-center">
@@ -277,20 +313,26 @@ export default function DishDetailScreen() {
                 {dish.merchant.city}
               </Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color="#b0a89e" />
+            <Ionicons name="chevron-forward" size={20} color="#9e9589" />
           </Pressable>
         </View>
       </ScrollView>
 
-      {/* Reserve section */}
+      {/* Bottom actions */}
       <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-warm-200 px-5 pt-4 pb-8">
         <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center">
+          <Pressable
+            className="w-12 h-12 rounded-xl bg-warm-100 items-center justify-center"
+            onPress={handleChat}
+          >
+            <Ionicons name="chatbubble-outline" size={22} color="#302b26" />
+          </Pressable>
+          <View className="flex-row items-center ml-3">
             <Pressable
               className="w-10 h-10 rounded-xl bg-warm-100 items-center justify-center"
               onPress={() => setQuantity((q) => Math.max(1, q - 1))}
             >
-              <Ionicons name="remove" size={20} color="#3d3833" />
+              <Ionicons name="remove" size={20} color="#302b26" />
             </Pressable>
             <Text className="text-lg font-bold text-warm-800 mx-4">{quantity}</Text>
             <Pressable
@@ -299,11 +341,11 @@ export default function DishDetailScreen() {
                 setQuantity((q) => Math.min(dish.quantity_available, q + 1))
               }
             >
-              <Ionicons name="add" size={20} color="#3d3833" />
+              <Ionicons name="add" size={20} color="#302b26" />
             </Pressable>
           </View>
           <Pressable
-            className="bg-brand-500 rounded-xl px-6 py-3.5 flex-1 ml-4"
+            className="bg-brand-500 rounded-xl px-6 py-3.5 flex-1 ml-3"
             onPress={handleReserve}
             disabled={reserving}
           >

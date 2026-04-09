@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import { createServerComponentClient } from '@/lib/supabase-server'
+import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
 import { DeleteDishButton } from '@/components/DeleteDishButton'
 import { Button } from '@/components/ui/Button'
@@ -36,16 +36,13 @@ function formatPickupTime(start: string | null, end: string | null): string {
 }
 
 export default async function DishesPage() {
-  const supabase = await createServerComponentClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getUser()
 
   if (!user) {
     redirect('/login')
   }
 
+  const supabase = await createServerComponentClient()
   const { data: merchant } = await supabase
     .from('merchants')
     .select('id')

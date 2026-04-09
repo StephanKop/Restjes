@@ -30,8 +30,10 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // Refresh the auth token
-  await supabase.auth.getUser();
+  // Refresh the session token if expired (local JWT decode — no network call
+  // unless the token actually needs refreshing). Page-level getUser() still
+  // verifies the token server-side for actual auth decisions.
+  await supabase.auth.getSession();
 
   return supabaseResponse;
 }

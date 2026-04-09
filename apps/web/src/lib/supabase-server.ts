@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
@@ -23,3 +24,13 @@ export async function createServerComponentClient() {
     },
   )
 }
+
+/**
+ * Cached per-request: deduplicates auth calls across layout, nav, and page
+ * components that all need the current user within the same render.
+ */
+export const getUser = cache(async () => {
+  const supabase = await createServerComponentClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  return user
+})

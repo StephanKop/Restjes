@@ -15,6 +15,7 @@ import { supabase } from '../../lib/supabase'
 
 export default function SignupScreen() {
   const [name, setName] = useState('')
+  const [city, setCity] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -22,7 +23,7 @@ export default function SignupScreen() {
   const [loading, setLoading] = useState(false)
 
   const handleSignup = async () => {
-    if (!name || !email || !password) {
+    if (!name || !city || !email || !password) {
       setError('Vul alle velden in.')
       return
     }
@@ -41,6 +42,7 @@ export default function SignupScreen() {
       options: {
         data: {
           display_name: name.trim(),
+          city: city.trim(),
         },
       },
     })
@@ -113,15 +115,22 @@ export default function SignupScreen() {
             <TextInput
               className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-base"
               placeholder="Naam"
-              placeholderTextColor="#b0a89e"
+              placeholderTextColor="#9e9589"
               value={name}
               onChangeText={setName}
               autoComplete="name"
             />
             <TextInput
               className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-base"
+              placeholder="Woonplaats"
+              placeholderTextColor="#9e9589"
+              value={city}
+              onChangeText={setCity}
+            />
+            <TextInput
+              className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-base"
               placeholder="E-mailadres"
-              placeholderTextColor="#b0a89e"
+              placeholderTextColor="#9e9589"
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
@@ -131,7 +140,7 @@ export default function SignupScreen() {
             <TextInput
               className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-base"
               placeholder="Wachtwoord"
-              placeholderTextColor="#b0a89e"
+              placeholderTextColor="#9e9589"
               value={password}
               onChangeText={setPassword}
               secureTextEntry

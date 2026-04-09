@@ -5,6 +5,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send'
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -29,7 +31,7 @@ Deno.serve(async (req) => {
       )
     }
 
-    const { dish_id, quantity } = reservation
+    const { dish_id, quantity, consumer_id } = reservation
 
     if (!dish_id || !quantity) {
       return new Response(
@@ -44,7 +46,7 @@ Deno.serve(async (req) => {
     // Fetch the current dish to get quantity_available
     const { data: dish, error: fetchError } = await supabase
       .from('dishes')
-      .select('id, quantity_available, merchant_id')
+      .select('id, title, quantity_available, merchant_id')
       .eq('id', dish_id)
       .single()
 
@@ -76,11 +78,54 @@ Deno.serve(async (req) => {
       `Dish ${dish_id}: quantity_available ${dish.quantity_available} -> ${Math.max(0, newQuantity)}`,
     )
 
-    // TODO: Send push notification to merchant
-    // This would notify the merchant that a new reservation was placed
-    console.log(
-      `[Placeholder] Would send push notification to merchant ${dish.merchant_id} about new reservation`,
-    )
+    // Send push notification to the dish owner (merchant)
+    const { data: merchant } = await supabase
+      .from('merchants')
+      .select('profile_id')
+      .eq('id', dish.merchant_id)
+      .single()
+
+    if (merchant?.profile_id) {
+      // Get consumer name for the notification
+      const { data: consumerProfile } = await supabase
+        .from('profiles')
+        .select('display_name')
+        .eq('id', consumer_id)
+        .single()
+
+      const consumerName = consumerProfile?.display_name ?? 'Iemand'
+
+      const { data: pushTokens } = await supabase
+        .from('push_tokens')
+        .select('token')
+        .eq('profile_id', merchant.profile_id)
+
+      if (pushTokens && pushTokens.length > 0) {
+        const messages = pushTokens.map((tokenRow: { token: string }) => ({
+          to: tokenRow.token,
+          title: 'Nieuwe reservering',
+          body: `${consumerName} heeft ${quantity} portie${quantity > 1 ? 's' : ''} van "${dish.title}" gereserveerd`,
+          sound: 'default',
+          data: {
+            type: 'reservation',
+          },
+        }))
+
+        await fetch(EXPO_PUSH_URL, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(messages),
+        })
+
+        console.log(
+          `Sent reservation push notification to merchant ${dish.merchant_id}`,
+        )
+      }
+    }
 
     return new Response(
       JSON.stringify({

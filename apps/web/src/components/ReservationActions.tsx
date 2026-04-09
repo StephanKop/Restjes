@@ -8,13 +8,13 @@ import { Button } from '@/components/ui/Button'
 interface ReservationActionsProps {
   reservationId: string
   currentStatus: string
-  role: 'consumer' | 'merchant'
+  view: 'consumer' | 'merchant'
 }
 
 export function ReservationActions({
   reservationId,
   currentStatus,
-  role,
+  view,
 }: ReservationActionsProps) {
   const router = useRouter()
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
@@ -49,7 +49,7 @@ export function ReservationActions({
   }
 
   // Consumer actions
-  if (role === 'consumer') {
+  if (view === 'consumer') {
     if (currentStatus === 'pending' || currentStatus === 'confirmed') {
       return (
         <Button

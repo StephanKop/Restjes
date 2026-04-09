@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { redirect, notFound } from 'next/navigation'
-import { createServerComponentClient } from '@/lib/supabase-server'
+import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { DishForm } from '@/components/DishForm'
 
 export const metadata: Metadata = {
@@ -13,16 +13,13 @@ interface EditDishPageProps {
 
 export default async function EditDishPage({ params }: EditDishPageProps) {
   const { id } = await params
-  const supabase = await createServerComponentClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getUser()
 
   if (!user) {
     redirect('/login')
   }
 
+  const supabase = await createServerComponentClient()
   const { data: merchant } = await supabase
     .from('merchants')
     .select('id')

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { createServerComponentClient } from '@/lib/supabase-server'
+import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
 import { formatRelativeDate } from '@/lib/format'
 import { StatusBadge } from '@/components/StatusBadge'
@@ -43,16 +43,13 @@ export default async function MerchantReservationsPage({
   const params = await searchParams
   const activeTab = (typeof params.tab === 'string' ? params.tab : 'alle') as TabFilter
 
-  const supabase = await createServerComponentClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getUser()
 
   if (!user) {
     redirect('/login')
   }
 
+  const supabase = await createServerComponentClient()
   const { data: merchant } = await supabase
     .from('merchants')
     .select('id')
@@ -205,7 +202,7 @@ export default async function MerchantReservationsPage({
                   <ReservationActions
                     reservationId={reservation.id}
                     currentStatus={reservation.status}
-                    role="merchant"
+                    view="merchant"
                   />
                 </div>
               </div>

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { Session, User } from '@supabase/supabase-js'
 import { supabase } from './supabase'
+import { unregisterPushNotifications } from './notifications'
 
 interface AuthContextType {
   session: Session | null
@@ -36,6 +37,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const signOut = async () => {
+    const userId = session?.user?.id
+    if (userId) {
+      await unregisterPushNotifications(userId)
+    }
     await supabase.auth.signOut()
     setSession(null)
   }

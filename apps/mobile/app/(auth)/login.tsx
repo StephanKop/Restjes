@@ -74,7 +74,7 @@ export default function LoginScreen() {
             <TextInput
               className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-base"
               placeholder="E-mailadres"
-              placeholderTextColor="#b0a89e"
+              placeholderTextColor="#9e9589"
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
@@ -84,7 +84,7 @@ export default function LoginScreen() {
             <TextInput
               className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-base"
               placeholder="Wachtwoord"
-              placeholderTextColor="#b0a89e"
+              placeholderTextColor="#9e9589"
               value={password}
               onChangeText={setPassword}
               secureTextEntry

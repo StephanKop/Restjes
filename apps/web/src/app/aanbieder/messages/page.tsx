@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { createServerComponentClient } from '@/lib/supabase-server'
+import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { ConversationList, type ConversationItem } from '@/components/ConversationList'
 
 export const metadata = {
@@ -7,14 +7,13 @@ export const metadata = {
 }
 
 export default async function MerchantMessagesPage() {
-  const supabase = await createServerComponentClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getUser()
 
   if (!user) {
     redirect('/login')
   }
+
+  const supabase = await createServerComponentClient()
 
   // Get the merchant record for this user
   const { data: merchant } = await supabase
@@ -57,42 +56,53 @@ export default async function MerchantMessagesPage() {
     )
   }
 
-  const conversationItems: ConversationItem[] = await Promise.all(
-    conversations.map(async (conv) => {
-      const consumer = conv.consumer as unknown as {
-        id: string
-        display_name: string | null
-        avatar_url: string | null
-      }
+  const conversationIds = conversations.map((c) => c.id)
 
-      const { data: lastMsg } = await supabase
-        .from('messages')
-        .select('content, created_at')
-        .eq('conversation_id', conv.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle()
+  const [{ data: allMessages }, { data: unreadCounts }] = await Promise.all([
+    supabase
+      .from('messages')
+      .select('conversation_id, content, created_at')
+      .in('conversation_id', conversationIds)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('messages')
+      .select('conversation_id')
+      .in('conversation_id', conversationIds)
+      .eq('is_read', false)
+      .neq('sender_id', user.id),
+  ])
 
-      const { count: unreadCount } = await supabase
-        .from('messages')
-        .select('id', { count: 'exact', head: true })
-        .eq('conversation_id', conv.id)
-        .eq('is_read', false)
-        .neq('sender_id', user.id)
+  const lastMessageMap = new Map<string, { content: string; created_at: string }>()
+  for (const msg of allMessages ?? []) {
+    if (!lastMessageMap.has(msg.conversation_id)) {
+      lastMessageMap.set(msg.conversation_id, msg)
+    }
+  }
 
-      const dish = conv.dish as unknown as { title: string } | null
+  const unreadCountMap = new Map<string, number>()
+  for (const row of unreadCounts ?? []) {
+    unreadCountMap.set(row.conversation_id, (unreadCountMap.get(row.conversation_id) ?? 0) + 1)
+  }
 
-      return {
-        id: conv.id,
-        otherPartyName: consumer?.display_name ?? 'Onbekende gebruiker',
-        otherPartyAvatar: consumer?.avatar_url ?? null,
-        dishTitle: dish?.title ?? null,
-        lastMessage: lastMsg?.content ?? null,
-        lastMessageAt: lastMsg?.created_at ?? conv.last_message_at,
-        unreadCount: unreadCount ?? 0,
-      }
-    }),
-  )
+  const conversationItems: ConversationItem[] = conversations.map((conv) => {
+    const consumer = conv.consumer as unknown as {
+      id: string
+      display_name: string | null
+      avatar_url: string | null
+    }
+    const dish = conv.dish as unknown as { title: string } | null
+    const lastMsg = lastMessageMap.get(conv.id)
+
+    return {
+      id: conv.id,
+      otherPartyName: consumer?.display_name ?? 'Onbekende gebruiker',
+      otherPartyAvatar: consumer?.avatar_url ?? null,
+      dishTitle: dish?.title ?? null,
+      lastMessage: lastMsg?.content ?? null,
+      lastMessageAt: lastMsg?.created_at ?? conv.last_message_at,
+      unreadCount: unreadCountMap.get(conv.id) ?? 0,
+    }
+  })
 
   return (
     <div>

@@ -18,11 +18,17 @@ import { formatRelativeDate } from '../../lib/format'
 interface Conversation {
   id: string
   merchant_id: string
+  consumer_id: string
   last_message_at: string | null
   merchant: {
     id: string
     business_name: string
     logo_url: string | null
+  }
+  consumer: {
+    id: string
+    display_name: string
+    avatar_url: string | null
   }
   last_message: {
     content: string
@@ -41,17 +47,33 @@ export default function MessagesScreen() {
   const fetchConversations = useCallback(async () => {
     if (!user) return
 
-    // Fetch conversations with merchant info
-    const { data: convos, error } = await supabase
+    // Fetch conversations where user is consumer OR merchant owner
+    const { data: myMerchant } = await supabase
+      .from('merchants')
+      .select('id')
+      .eq('profile_id', user.id)
+      .limit(1)
+
+    const merchantId = myMerchant?.[0]?.id
+
+    let query = supabase
       .from('conversations')
       .select(
         `
-        id, merchant_id, last_message_at,
-        merchant:merchants!merchant_id (id, business_name, logo_url)
+        id, merchant_id, consumer_id, last_message_at,
+        merchant:merchants!merchant_id (id, business_name, logo_url),
+        consumer:profiles!consumer_id (id, display_name, avatar_url)
       `
       )
-      .eq('consumer_id', user.id)
       .order('last_message_at', { ascending: false })
+
+    if (merchantId) {
+      query = query.or(`consumer_id.eq.${user.id},merchant_id.eq.${merchantId}`)
+    } else {
+      query = query.eq('consumer_id', user.id)
+    }
+
+    const { data: convos, error } = await query
 
     if (error || !convos) return
 
@@ -98,6 +120,15 @@ export default function MessagesScreen() {
 
   const renderConversation = ({ item }: { item: Conversation }) => {
     const hasUnread = item.unread_count > 0
+    const isOwnMerchant = item.consumer_id !== user?.id
+
+    // Show the other party's info
+    const otherName = isOwnMerchant
+      ? item.consumer?.display_name ?? 'Onbekend'
+      : item.merchant?.business_name ?? 'Onbekend'
+    const otherAvatar = isOwnMerchant
+      ? item.consumer?.avatar_url
+      : item.merchant?.logo_url
 
     return (
       <Pressable
@@ -105,16 +136,16 @@ export default function MessagesScreen() {
         onPress={() => router.push(`/chat/${item.id}`)}
       >
         {/* Avatar */}
-        {item.merchant?.logo_url ? (
+        {otherAvatar ? (
           <Image
-            source={{ uri: item.merchant.logo_url }}
+            source={{ uri: otherAvatar }}
             className="w-12 h-12 rounded-xl"
             resizeMode="cover"
           />
         ) : (
           <View className="w-12 h-12 rounded-xl bg-brand-100 items-center justify-center">
             <Text className="text-lg font-bold text-brand-700">
-              {(item.merchant?.business_name ?? '?')[0].toUpperCase()}
+              {otherName[0].toUpperCase()}
             </Text>
           </View>
         )}
@@ -125,7 +156,7 @@ export default function MessagesScreen() {
             className={`text-base text-warm-800 ${hasUnread ? 'font-bold' : 'font-semibold'}`}
             numberOfLines={1}
           >
-            {item.merchant?.business_name ?? 'Onbekend'}
+            {otherName}
           </Text>
           {item.last_message && (
             <Text
@@ -164,7 +195,7 @@ export default function MessagesScreen() {
           Berichten
         </Text>
         <Text className="text-base text-warm-500 mb-4">
-          Je gesprekken met aanbieders
+          Je gesprekken
         </Text>
 
         {loading ? (
@@ -187,7 +218,7 @@ export default function MessagesScreen() {
             }
             ListEmptyComponent={
               <View className="items-center justify-center py-20">
-                <Ionicons name="chatbubbles-outline" size={48} color="#d1cbc4" />
+                <Ionicons name="chatbubbles-outline" size={48} color="#c4bdb4" />
                 <Text className="text-warm-400 text-base text-center mt-4">
                   Je hebt nog geen berichten
                 </Text>

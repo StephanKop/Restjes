@@ -158,7 +158,7 @@ export default function ReservationsScreen() {
         </View>
 
         <View className="flex-row items-center mt-1">
-          <Ionicons name="time-outline" size={14} color="#8a8680" />
+          <Ionicons name="time-outline" size={14} color="#736b62" />
           <Text className="text-sm text-warm-500 ml-1">
             {formatPickupTime(item.dish.pickup_start, item.dish.pickup_end)}
           </Text>
@@ -229,7 +229,7 @@ export default function ReservationsScreen() {
                       : 'close-circle-outline'
                   }
                   size={48}
-                  color="#d1cbc4"
+                  color="#c4bdb4"
                 />
                 <Text className="text-warm-400 text-base text-center mt-4">
                   {activeTab === 'actief'

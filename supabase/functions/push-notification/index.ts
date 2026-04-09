@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
     // Look up the conversation to find all participants
     const { data: conversation, error: convError } = await supabase
       .from('conversations')
-      .select('customer_id, merchant_id')
+      .select('consumer_id, merchant_id')
       .eq('id', conversation_id)
       .single()
 
@@ -56,13 +56,25 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Determine the recipient (the participant who is NOT the sender)
-    const recipientId =
-      conversation.customer_id === sender_id
-        ? conversation.merchant_id
-        : conversation.customer_id
+    // Determine the recipient profile_id
+    // consumer_id is already a profile UUID
+    // merchant_id is a merchant UUID — need to resolve to profile_id
+    let recipientProfileId: string | null = null
 
-    if (!recipientId) {
+    if (conversation.consumer_id === sender_id) {
+      // Sender is the consumer, recipient is the merchant owner
+      const { data: merchant } = await supabase
+        .from('merchants')
+        .select('profile_id')
+        .eq('id', conversation.merchant_id)
+        .single()
+      recipientProfileId = merchant?.profile_id ?? null
+    } else {
+      // Sender is the merchant owner, recipient is the consumer
+      recipientProfileId = conversation.consumer_id
+    }
+
+    if (!recipientProfileId) {
       console.log('No recipient found for message, skipping notification')
       return new Response(
         JSON.stringify({ sent: false, reason: 'no_recipient' }),
@@ -84,20 +96,20 @@ Deno.serve(async (req) => {
       console.warn(`Could not fetch sender profile: ${profileError.message}`)
     }
 
-    const senderName = senderProfile?.display_name ?? 'Someone'
+    const senderName = senderProfile?.display_name ?? 'Iemand'
 
     // Look up recipient's push tokens
     const { data: pushTokens, error: tokenError } = await supabase
       .from('push_tokens')
       .select('token')
-      .eq('user_id', recipientId)
+      .eq('profile_id', recipientProfileId)
 
     if (tokenError) {
       throw new Error(`Failed to fetch push tokens: ${tokenError.message}`)
     }
 
     if (!pushTokens || pushTokens.length === 0) {
-      console.log(`No push tokens found for recipient ${recipientId}`)
+      console.log(`No push tokens found for recipient ${recipientProfileId}`)
       return new Response(
         JSON.stringify({ sent: false, reason: 'no_push_tokens' }),
         {
@@ -142,7 +154,7 @@ Deno.serve(async (req) => {
     }
 
     console.log(
-      `Sent ${messages.length} push notification(s) to recipient ${recipientId}`,
+      `Sent ${messages.length} push notification(s) to recipient ${recipientProfileId}`,
     )
 
     return new Response(

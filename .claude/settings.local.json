@@ -50,7 +50,21 @@
       "Bash(git config:*)",
       "Bash(gh auth:*)",
       "Bash(ssh -T git@github.com-personal)",
-      "Bash(ssh-add:*)"
+      "Bash(ssh-add:*)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('peerDependencies',{}\\), indent=2\\)\\)\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('dependencies',{}\\), indent=2\\)\\)\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('version:', d.get\\('version'\\)\\); print\\('main:', d.get\\('main','N/A'\\)\\)\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('version:', d.get\\('version'\\)\\)\")",
+      "Bash(npx expo:*)",
+      "Bash(kill %1)",
+      "Bash(node -e \"try { require.resolve\\('nativewind/metro'\\); console.log\\('nativewind/metro: OK'\\) } catch\\(e\\) { console.log\\('nativewind/metro: FAIL', e.message\\) }\")",
+      "Bash(node -e \"try { require.resolve\\('react-native-css-interop'\\); console.log\\('react-native-css-interop: OK'\\) } catch\\(e\\) { console.log\\('react-native-css-interop: FAIL', e.message\\) }\")",
+      "Bash(node -e \"try { require.resolve\\('tailwindcss'\\); console.log\\('tailwindcss: OK'\\) } catch\\(e\\) { console.log\\('tailwindcss: FAIL', e.message\\) }\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d.get\\('dependencies',{}\\).get\\('react-native-css-interop','N/A'\\)\\)\")",
+      "Bash(node -e \"try { require.resolve\\('react-native-css-interop'\\); console.log\\('react-native-css-interop: OK'\\) } catch\\(e\\) { console.log\\('FAIL', e.message\\) }\")",
+      "Bash(python3 -c \"from PIL import Image; print\\('ok'\\)\")",
+      "Bash(pip3 install:*)",
+      "Bash(python3:*)"
     ]
   }
 }
