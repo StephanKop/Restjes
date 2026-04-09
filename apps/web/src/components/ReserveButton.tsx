@@ -88,7 +88,7 @@ export function ReserveButton({ dishId, merchantId, maxQuantity }: ReserveButton
             type="button"
             onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
             disabled={quantity <= 1}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-warm-200 text-warm-600 transition-colors hover:bg-warm-50 disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-warm-200 text-warm-600 transition-all duration-150 hover:bg-warm-50 active:scale-90 active:bg-warm-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
           >
             -
           </button>
@@ -99,7 +99,7 @@ export function ReserveButton({ dishId, merchantId, maxQuantity }: ReserveButton
             type="button"
             onClick={() => setQuantity((prev) => Math.min(maxQuantity, prev + 1))}
             disabled={quantity >= maxQuantity}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-warm-200 text-warm-600 transition-colors hover:bg-warm-50 disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-warm-200 text-warm-600 transition-all duration-150 hover:bg-warm-50 active:scale-90 active:bg-warm-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
           >
             +
           </button>

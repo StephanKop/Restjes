@@ -271,13 +271,13 @@ export function HowItWorks() {
           <div className="animate-target flex flex-wrap items-center justify-center gap-4">
             <a
               href="/browse"
-              className="rounded-xl bg-white px-8 py-4 text-lg font-bold text-brand-600 shadow-button transition-colors hover:bg-brand-50"
+              className="rounded-xl bg-white px-8 py-4 text-lg font-bold text-brand-600 shadow-button transition-all duration-150 hover:bg-brand-50 active:scale-[0.97] active:bg-brand-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
             >
               Bekijk het aanbod
             </a>
             <a
               href="/signup"
-              className="rounded-xl border-2 border-white/80 px-8 py-4 text-lg font-bold text-white transition-colors hover:bg-white/10"
+              className="rounded-xl border-2 border-white/80 px-8 py-4 text-lg font-bold text-white transition-all duration-150 hover:bg-white/10 active:scale-[0.97] active:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
             >
               Maak een account
             </a>

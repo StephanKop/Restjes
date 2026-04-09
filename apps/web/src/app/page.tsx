@@ -37,13 +37,13 @@ export default function HomePage() {
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
               href="/browse"
-              className="rounded-xl bg-brand-500 px-8 py-4 text-lg font-bold text-white shadow-button transition-colors hover:bg-brand-600"
+              className="rounded-xl bg-brand-500 px-8 py-4 text-lg font-bold text-white shadow-button transition-all duration-150 hover:bg-brand-600 active:scale-[0.97] active:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
             >
               Bekijk beschikbare gerechten
             </Link>
             <Link
               href="/aanbieder/dishes"
-              className="rounded-xl border-2 border-white/80 px-8 py-4 text-lg font-bold text-white transition-colors hover:bg-white/10"
+              className="rounded-xl border-2 border-white/80 px-8 py-4 text-lg font-bold text-white transition-all duration-150 hover:bg-white/10 active:scale-[0.97] active:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
             >
               Zelf restjes aanbieden
             </Link>

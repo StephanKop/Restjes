@@ -112,7 +112,7 @@ export function ChatReserveBanner({
                 type="button"
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                 disabled={quantity <= 1}
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-warm-200 text-sm text-warm-600 hover:bg-warm-50 disabled:opacity-40"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-warm-200 text-sm text-warm-600 transition-all duration-150 hover:bg-warm-50 active:scale-90 active:bg-warm-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 disabled:opacity-40 disabled:active:scale-100"
               >
                 -
               </button>
@@ -121,7 +121,7 @@ export function ChatReserveBanner({
                 type="button"
                 onClick={() => setQuantity((q) => Math.min(maxQuantity, q + 1))}
                 disabled={quantity >= maxQuantity}
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-warm-200 text-sm text-warm-600 hover:bg-warm-50 disabled:opacity-40"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-warm-200 text-sm text-warm-600 transition-all duration-150 hover:bg-warm-50 active:scale-90 active:bg-warm-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 disabled:opacity-40 disabled:active:scale-100"
               >
                 +
               </button>

@@ -76,7 +76,7 @@ export function NotificationBell({ userId, initialCount, initialItems }: Notific
           setOpen((o) => !o)
           if (!open) setCount(0)
         }}
-        className="relative flex h-9 w-9 items-center justify-center rounded-full text-warm-500 transition-colors hover:bg-warm-100 hover:text-warm-700"
+        className="relative flex h-9 w-9 items-center justify-center rounded-full text-warm-500 transition-all duration-150 hover:bg-warm-100 hover:text-warm-700 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2"
         aria-label="Meldingen"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
@@ -91,7 +91,7 @@ export function NotificationBell({ userId, initialCount, initialItems }: Notific
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-warm-100">
+        <div className="fixed inset-x-3 top-14 z-50 mx-auto max-w-sm overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-warm-100 sm:absolute sm:inset-x-auto sm:top-full sm:right-0 sm:mt-2 sm:w-80">
           <div className="border-b border-warm-100 px-4 py-3">
             <h3 className="text-sm font-bold text-warm-800">Meldingen</h3>
           </div>
@@ -107,7 +107,7 @@ export function NotificationBell({ userId, initialCount, initialItems }: Notific
                   key={item.id}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className={`block border-b border-warm-50 px-4 py-3 transition-colors hover:bg-warm-50 ${
+                  className={`block border-b border-warm-50 px-4 py-3 transition-colors hover:bg-warm-50 active:bg-warm-100 focus-visible:outline-none focus-visible:bg-warm-50 ${
                     !item.read ? 'bg-brand-50/40' : ''
                   }`}
                 >

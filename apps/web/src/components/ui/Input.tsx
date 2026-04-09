@@ -10,7 +10,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined)
 
     return (
-      <div>
+      <div className="min-w-0">
         {label && (
           <label
             htmlFor={inputId}
@@ -22,11 +22,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           id={inputId}
-          className={`w-full rounded-xl border bg-white px-4 py-3 text-warm-800 placeholder:text-warm-400 transition-colors focus:outline-none focus:ring-2 ${
+          className={`min-w-0 w-full rounded-xl border bg-white px-4 py-3 text-sm text-warm-800 placeholder:text-warm-400 transition-all duration-150 focus:outline-none focus:ring-2 ${
             error
-              ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
-              : 'border-warm-200 focus:border-brand-400 focus:ring-brand-100'
-          } ${className}`}
+              ? 'border-red-400 hover:border-red-500 focus:border-red-400 focus:ring-red-100'
+              : 'border-warm-200 hover:border-warm-300 focus:border-brand-400 focus:ring-brand-100'
+          } ${props.disabled ? 'cursor-not-allowed opacity-60' : ''} ${className}`}
           {...props}
         />
         {error && (

@@ -45,10 +45,10 @@ export function BrowseResults({ dishes }: BrowseResultsProps) {
           <button
             type="button"
             onClick={() => setView('grid')}
-            className={`rounded-lg p-2 transition-colors ${
+            className={`rounded-lg p-2 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 active:scale-90 ${
               view === 'grid'
                 ? 'bg-brand-50 text-brand-600'
-                : 'text-warm-400 hover:text-warm-600'
+                : 'text-warm-400 hover:text-warm-600 hover:bg-warm-50'
             }`}
             aria-label="Rasterweergave"
             title="Rasterweergave"
@@ -60,10 +60,10 @@ export function BrowseResults({ dishes }: BrowseResultsProps) {
           <button
             type="button"
             onClick={() => setView('list')}
-            className={`rounded-lg p-2 transition-colors ${
+            className={`rounded-lg p-2 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 active:scale-90 ${
               view === 'list'
                 ? 'bg-brand-50 text-brand-600'
-                : 'text-warm-400 hover:text-warm-600'
+                : 'text-warm-400 hover:text-warm-600 hover:bg-warm-50'
             }`}
             aria-label="Lijstweergave"
             title="Lijstweergave"
@@ -75,10 +75,10 @@ export function BrowseResults({ dishes }: BrowseResultsProps) {
           <button
             type="button"
             onClick={() => setView('map')}
-            className={`rounded-lg p-2 transition-colors ${
+            className={`rounded-lg p-2 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 active:scale-90 ${
               view === 'map'
                 ? 'bg-brand-50 text-brand-600'
-                : 'text-warm-400 hover:text-warm-600'
+                : 'text-warm-400 hover:text-warm-600 hover:bg-warm-50'
             }`}
             aria-label="Kaartweergave"
             title="Kaartweergave"

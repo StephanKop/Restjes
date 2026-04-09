@@ -288,7 +288,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
             onChange={(e) => setQuantity(Number(e.target.value))}
             error={errors.quantity}
           />
-          <div /> {/* spacer */}
+          <div className="hidden sm:block" />
           <Input
             label="Ophalen vanaf"
             type="datetime-local"

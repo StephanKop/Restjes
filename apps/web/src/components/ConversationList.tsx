@@ -166,10 +166,10 @@ export function ConversationList({ conversations: initial, basePath, currentUser
           <div key={conversation.id} className="group relative">
             <Link
               href={href}
-              className={`flex items-center gap-3 rounded-xl p-3 transition-colors ${
+              className={`flex items-center gap-3 rounded-xl p-3 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 ${
                 isActive
                   ? 'bg-brand-50 ring-1 ring-brand-200'
-                  : 'hover:bg-warm-50'
+                  : 'hover:bg-warm-50 active:bg-warm-100'
               } ${isDeleting ? 'opacity-50 pointer-events-none' : ''}`}
             >
               {/* Avatar */}

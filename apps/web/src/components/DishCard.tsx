@@ -33,7 +33,7 @@ export function DishCard({ dish }: DishCardProps) {
   return (
     <Link
       href={`/dish/${dish.id}`}
-      className="group block overflow-hidden rounded-2xl bg-white shadow-card transition-shadow hover:shadow-card-hover"
+      className="group block overflow-hidden rounded-2xl bg-white shadow-card transition-all duration-150 hover:shadow-card-hover active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2"
     >
       {/* Image */}
       <div className="relative aspect-[4/3] w-full overflow-hidden">

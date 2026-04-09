@@ -14,7 +14,7 @@ export function DishListItem({ dish }: DishListItemProps) {
   return (
     <Link
       href={`/dish/${dish.id}`}
-      className="group flex gap-4 overflow-hidden rounded-2xl bg-white p-3 shadow-card transition-shadow hover:shadow-card-hover sm:p-4"
+      className="group flex gap-4 overflow-hidden rounded-2xl bg-white p-3 shadow-card transition-all duration-150 hover:shadow-card-hover active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 sm:p-4"
     >
       {/* Image */}
       <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl sm:h-28 sm:w-28">

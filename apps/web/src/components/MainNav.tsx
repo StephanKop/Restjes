@@ -205,13 +205,13 @@ async function AuthNav() {
     <>
       <Link
         href="/aanbieder/dishes"
-        className="hidden font-semibold text-warm-600 transition-colors hover:text-brand-600 sm:inline-flex"
+        className="hidden rounded-lg px-2 py-1 font-semibold text-warm-600 transition-all duration-150 hover:text-brand-600 active:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 sm:inline-flex"
       >
         Mijn aanbod
       </Link>
       <Link
         href="/reservations"
-        className="hidden font-semibold text-warm-600 transition-colors hover:text-brand-600 sm:inline-flex"
+        className="hidden rounded-lg px-2 py-1 font-semibold text-warm-600 transition-all duration-150 hover:text-brand-600 active:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 sm:inline-flex"
       >
         Reserveringen
       </Link>
@@ -250,7 +250,7 @@ export function MainNav() {
         <nav className="flex items-center gap-4 sm:gap-6">
           <Link
             href="/browse"
-            className="hidden font-semibold text-warm-600 transition-colors hover:text-brand-600 sm:inline-flex"
+            className="hidden rounded-lg px-2 py-1 font-semibold text-warm-600 transition-all duration-150 hover:text-brand-600 active:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 sm:inline-flex"
           >
             Ontdekken
           </Link>

@@ -47,7 +47,7 @@ export function SocialAuthButtons() {
           type="button"
           disabled={loadingProvider !== null}
           onClick={() => handleOAuth(p.id)}
-          className={`flex w-full items-center justify-center gap-3 rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors ${p.bg} ${p.text} disabled:opacity-50`}
+          className={`flex w-full items-center justify-center gap-3 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 ${p.bg} ${p.text} disabled:opacity-50 disabled:active:scale-100`}
         >
           {p.icon}
           {loadingProvider === p.id ? 'Even geduld...' : `Doorgaan met ${p.label}`}

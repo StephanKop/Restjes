@@ -24,7 +24,7 @@ export function UserMenu({ initial }: UserMenuProps) {
     <div className="group relative">
       <button
         type="button"
-        className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700 transition-colors hover:bg-brand-200"
+        className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700 transition-all duration-150 hover:bg-brand-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2"
         aria-label="Gebruikersmenu"
       >
         {initial}
@@ -35,14 +35,14 @@ export function UserMenu({ initial }: UserMenuProps) {
         <div className="w-44 overflow-hidden rounded-xl bg-white py-1 shadow-lg ring-1 ring-warm-100">
           <Link
             href="/profile"
-            className="block px-4 py-2.5 text-sm font-medium text-warm-700 transition-colors hover:bg-warm-50 hover:text-warm-900"
+            className="block px-4 py-2.5 text-sm font-medium text-warm-700 transition-colors hover:bg-warm-50 hover:text-warm-900 active:bg-warm-100 focus-visible:outline-none focus-visible:bg-warm-50 focus-visible:text-warm-900"
           >
             Bekijk profiel
           </Link>
           <button
             type="button"
             onClick={handleLogout}
-            className="block w-full px-4 py-2.5 text-left text-sm font-medium text-warm-700 transition-colors hover:bg-warm-50 hover:text-warm-900"
+            className="block w-full px-4 py-2.5 text-left text-sm font-medium text-warm-700 transition-colors hover:bg-warm-50 hover:text-warm-900 active:bg-warm-100 focus-visible:outline-none focus-visible:bg-warm-50 focus-visible:text-warm-900"
           >
             Uitloggen
           </button>
