@@ -56,7 +56,7 @@ export function MobileMenu({ isLoggedIn, displayName, initial, unreadCount }: Mo
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex h-9 w-9 items-center justify-center rounded-xl text-warm-600 transition-colors hover:bg-warm-100"
+        className="flex h-9 w-9 items-center justify-center rounded-xl text-inherit transition-colors hover:bg-white/20 group-data-[scrolled]/header:hover:bg-warm-100"
         aria-label={open ? 'Menu sluiten' : 'Menu openen'}
       >
         {open ? (

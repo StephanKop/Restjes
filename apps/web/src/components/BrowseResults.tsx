@@ -90,15 +90,19 @@ export function BrowseResults({ dishes }: BrowseResultsProps) {
 
       {/* Results */}
       {view === 'grid' ? (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal-stagger>
           {dishes.map((dish) => (
-            <DishCard key={dish.id} dish={dish} />
+            <div key={dish.id} data-reveal="scale">
+              <DishCard dish={dish} />
+            </div>
           ))}
         </div>
       ) : view === 'list' ? (
-        <div className="space-y-3">
+        <div className="space-y-3" data-reveal-stagger>
           {dishes.map((dish) => (
-            <DishListItem key={dish.id} dish={dish} />
+            <div key={dish.id} data-reveal>
+              <DishListItem dish={dish} />
+            </div>
           ))}
         </div>
       ) : (

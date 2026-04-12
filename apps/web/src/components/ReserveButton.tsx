@@ -50,6 +50,12 @@ export function ReserveButton({ dishId, merchantId, maxQuantity }: ReserveButton
         setError('Er ging iets mis bij het plaatsen van je reservering. Probeer het opnieuw.')
         console.error('Reservation error:', insertError)
       } else {
+        // Decrement dish quantity via RPC (bypasses RLS)
+        await supabase.rpc('decrement_dish_quantity', {
+          p_dish_id: dishId,
+          p_quantity: quantity,
+        })
+
         setSuccess(true)
       }
     } catch {

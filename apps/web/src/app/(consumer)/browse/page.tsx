@@ -5,8 +5,8 @@ import { BrowseResults } from '@/components/BrowseResults'
 import type { DishCardData } from '@/components/DishCard'
 
 export const metadata: Metadata = {
-  title: 'Ontdekken - Restjes',
-  description: 'Bekijk beschikbare restjes bij jou in de buurt.',
+  title: 'Ontdekken - Kliekjesclub',
+  description: 'Bekijk beschikbare kliekjes bij jou in de buurt.',
 }
 
 interface BrowsePageProps {

@@ -8,6 +8,7 @@ import { StatusBadge } from '@/components/StatusBadge'
 import { ReservationActions } from '@/components/ReservationActions'
 import { ReservationReviewSection } from '@/components/ReservationReviewSection'
 import { ClipboardIcon, CookingPotIcon } from '@/components/icons'
+import { RealtimeRefresh } from '@/components/RealtimeRefresh'
 
 export const metadata: Metadata = {
   title: 'Mijn reserveringen',
@@ -107,6 +108,7 @@ export default async function ConsumerReservationsPage({
 
   return (
     <div>
+      <RealtimeRefresh table="reservations" filter={`consumer_id=eq.${user.id}`} />
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold text-warm-900">Mijn reserveringen</h1>
       </div>
@@ -156,7 +158,7 @@ export default async function ConsumerReservationsPage({
           )}
         </div>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-4" data-reveal-stagger>
           {filtered.map((reservation) => {
             const dish = reservation.dish as unknown as {
               id: string
@@ -176,6 +178,7 @@ export default async function ConsumerReservationsPage({
             return (
               <div
                 key={reservation.id}
+                data-reveal
                 className="flex gap-4 rounded-2xl bg-white p-4 shadow-card sm:p-5"
               >
                 {/* Dish image */}
@@ -227,6 +230,8 @@ export default async function ConsumerReservationsPage({
                   <div className="mt-3">
                     <ReservationActions
                       reservationId={reservation.id}
+                      dishId={dish.id}
+                      quantity={reservation.quantity}
                       currentStatus={reservation.status}
                       view="consumer"
                     />

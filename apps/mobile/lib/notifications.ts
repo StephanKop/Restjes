@@ -74,10 +74,52 @@ export function setupNotificationListeners() {
     (response) => {
       const data = response.notification.request.content.data
 
-      if (data?.type === 'message' && data?.conversationId) {
-        router.push(`/chat/${data.conversationId}`)
-      } else if (data?.type === 'reservation') {
-        router.push('/(tabs)/reservations')
+      if (!data?.type) return
+
+      switch (data.type) {
+        // Message notifications
+        case 'message':
+          if (data.conversationId) {
+            router.push(`/chat/${data.conversationId}`)
+          }
+          break
+
+        // Reservation notifications — route based on target
+        case 'reservation_placed':
+          router.push('/aanbieder/reservations' as any)
+          break
+
+        case 'reservation_confirmed':
+        case 'reservation_collected':
+        case 'reservation_no_show':
+          router.push('/(tabs)/reservations')
+          break
+
+        case 'reservation_cancelled':
+          if (data.target === 'merchant') {
+            router.push('/aanbieder/reservations' as any)
+          } else {
+            router.push('/(tabs)/reservations')
+          }
+          break
+
+        // Review notifications
+        case 'review_received':
+          router.push('/aanbieder/reviews' as any)
+          break
+
+        case 'review_reply':
+          router.push('/(tabs)/reservations')
+          break
+
+        // Backward compat for old 'reservation' type from on-reservation-placed
+        case 'reservation':
+          if (data.target === 'merchant') {
+            router.push('/aanbieder/reservations' as any)
+          } else {
+            router.push('/(tabs)/reservations')
+          }
+          break
       }
     }
   )

@@ -36,6 +36,18 @@ export function StartChatButton({
         return
       }
 
+      // Prevent chatting with own merchant profile
+      const { data: ownMerchant } = await supabase
+        .from('merchants')
+        .select('id')
+        .eq('profile_id', user.id)
+        .eq('id', merchantId)
+        .maybeSingle()
+
+      if (ownMerchant) {
+        return
+      }
+
       // Check for existing conversation
       let query = supabase
         .from('conversations')

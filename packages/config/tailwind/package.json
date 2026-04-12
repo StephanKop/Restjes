@@ -1,5 +1,5 @@
 {
-  "name": "@restjes/tailwind-config",
+  "name": "@kliekjesclub/tailwind-config",
   "version": "0.0.0",
   "private": true,
   "exports": {

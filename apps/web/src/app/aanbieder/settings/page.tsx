@@ -3,7 +3,7 @@ import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { MerchantSettingsForm } from './MerchantSettingsForm'
 
 export const metadata = {
-  title: 'Instellingen - Restjes Aanbieder',
+  title: 'Instellingen - Kliekjesclub Aanbieder',
 }
 
 export default async function MerchantSettingsPage() {
@@ -37,7 +37,7 @@ export default async function MerchantSettingsPage() {
       </h1>
       {isOnboarding && (
         <p className="mb-8 text-warm-500">
-          Vul je gegevens in zodat anderen weten waar ze je restjes kunnen ophalen.
+          Vul je gegevens in zodat anderen weten waar ze je kliekjes kunnen ophalen.
         </p>
       )}
 

@@ -92,7 +92,17 @@ export function ChatThread({
         (payload) => {
           const newMsg = payload.new as Message
           setMessages((prev) => {
+            // Skip if already present (by real ID or as optimistic message from same sender)
             if (prev.some((m) => m.id === newMsg.id)) return prev
+            // Replace optimistic message if this is our own message coming back via realtime
+            const optimisticIndex = prev.findIndex(
+              (m) => m.id.startsWith('optimistic-') && m.sender_id === newMsg.sender_id && m.content === newMsg.content
+            )
+            if (optimisticIndex !== -1) {
+              const updated = [...prev]
+              updated[optimisticIndex] = newMsg
+              return updated
+            }
             return [...prev, newMsg]
           })
         },
@@ -109,19 +119,43 @@ export function ChatThread({
     if (!content || sending) return
 
     setSending(true)
-    try {
-      const { error } = await supabase.from('messages').insert({
-        conversation_id: conversationId,
-        sender_id: currentUserId,
-        content,
-      })
+    setNewMessage('')
 
-      if (!error) {
-        setNewMessage('')
+    // Optimistic: show the message immediately
+    const optimisticId = `optimistic-${Date.now()}`
+    const optimisticMsg: Message = {
+      id: optimisticId,
+      content,
+      sender_id: currentUserId,
+      created_at: new Date().toISOString(),
+      is_read: true,
+    }
+    setMessages((prev) => [...prev, optimisticMsg])
+
+    try {
+      const { data, error } = await supabase
+        .from('messages')
+        .insert({
+          conversation_id: conversationId,
+          sender_id: currentUserId,
+          content,
+        })
+        .select('id')
+        .single()
+
+      if (!error && data) {
+        // Replace optimistic message with the real one
+        setMessages((prev) =>
+          prev.map((m) => (m.id === optimisticId ? { ...m, id: data.id } : m))
+        )
         await supabase
           .from('conversations')
           .update({ last_message_at: new Date().toISOString() })
           .eq('id', conversationId)
+      } else {
+        // Remove optimistic message on failure
+        setMessages((prev) => prev.filter((m) => m.id !== optimisticId))
+        setNewMessage(content)
       }
     } finally {
       setSending(false)

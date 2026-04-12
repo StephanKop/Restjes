@@ -24,12 +24,12 @@ export async function generateMetadata({ params }: MerchantPageProps): Promise<M
     .single()
 
   if (!merchant) {
-    return { title: 'Aanbieder niet gevonden - Restjes' }
+    return { title: 'Aanbieder niet gevonden - Kliekjesclub' }
   }
 
   return {
-    title: `${merchant.business_name} - Restjes`,
-    description: merchant.description ?? `Bekijk het profiel van ${merchant.business_name} op Restjes.`,
+    title: `${merchant.business_name} - Kliekjesclub`,
+    description: merchant.description ?? `Bekijk het profiel van ${merchant.business_name} op Kliekjesclub.`,
     openGraph: {
       title: merchant.business_name,
       description: merchant.description ?? undefined,
@@ -101,6 +101,8 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
       rating,
       comment,
       created_at,
+      merchant_reply,
+      merchant_replied_at,
       consumer:profiles!consumer_id (
         display_name,
         avatar_url
@@ -116,6 +118,8 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
     rating: r.rating,
     comment: r.comment,
     created_at: r.created_at,
+    merchant_reply: r.merchant_reply,
+    merchant_replied_at: r.merchant_replied_at,
     consumer: r.consumer as unknown as { display_name: string | null; avatar_url: string | null },
   }))
 
@@ -245,7 +249,7 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
         </h2>
 
         {dishCards.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal-stagger>
             {dishCards.map((dish) => (
               <DishCard key={dish.id} dish={dish} />
             ))}

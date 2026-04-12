@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { Nunito } from 'next/font/google'
 import { NavigationProgress } from '@/components/NavigationProgress'
+import { ScrollReveal } from '@/components/ScrollReveal'
 import './globals.css'
 
 const nunito = Nunito({
@@ -12,11 +13,11 @@ const nunito = Nunito({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Restjes - Deel je restjes, maak iemand blij',
-    template: '%s | Restjes',
+    default: 'Kliekjesclub - Deel je kliekjes, maak iemand blij',
+    template: '%s | Kliekjesclub',
   },
   description:
-    'Restjes verbindt mensen die eten over hebben met mensen die er blij mee zijn. Samen tegen voedselverspilling!',
+    'Kliekjesclub verbindt mensen die eten over hebben met mensen die er blij mee zijn. Samen tegen voedselverspilling!',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Suspense>
           <NavigationProgress />
         </Suspense>
+        <ScrollReveal />
         {children}
       </body>
     </html>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import {
   View,
   Text,
@@ -7,16 +7,23 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  StyleSheet,
 } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { Link, router } from 'expo-router'
+import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av'
+import * as WebBrowser from 'expo-web-browser'
+import { makeRedirectUri } from 'expo-auth-session'
 import { supabase } from '../../lib/supabase'
 
+WebBrowser.maybeCompleteAuthSession()
+
 export default function LoginScreen() {
+  const videoRef = useRef<Video>(null)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -48,29 +55,125 @@ export default function LoginScreen() {
     router.replace('/(tabs)')
   }
 
+  const handleGoogleLogin = async () => {
+    setGoogleLoading(true)
+    setError(null)
+
+    try {
+      const redirectUri = makeRedirectUri({ scheme: 'kliekjesclub' })
+
+      const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: redirectUri,
+          skipBrowserRedirect: true,
+        },
+      })
+
+      if (oauthError || !data.url) {
+        setError('Kon Google-login niet starten. Probeer het opnieuw.')
+        setGoogleLoading(false)
+        return
+      }
+
+      const result = await WebBrowser.openAuthSessionAsync(data.url, redirectUri)
+
+      if (result.type === 'success') {
+        const url = new URL(result.url)
+
+        // Handle both fragment and query params
+        const params = new URLSearchParams(
+          url.hash ? url.hash.substring(1) : url.search.substring(1)
+        )
+        const accessToken = params.get('access_token')
+        const refreshToken = params.get('refresh_token')
+
+        if (accessToken && refreshToken) {
+          const { error: sessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          })
+
+          if (!sessionError) {
+            router.replace('/(tabs)')
+            return
+          }
+        }
+
+        setError('Kon sessie niet instellen. Probeer het opnieuw.')
+      }
+    } catch {
+      setError('Er is iets misgegaan met Google-login.')
+    } finally {
+      setGoogleLoading(false)
+    }
+  }
+
   return (
-    <SafeAreaView className="flex-1 bg-offwhite">
+    <View style={styles.container}>
+      {/* Video background */}
+      <Video
+        ref={videoRef}
+        source={require('../../assets/hero.mp4')}
+        style={StyleSheet.absoluteFill}
+        resizeMode={ResizeMode.COVER}
+        shouldPlay
+        isLooping
+        isMuted
+      />
+
+      {/* Dark overlay */}
+      <View style={styles.overlay} />
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
+        style={styles.content}
       >
         <View className="flex-1 justify-center px-6">
-          <View className="mb-10">
-            <Text className="text-4xl font-extrabold text-warm-800 mb-2">
-              Restjes
+          {/* Branding */}
+          <View className="mb-8">
+            <Text className="text-5xl font-extrabold text-white mb-2">
+              Kliekjesclub
             </Text>
-            <Text className="text-base text-warm-500">
+            <Text className="text-lg text-white/80">
               Red eten, bespaar geld
             </Text>
           </View>
 
+          {/* Error */}
           {error && (
-            <View className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-4">
-              <Text className="text-red-700 text-sm">{error}</Text>
+            <View className="bg-red-500/20 border border-red-400/30 rounded-xl px-4 py-3 mb-4">
+              <Text className="text-white text-sm">{error}</Text>
             </View>
           )}
 
-          <View className="gap-4 mb-6">
+          {/* Google button */}
+          <Pressable
+            onPress={handleGoogleLogin}
+            disabled={googleLoading}
+            className="bg-white rounded-xl px-6 py-3.5 mb-3 flex-row items-center justify-center active:opacity-90"
+          >
+            {googleLoading ? (
+              <ActivityIndicator color="#302b26" />
+            ) : (
+              <>
+                <GoogleIcon />
+                <Text className="text-warm-800 font-bold text-base ml-3">
+                  Doorgaan met Google
+                </Text>
+              </>
+            )}
+          </Pressable>
+
+          {/* Divider */}
+          <View className="flex-row items-center my-4">
+            <View className="flex-1 h-px bg-white/20" />
+            <Text className="text-white/50 text-xs mx-4 font-semibold">OF</Text>
+            <View className="flex-1 h-px bg-white/20" />
+          </View>
+
+          {/* Email/password inputs */}
+          <View className="gap-3 mb-4">
             <TextInput
               className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-base"
               placeholder="E-mailadres"
@@ -95,7 +198,7 @@ export default function LoginScreen() {
           <Pressable
             onPress={handleLogin}
             disabled={loading}
-            className="bg-brand-500 rounded-xl px-6 py-3.5 items-center mb-6 active:opacity-80"
+            className="bg-brand-500 rounded-xl px-6 py-3.5 items-center mb-5 active:opacity-80"
           >
             {loading ? (
               <ActivityIndicator color="#fff" />
@@ -105,17 +208,48 @@ export default function LoginScreen() {
           </Pressable>
 
           <View className="items-center gap-3">
+            <Link href={'/(auth)/forgot-password' as any} asChild>
+              <Pressable>
+                <Text className="text-white/70 text-sm font-semibold">
+                  Wachtwoord vergeten?
+                </Text>
+              </Pressable>
+            </Link>
             <Link href="/(auth)/signup" asChild>
               <Pressable>
-                <Text className="text-warm-500 text-sm">
+                <Text className="text-white/70 text-sm">
                   Nog geen account?{' '}
-                  <Text className="text-brand-500 font-semibold">Aanmelden</Text>
+                  <Text className="text-white font-semibold">Aanmelden</Text>
                 </Text>
               </Pressable>
             </Link>
           </View>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   )
 }
+
+function GoogleIcon() {
+  // Inline SVG isn't available in RN, so use a text-based approach
+  // This renders the Google "G" logo using styled views
+  return (
+    <View style={{ width: 20, height: 20, alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ fontSize: 18, fontWeight: '700', color: '#4285F4' }}>G</Text>
+    </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+  },
+  content: {
+    flex: 1,
+  },
+})

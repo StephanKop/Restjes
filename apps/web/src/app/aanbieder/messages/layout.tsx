@@ -4,7 +4,7 @@ import { ConversationList, type ConversationItem } from '@/components/Conversati
 import { MessagesShell } from '@/app/(consumer)/messages/MessagesShell'
 
 export const metadata = {
-  title: 'Berichten - Restjes Aanbieder',
+  title: 'Berichten - Kliekjesclub Aanbieder',
 }
 
 export default async function MerchantMessagesLayout({

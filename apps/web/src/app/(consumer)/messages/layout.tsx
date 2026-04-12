@@ -4,7 +4,7 @@ import { ConversationList, type ConversationItem } from '@/components/Conversati
 import { MessagesShell } from './MessagesShell'
 
 export const metadata = {
-  title: 'Berichten - Restjes',
+  title: 'Berichten - Kliekjesclub',
 }
 
 export default async function MessagesLayout({
@@ -74,9 +74,13 @@ export default async function MessagesLayout({
     merchantConvs = data ?? []
   }
 
+  // Deduplicate: if user is both consumer and merchant in the same conversation, skip the merchant copy
+  const consumerConvIds = new Set((consumerConvs ?? []).map((c) => c.id))
+  merchantConvs = merchantConvs.filter((c) => !consumerConvIds.has(c.id))
+
   const allConvIds = [
     ...(consumerConvs ?? []).map((c) => c.id),
-    ...(merchantConvs ?? []).map((c) => c.id),
+    ...merchantConvs.map((c) => c.id),
   ]
 
   if (allConvIds.length === 0) {

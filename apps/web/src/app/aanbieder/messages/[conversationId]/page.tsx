@@ -22,7 +22,7 @@ export async function generateMetadata({
     .single()
 
   if (!conversation) {
-    return { title: 'Gesprek niet gevonden - Restjes' }
+    return { title: 'Gesprek niet gevonden - Kliekjesclub' }
   }
 
   const consumer = conversation.consumer as unknown as {
@@ -30,7 +30,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `Chat met ${consumer?.display_name ?? 'klant'} - Restjes`,
+    title: `Chat met ${consumer?.display_name ?? 'klant'} - Kliekjesclub`,
   }
 }
 

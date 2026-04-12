@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
 import { formatRelativeDate } from '@/lib/format'
+import { RealtimeRefresh } from '@/components/RealtimeRefresh'
 import { StatusBadge } from '@/components/StatusBadge'
 import { ReservationActions } from '@/components/ReservationActions'
 import { ClipboardIcon } from '@/components/icons'
@@ -92,6 +93,7 @@ export default async function MerchantReservationsPage({
 
   return (
     <div>
+      <RealtimeRefresh table="reservations" filter={`merchant_id=eq.${merchant.id}`} />
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-extrabold text-warm-900">Reserveringen</h1>
@@ -151,7 +153,7 @@ export default async function MerchantReservationsPage({
           </p>
         </div>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-4" data-reveal-stagger>
           {filtered.map((reservation) => {
             const dish = reservation.dish as unknown as {
               id: string
@@ -165,6 +167,7 @@ export default async function MerchantReservationsPage({
             return (
               <div
                 key={reservation.id}
+                data-reveal
                 className="rounded-2xl bg-white p-5 shadow-card"
               >
                 <div className="flex items-start justify-between gap-3">
@@ -204,6 +207,8 @@ export default async function MerchantReservationsPage({
                 <div className="mt-4">
                   <ReservationActions
                     reservationId={reservation.id}
+                    dishId={dish.id}
+                    quantity={reservation.quantity}
                     currentStatus={reservation.status}
                     view="merchant"
                   />

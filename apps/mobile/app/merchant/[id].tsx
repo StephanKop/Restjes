@@ -40,6 +40,7 @@ interface Review {
   rating: number
   comment: string | null
   created_at: string
+  merchant_reply: string | null
   profile: {
     display_name: string | null
     avatar_url: string | null
@@ -85,7 +86,7 @@ export default function MerchantDetailScreen() {
         .order('pickup_start', { ascending: true }),
       supabase
         .from('reviews')
-        .select('id, rating, comment, created_at, profile:profiles!consumer_id (display_name, avatar_url)')
+        .select('id, rating, comment, created_at, merchant_reply, profile:profiles!consumer_id (display_name, avatar_url)')
         .eq('merchant_id', id)
         .order('created_at', { ascending: false })
         .limit(3),
@@ -189,6 +190,14 @@ export default function MerchantDetailScreen() {
         <Text className="text-sm text-warm-600 mt-2 leading-5">
           {review.comment}
         </Text>
+      )}
+      {review.merchant_reply && (
+        <View className="mt-3 rounded-xl bg-brand-50 p-3">
+          <Text className="text-xs font-bold text-brand-700 mb-1">
+            Reactie van aanbieder
+          </Text>
+          <Text className="text-sm text-brand-800">{review.merchant_reply}</Text>
+        </View>
       )}
     </View>
   )

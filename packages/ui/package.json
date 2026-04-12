@@ -1,5 +1,5 @@
 {
-  "name": "@restjes/ui",
+  "name": "@kliekjesclub/ui",
   "version": "0.0.0",
   "private": true,
   "exports": {
@@ -10,8 +10,8 @@
     "react": "^19.0.0"
   },
   "devDependencies": {
-    "@restjes/tailwind-config": "workspace:*",
-    "@restjes/types": "workspace:*",
+    "@kliekjesclub/tailwind-config": "workspace:*",
+    "@kliekjesclub/types": "workspace:*",
     "@types/react": "^19.0.0",
     "typescript": "^5.7.0"
   }

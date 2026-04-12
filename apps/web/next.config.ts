@@ -3,7 +3,7 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: resolve(__dirname, '../../'),
-  transpilePackages: ['@restjes/ui', '@restjes/supabase', '@restjes/types'],
+  transpilePackages: ['@kliekjesclub/ui', '@kliekjesclub/supabase', '@kliekjesclub/types'],
   images: {
     remotePatterns: [
       {

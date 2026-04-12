@@ -196,7 +196,7 @@ export function HowItWorks() {
               Zo simpel is het
             </p>
             <h2 className="animate-target text-4xl font-extrabold text-warm-900">
-              Hoe werkt Restjes?
+              Hoe werkt Kliekjesclub?
             </h2>
           </div>
 
@@ -256,6 +256,78 @@ export function HowItWorks() {
         </div>
       </div>
 
+      {/* Community section */}
+      <div className="overflow-hidden bg-cream px-6 py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-16">
+            {/* Image */}
+            <div
+              className="community-image w-full lg:w-1/2"
+              data-animate
+            >
+              <div className="animate-target relative overflow-hidden rounded-3xl shadow-lg">
+                <img
+                  src="/community.jpg"
+                  alt="Buren die eten delen"
+                  className="aspect-[4/3] w-full object-cover"
+                />
+                <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-black/10" />
+              </div>
+            </div>
+
+            {/* Text */}
+            <div className="w-full lg:w-1/2" data-animate>
+              <p className="animate-target mb-3 text-sm font-bold uppercase tracking-widest text-brand-600">
+                Meer dan eten delen
+              </p>
+              <h2 className="animate-target mb-6 text-3xl font-extrabold text-warm-900 lg:text-4xl">
+                Verbind met je buren
+              </h2>
+              <p className="animate-target mb-6 text-lg leading-relaxed text-warm-600">
+                Kliekjesclub gaat verder dan alleen voedselverspilling tegengaan. Het is een manier om
+                je buren te leren kennen, een praatje te maken aan de deur en samen te zorgen
+                voor een hechte buurt.
+              </p>
+              <div className="animate-target space-y-4">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-warm-900">Leer je buren kennen</h3>
+                    <p className="text-sm text-warm-500">Een bakje eten is het begin van een nieuw contact om de hoek.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-warm-900">Maak iemand blij</h3>
+                    <p className="text-sm text-warm-500">Een warme maaltijd kan iemands dag helemaal goed maken.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12.75 3.03v.568c0 .334.148.65.405.864l1.068.89c.442.369.535 1.01.216 1.49l-.51.766a2.25 2.25 0 0 1-1.161.886l-.143.048a1.107 1.107 0 0 0-.57 1.664c.369.555.169 1.307-.427 1.605L9 13.125l.423 1.059a.956.956 0 0 1-1.652.928l-.679-.906a1.125 1.125 0 0 0-1.906.172L4.5 15.75l-.612.153M12.75 3.031a9 9 0 1 0 6.69 14.036m-6.69-14.036a8.963 8.963 0 0 1 2.555-.568A9 9 0 0 1 21 12c0 .778-.099 1.533-.284 2.253" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-warm-900">Beter voor de planeet</h3>
+                    <p className="text-sm text-warm-500">Elke portie die gedeeld wordt is voedsel dat niet verspild wordt.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* CTA banner */}
       <div className="bg-brand-600 px-6 py-16">
         <div
@@ -295,6 +367,15 @@ export function HowItWorks() {
         .animate-in.animate-target {
           opacity: 1;
           transform: translateY(0);
+        }
+        .community-image .animate-target {
+          opacity: 0;
+          transform: translateX(-40px);
+          transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .community-image.animate-in .animate-target {
+          opacity: 1;
+          transform: translateX(0);
         }
       `}</style>
     </section>

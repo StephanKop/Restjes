@@ -8,12 +8,16 @@ import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
 interface ReservationActionsProps {
   reservationId: string
+  dishId?: string
+  quantity?: number
   currentStatus: string
   view: 'consumer' | 'merchant'
 }
 
 export function ReservationActions({
   reservationId,
+  dishId,
+  quantity,
   currentStatus,
   view,
 }: ReservationActionsProps) {
@@ -25,6 +29,7 @@ export function ReservationActions({
     title: string
     description: string
     label: string
+    cancelledBy?: 'consumer' | 'merchant'
   } | null>(null)
 
   const supabase = createBrowserClient(
@@ -32,7 +37,7 @@ export function ReservationActions({
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   )
 
-  async function updateStatus(newStatus: string, actionKey: string) {
+  async function updateStatus(newStatus: string, actionKey: string, cancelledBy?: 'consumer' | 'merchant') {
     setLoadingAction(actionKey)
     setConfirm(null)
     try {
@@ -41,8 +46,22 @@ export function ReservationActions({
         .update({ status: newStatus, updated_at: new Date().toISOString() })
         .eq('id', reservationId)
 
+      // Try setting cancelled_by separately (column may not exist yet)
+      if (!error && cancelledBy) {
+        await supabase
+          .from('reservations')
+          .update({ cancelled_by: cancelledBy } as any)
+          .eq('id', reservationId)
+          .catch(() => {})
+      }
+
       if (error) {
         console.error('Fout bij bijwerken reservering:', error)
+      }
+
+      // Update dish status via RPC (bypasses RLS)
+      if (!error && dishId && newStatus === 'collected') {
+        await supabase.rpc('mark_dish_collected', { p_dish_id: dishId })
       }
 
       router.refresh()
@@ -51,8 +70,8 @@ export function ReservationActions({
     }
   }
 
-  function requestConfirm(action: string, newStatus: string, title: string, description: string, label: string) {
-    setConfirm({ action, newStatus, title, description, label })
+  function requestConfirm(action: string, newStatus: string, title: string, description: string, label: string, cancelledBy?: 'consumer' | 'merchant') {
+    setConfirm({ action, newStatus, title, description, label, cancelledBy })
   }
 
   // Consumer actions
@@ -71,6 +90,7 @@ export function ReservationActions({
                 'Reservering annuleren?',
                 'De aanbieder wordt hiervan op de hoogte gesteld.',
                 'Annuleren',
+                'consumer',
               )
             }
           >
@@ -83,7 +103,7 @@ export function ReservationActions({
             confirmLabel={confirm?.label ?? 'Bevestigen'}
             variant="danger"
             loading={loadingAction !== null}
-            onConfirm={() => confirm && updateStatus(confirm.newStatus, confirm.action)}
+            onConfirm={() => confirm && updateStatus(confirm.newStatus, confirm.action, confirm.cancelledBy)}
             onCancel={() => setConfirm(null)}
           />
         </>
@@ -116,6 +136,7 @@ export function ReservationActions({
                 'Reservering afwijzen?',
                 'De klant wordt hiervan op de hoogte gesteld.',
                 'Afwijzen',
+                'merchant',
               )
             }
           >
@@ -129,7 +150,7 @@ export function ReservationActions({
           confirmLabel={confirm?.label ?? 'Bevestigen'}
           variant="danger"
           loading={loadingAction !== null}
-          onConfirm={() => confirm && updateStatus(confirm.newStatus, confirm.action)}
+          onConfirm={() => confirm && updateStatus(confirm.newStatus, confirm.action, confirm.cancelledBy)}
           onCancel={() => setConfirm(null)}
         />
       </>
@@ -172,7 +193,7 @@ export function ReservationActions({
           confirmLabel={confirm?.label ?? 'Bevestigen'}
           variant="danger"
           loading={loadingAction !== null}
-          onConfirm={() => confirm && updateStatus(confirm.newStatus, confirm.action)}
+          onConfirm={() => confirm && updateStatus(confirm.newStatus, confirm.action, confirm.cancelledBy)}
           onCancel={() => setConfirm(null)}
         />
       </>

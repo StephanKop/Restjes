@@ -24,14 +24,14 @@ export async function generateMetadata({ params }: DishPageProps): Promise<Metad
     .single()
 
   if (!dish) {
-    return { title: 'Gerecht niet gevonden - Restjes' }
+    return { title: 'Gerecht niet gevonden - Kliekjesclub' }
   }
 
   const merchant = dish.merchant as unknown as { business_name: string }
 
   return {
-    title: `${dish.title} bij ${merchant.business_name} - Restjes`,
-    description: dish.description ?? `Bekijk ${dish.title} bij ${merchant.business_name} op Restjes.`,
+    title: `${dish.title} bij ${merchant.business_name} - Kliekjesclub`,
+    description: dish.description ?? `Bekijk ${dish.title} bij ${merchant.business_name} op Kliekjesclub.`,
     openGraph: {
       title: `${dish.title} bij ${merchant.business_name}`,
       description: dish.description ?? undefined,
@@ -128,45 +128,198 @@ export default async function DishPage({ params }: DishPageProps) {
     <div>
       <JsonLd data={productJsonLd} />
 
-      {/* Image header */}
-      <div className="relative -mx-6 -mt-8 mb-8 aspect-[16/7] w-[calc(100%+3rem)] overflow-hidden sm:rounded-2xl sm:mx-0 sm:mt-0 sm:w-full">
-        {dish.image_url ? (
-          <Image
-            src={dish.image_url}
-            alt={dish.title}
-            fill
-            className="object-cover"
-            priority
-            sizes="(max-width: 1024px) 100vw, 1024px"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-400 to-brand-600">
-            <DishIcon className="h-20 w-20 text-white/80" />
-          </div>
-        )}
-      </div>
+      {/* Breadcrumb */}
+      <nav className="mb-4 flex items-center gap-2 text-sm text-warm-400" data-reveal>
+        <Link href="/browse" className="transition-colors hover:text-brand-600">Ontdekken</Link>
+        <span>/</span>
+        <span className="text-warm-600">{dish.title}</span>
+      </nav>
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        {/* Main content */}
-        <div className="lg:col-span-2 space-y-6">
-          <div>
-            <h1 className="mb-2 text-3xl font-extrabold text-warm-900">{dish.title}</h1>
-            {dish.description && (
-              <p className="text-warm-600 leading-relaxed">{dish.description}</p>
-            )}
+      {/* Hero: Image + title/merchant/reserve */}
+      <div className="gap-6 lg:flex" style={{ minHeight: 480 }}>
+        {/* Image */}
+        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-warm-100 shadow-card lg:aspect-auto lg:flex-[7_7_0%]" data-reveal="left">
+          {dish.image_url ? (
+            <Image
+              src={dish.image_url}
+              alt={dish.title}
+              fill
+              className="object-cover"
+              priority
+              sizes="(max-width: 1024px) 100vw, 70vw"
+              unoptimized
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-400 to-brand-600">
+              <DishIcon className="h-20 w-20 text-white/80" />
+            </div>
+          )}
+        </div>
+
+        {/* Right column */}
+        <div className="mt-6 flex flex-col justify-between gap-6 rounded-2xl bg-white p-6 shadow-card lg:mt-0 lg:flex-[3_3_0%] lg:p-8" data-reveal="right">
+          <div className="space-y-5">
+            <div>
+              {/* Badges */}
+              <div className="mb-3 flex flex-wrap gap-1.5">
+                {!isAvailable && (
+                  <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                    dish.status === 'reserved'
+                      ? 'bg-amber-100 text-amber-800'
+                      : dish.status === 'collected'
+                        ? 'bg-warm-100 text-warm-700'
+                        : dish.status === 'expired'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-warm-100 text-warm-700'
+                  }`}>
+                    {dish.status === 'reserved' && 'Gereserveerd'}
+                    {dish.status === 'collected' && 'Opgehaald'}
+                    {dish.status === 'expired' && 'Verlopen'}
+                    {dish.status === 'available' && 'Niet beschikbaar'}
+                  </span>
+                )}
+                {dish.is_vegan && (
+                  <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
+                    Veganistisch
+                  </span>
+                )}
+                {dish.is_vegetarian && !dish.is_vegan && (
+                  <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
+                    Vegetarisch
+                  </span>
+                )}
+                {dish.bring_own_container && (
+                  <span className="rounded-full bg-brand-100 px-2.5 py-0.5 text-xs font-semibold text-brand-800">
+                    Eigen bakje
+                  </span>
+                )}
+              </div>
+              <h1 className="mb-2 text-3xl font-extrabold text-warm-900 lg:text-4xl">{dish.title}</h1>
+              {dish.description && (
+                <p className="text-warm-600 leading-relaxed">{dish.description}</p>
+              )}
+            </div>
+
+            {/* Merchant info */}
+            <Link
+              href={`/merchant/${merchant.id}`}
+              className="flex items-center gap-4 rounded-xl border border-warm-200 bg-warm-50/50 p-4 transition-all duration-150 hover:border-brand-200 hover:bg-brand-50/50 active:scale-[0.98]"
+            >
+              {merchant.logo_url ? (
+                <Image
+                  src={merchant.logo_url}
+                  alt={merchant.business_name}
+                  width={48}
+                  height={48}
+                  className="h-12 w-12 rounded-xl object-cover"
+                />
+              ) : (
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100">
+                  <StorefrontIcon className="h-6 w-6 text-brand-600" />
+                </div>
+              )}
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-extrabold text-warm-900">{merchant.business_name}</span>
+                  {merchant.is_verified && (
+                    <CheckBadgeIcon className="h-4 w-4 text-brand-500" />
+                  )}
+                </div>
+                <div className="flex items-center gap-2 text-sm text-warm-500">
+                  <span>{merchant.city}</span>
+                  {merchant.avg_rating !== null && (
+                    <>
+                      <span>·</span>
+                      <span className="text-yellow-500">★</span>
+                      <span className="font-semibold text-warm-700">{merchant.avg_rating.toFixed(1)}</span>
+                      <span className="text-warm-400">({merchant.review_count})</span>
+                    </>
+                  )}
+                </div>
+              </div>
+              <span className="text-sm font-medium text-brand-600">→</span>
+            </Link>
+
+            {/* Quick info */}
+            <div className="flex flex-wrap gap-4 text-sm text-warm-600">
+              <span className="flex items-center gap-1.5">
+                <ClockIcon className="h-4 w-4 text-warm-400" />
+                {pickupLabel}
+              </span>
+              {isAvailable && (
+                <span className="flex items-center gap-1.5">
+                  <CubeIcon className="h-4 w-4 text-warm-400" />
+                  Nog {dish.quantity_available} beschikbaar
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Unavailable notice */}
           {!isAvailable && (
-            <div className="rounded-2xl border border-warm-200 bg-warm-50 p-6 text-center">
-              <p className="text-lg font-bold text-warm-700">
-                Dit gerecht is niet meer beschikbaar
+            <div className={`rounded-2xl border p-6 text-center ${
+              dish.status === 'reserved'
+                ? 'border-amber-200 bg-amber-50'
+                : dish.status === 'expired'
+                  ? 'border-red-200 bg-red-50'
+                  : 'border-warm-200 bg-warm-50'
+            }`}>
+              <p className={`text-lg font-bold ${
+                dish.status === 'reserved'
+                  ? 'text-amber-800'
+                  : dish.status === 'expired'
+                    ? 'text-red-800'
+                    : 'text-warm-700'
+              }`}>
+                {dish.status === 'reserved' && 'Dit gerecht is al gereserveerd'}
+                {dish.status === 'collected' && 'Dit gerecht is al opgehaald'}
+                {dish.status === 'expired' && 'Dit gerecht is verlopen'}
+                {dish.status === 'available' && dish.quantity_available <= 0 && 'Dit gerecht is niet meer beschikbaar'}
+              </p>
+              <p className="mt-1 text-sm text-warm-500">
+                <Link href="/browse" className="font-medium text-brand-600 hover:text-brand-700">
+                  Bekijk andere gerechten &rarr;
+                </Link>
               </p>
             </div>
           )}
 
-          {/* Info grid */}
-          <div className="grid gap-4 sm:grid-cols-2">
+          {/* Reserve + chat */}
+          {isAvailable && (
+            <div className="space-y-3" data-reveal>
+              {user ? (
+                <>
+                  <ReserveButton
+                    dishId={dish.id}
+                    merchantId={dish.merchant_id}
+                    maxQuantity={dish.quantity_available}
+                  />
+                  <StartChatButton
+                    merchantId={merchant.id}
+                    dishId={dish.id}
+                    merchantName={merchant.business_name}
+                  />
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="flex items-center justify-center rounded-xl bg-brand-500 px-6 py-3 font-bold text-white shadow-button transition-all duration-150 hover:bg-brand-600 active:scale-[0.97]"
+                >
+                  Inloggen om te reserveren
+                </Link>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Details section */}
+      <div className="mt-10 space-y-6" data-reveal>
+        <h2 className="text-xl font-extrabold text-warm-900">Details</h2>
+
+        <div className="overflow-hidden rounded-2xl bg-white shadow-card">
+          {/* Info rows */}
+          <div className="divide-y divide-warm-100">
             <InfoItem
               icon={<ClockIcon className="h-5 w-5" />}
               label="Ophaalmoment"
@@ -194,124 +347,54 @@ export default async function DishPage({ params }: DishPageProps) {
               }
             />
           </div>
-
-          {/* Ingredients */}
-          {ingredients.length > 0 && (
-            <div>
-              <h2 className="mb-3 text-xl font-bold text-warm-900">Ingredienten</h2>
-              <div className="flex flex-wrap gap-2">
-                {ingredients.map((ingredient) => (
-                  <span
-                    key={ingredient.id}
-                    className="rounded-full bg-cream px-3 py-1 text-sm font-medium text-warm-700"
-                  >
-                    {ingredient.name}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Allergens */}
-          {allergies.length > 0 && (
-            <div>
-              <h2 className="mb-3 text-xl font-bold text-warm-900">Allergenen</h2>
-              <div className="flex flex-wrap gap-2">
-                {allergies.map((allergy) => (
-                  <span
-                    key={allergy.id}
-                    className="rounded-full bg-red-100 px-3 py-1 text-sm font-semibold text-red-700"
-                  >
-                    {allergenLabel(allergy.allergen)}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Merchant card */}
-          <Link
-            href={`/merchant/${merchant.id}`}
-            className="block rounded-2xl bg-white p-6 shadow-card transition-shadow hover:shadow-card-hover"
-          >
-            <div className="flex items-center gap-4">
-              {merchant.logo_url ? (
-                <Image
-                  src={merchant.logo_url}
-                  alt={merchant.business_name}
-                  width={56}
-                  height={56}
-                  className="rounded-xl object-cover"
-                />
-              ) : (
-                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-brand-100">
-                  <StorefrontIcon className="h-7 w-7 text-brand-600" />
-                </div>
-              )}
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-warm-900">
-                    {merchant.business_name}
-                  </h3>
-                  {merchant.is_verified && (
-                    <CheckBadgeIcon className="h-5 w-5 text-brand-500" />
-                  )}
-                </div>
-                <p className="text-sm text-warm-500">{merchant.city}</p>
-                {merchant.avg_rating !== null && (
-                  <div className="mt-1 flex items-center gap-1 text-sm">
-                    <span className="text-yellow-500">★</span>
-                    <span className="font-semibold text-warm-700">
-                      {merchant.avg_rating.toFixed(1)}
-                    </span>
-                    <span className="text-warm-400">
-                      ({merchant.review_count} beoordelingen)
-                    </span>
+        {/* Ingredients & Allergens as separate cards */}
+        {(ingredients.length > 0 || allergies.length > 0) && (
+          <div className="grid gap-6 lg:grid-cols-2">
+            {ingredients.length > 0 && (
+              <div className="rounded-2xl bg-white p-6 shadow-card">
+                <div className="mb-4 flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+                    <LeafIcon className="h-4 w-4" />
                   </div>
-                )}
+                  <h3 className="font-bold text-warm-900">Ingredienten</h3>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {ingredients.map((ingredient) => (
+                    <span
+                      key={ingredient.id}
+                      className="rounded-full border border-warm-200 bg-warm-50 px-3 py-1 text-sm font-medium text-warm-700"
+                    >
+                      {ingredient.name}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-            <p className="mt-3 text-sm font-medium text-brand-600">
-              Bekijk profiel →
-            </p>
-          </Link>
+            )}
 
-          {/* Reserve section */}
-          {isAvailable && (
-            <div className="rounded-2xl bg-white p-6 shadow-card">
-              <h2 className="mb-4 text-xl font-bold text-warm-900">Reserveren</h2>
-              {user ? (
-                <div className="space-y-3">
-                  <ReserveButton
-                    dishId={dish.id}
-                    merchantId={dish.merchant_id}
-                    maxQuantity={dish.quantity_available}
-                  />
-                  <StartChatButton
-                    merchantId={merchant.id}
-                    dishId={dish.id}
-                    merchantName={merchant.business_name}
-                  />
+            {allergies.length > 0 && (
+              <div className="rounded-2xl bg-white p-6 shadow-card">
+                <div className="mb-4 flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-600">
+                    <DishIcon className="h-4 w-4" />
+                  </div>
+                  <h3 className="font-bold text-warm-900">Allergenen</h3>
                 </div>
-              ) : (
-                <div className="text-center">
-                  <p className="mb-4 text-sm text-warm-500">
-                    Log in om dit gerecht te reserveren.
-                  </p>
-                  <Link
-                    href="/login"
-                    className="inline-flex items-center justify-center rounded-xl bg-brand-500 px-6 py-3 font-bold text-white shadow-button transition-colors hover:bg-brand-600"
-                  >
-                    Inloggen om te reserveren
-                  </Link>
+                <div className="flex flex-wrap gap-2">
+                  {allergies.map((allergy) => (
+                    <span
+                      key={allergy.id}
+                      className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-sm font-semibold text-red-700"
+                    >
+                      {allergenLabel(allergy.allergen)}
+                    </span>
+                  ))}
                 </div>
-              )}
-            </div>
-          )}
-        </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -327,18 +410,12 @@ function InfoItem({
   value: string
 }) {
   return (
-    <div className="rounded-2xl bg-white p-4 shadow-card">
-      <div className="flex items-start gap-3">
-        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
-          {icon}
-        </div>
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-warm-400">
-            {label}
-          </p>
-          <p className="font-semibold text-warm-800">{value}</p>
-        </div>
+    <div className="flex items-center gap-4 px-6 py-4">
+      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+        {icon}
       </div>
+      <span className="flex-1 text-sm font-medium text-warm-500">{label}</span>
+      <span className="text-right font-semibold text-warm-900">{value}</span>
     </div>
   )
 }

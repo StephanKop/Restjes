@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: MerchantReviewsPageProps): Pr
     .single()
 
   if (!merchant) {
-    return { title: 'Beoordelingen - Restjes' }
+    return { title: 'Beoordelingen - Kliekjesclub' }
   }
 
   return {
@@ -50,22 +50,33 @@ export default async function MerchantReviewsPage({ params }: MerchantReviewsPag
       rating,
       comment,
       created_at,
+      merchant_reply,
+      merchant_replied_at,
       consumer:profiles!consumer_id (
         display_name,
         avatar_url
+      ),
+      reservation:reservations (
+        dish:dishes ( title )
       )
     `,
     )
     .eq('merchant_id', id)
     .order('created_at', { ascending: false })
 
-  const reviewList: ReviewData[] = (reviews ?? []).map((r) => ({
-    id: r.id,
-    rating: r.rating,
-    comment: r.comment,
-    created_at: r.created_at,
-    consumer: r.consumer as unknown as { display_name: string | null; avatar_url: string | null },
-  }))
+  const reviewList: ReviewData[] = (reviews ?? []).map((r) => {
+    const reservation = r.reservation as unknown as { dish: { title: string } } | null
+    return {
+      id: r.id,
+      rating: r.rating,
+      comment: r.comment,
+      created_at: r.created_at,
+      merchant_reply: r.merchant_reply,
+      merchant_replied_at: r.merchant_replied_at,
+      consumer: r.consumer as unknown as { display_name: string | null; avatar_url: string | null },
+      dish_title: reservation?.dish?.title ?? null,
+    }
+  })
 
   // Calculate rating distribution
   const distribution: Record<number, number> = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
@@ -126,7 +137,7 @@ export default async function MerchantReviewsPage({ params }: MerchantReviewsPag
 
       {/* Review list */}
       {reviewList.length > 0 ? (
-        <ReviewList reviews={reviewList} />
+        <ReviewList reviews={reviewList} showDishTitle />
       ) : (
         <div className="rounded-2xl bg-white p-12 text-center shadow-card">
           <p className="mb-2 text-4xl">&#9734;</p>

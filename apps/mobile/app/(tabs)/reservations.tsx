@@ -10,6 +10,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
+import { router } from 'expo-router'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
 import { formatPickupTime, formatRelativeDate } from '../../lib/format'
@@ -52,6 +53,7 @@ const TAB_FILTERS: Record<TabKey, ReservationStatus[]> = {
 export default function ReservationsScreen() {
   const { user } = useAuth()
   const [reservations, setReservations] = useState<Reservation[]>([])
+  const [reviewMap, setReviewMap] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [activeTab, setActiveTab] = useState<TabKey>('actief')
@@ -72,7 +74,31 @@ export default function ReservationsScreen() {
       .order('created_at', { ascending: false })
 
     if (!error && data) {
-      setReservations(data as unknown as Reservation[])
+      const items = data as unknown as Reservation[]
+      setReservations(items)
+
+      // Fetch existing reviews for collected reservations
+      const collectedIds = items
+        .filter((r) => r.status === 'collected')
+        .map((r) => r.id)
+
+      if (collectedIds.length > 0) {
+        const { data: reviews } = await supabase
+          .from('reviews')
+          .select('reservation_id, rating')
+          .eq('consumer_id', user.id)
+          .in('reservation_id', collectedIds)
+
+        const map: Record<string, number> = {}
+        if (reviews) {
+          for (const review of reviews) {
+            if (review.reservation_id) {
+              map[review.reservation_id] = review.rating
+            }
+          }
+        }
+        setReviewMap(map)
+      }
     }
   }, [user])
 
@@ -101,6 +127,16 @@ export default function ReservationsScreen() {
               .from('reservations')
               .update({ status: 'cancelled' })
               .eq('id', reservation.id)
+
+            // Try setting cancelled_by (column may not exist yet)
+            if (!error) {
+              await supabase
+                .from('reservations')
+                .update({ cancelled_by: 'consumer' } as any)
+                .eq('id', reservation.id)
+                .then(() => {})
+                .catch(() => {})
+            }
 
             if (error) {
               Alert.alert('Fout', 'Kon de reservering niet annuleren.')
@@ -179,6 +215,37 @@ export default function ReservationsScreen() {
             </Pressable>
           )}
         </View>
+
+        {/* Review section for collected reservations */}
+        {item.status === 'collected' && (
+          <View className="mt-3 pt-3 border-t border-warm-100">
+            {reviewMap[item.id] != null ? (
+              <View className="flex-row items-center">
+                <Text className="text-xs font-bold text-warm-500 mr-2">Jouw beoordeling:</Text>
+                <View className="flex-row">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Ionicons
+                      key={star}
+                      name={star <= reviewMap[item.id] ? 'star' : 'star-outline'}
+                      size={14}
+                      color={star <= reviewMap[item.id] ? '#f59e0b' : '#c4bdb4'}
+                    />
+                  ))}
+                </View>
+              </View>
+            ) : (
+              <Pressable
+                className="flex-row items-center bg-brand-50 rounded-xl px-4 py-2.5 self-start"
+                onPress={() => router.push(`/review/${item.id}` as any)}
+              >
+                <Ionicons name="star-outline" size={16} color="#15803d" />
+                <Text className="text-sm font-bold text-brand-700 ml-1.5">
+                  Beoordeling schrijven
+                </Text>
+              </Pressable>
+            )}
+          </View>
+        )}
       </View>
     )
   }

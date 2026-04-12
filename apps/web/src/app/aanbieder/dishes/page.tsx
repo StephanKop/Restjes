@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
+import { RealtimeRefresh } from '@/components/RealtimeRefresh'
 import { DeleteDishButton } from '@/components/DeleteDishButton'
 import { Button } from '@/components/ui/Button'
 import { DishIcon, CookingPotIcon } from '@/components/icons'
@@ -62,6 +63,7 @@ export default async function DishesPage() {
 
   return (
     <div>
+      <RealtimeRefresh table="dishes" filter={`merchant_id=eq.${merchant.id}`} />
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-extrabold text-warm-900">Mijn gerechten</h1>
         <Link href="/aanbieder/dishes/new">
@@ -85,7 +87,7 @@ export default async function DishesPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal-stagger>
           {dishes.map((dish) => {
             const status = dish.status as DishStatus
             const badge = statusConfig[status] ?? statusConfig.available
@@ -93,6 +95,7 @@ export default async function DishesPage() {
             return (
               <div
                 key={dish.id}
+                data-reveal="scale"
                 className="overflow-hidden rounded-2xl bg-white shadow-card transition-shadow hover:shadow-lg"
               >
                 <div className="relative aspect-[4/3] bg-warm-100">

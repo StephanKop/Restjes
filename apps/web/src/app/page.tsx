@@ -1,14 +1,15 @@
 import Link from 'next/link'
 import { MainNav } from '@/components/MainNav'
 import { HowItWorks } from '@/components/HowItWorks'
+import { Footer } from '@/components/Footer'
 
 export default function HomePage() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <MainNav />
+    <div className="flex min-h-screen flex-col bg-warm-900">
+      <MainNav transparent />
 
       {/* Hero */}
-      <main className="relative flex min-h-[70dvh] flex-col items-center justify-center px-6 py-20 text-center md:min-h-[60dvh]">
+      <main className="relative -mt-[72px] flex min-h-[80dvh] flex-col items-center justify-center px-6 pt-[92px] pb-20 text-center md:min-h-[85dvh]">
         {/* Background video */}
         <video
           autoPlay
@@ -26,12 +27,12 @@ export default function HomePage() {
         {/* Content */}
         <div className="relative z-10">
           <h1 className="mb-6 max-w-3xl text-5xl font-extrabold leading-tight text-white">
-            Deel je restjes,
+            Deel je kliekjes,
             <br />
             <span className="text-brand-300">maak iemand blij</span>
           </h1>
           <p className="mx-auto mb-10 max-w-xl text-lg text-warm-200">
-            Heb je eten over? Zonde om weg te gooien! Via Restjes deel je jouw overgebleven gerechten
+            Heb je eten over? Zonde om weg te gooien! Via Kliekjesclub deel je jouw overgebleven gerechten
             met mensen in de buurt. Samen maken we voedselverspilling een stuk leuker.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
@@ -45,7 +46,7 @@ export default function HomePage() {
               href="/aanbieder/dishes"
               className="rounded-xl border-2 border-white/80 px-8 py-4 text-lg font-bold text-white transition-all duration-150 hover:bg-white/10 active:scale-[0.97] active:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
             >
-              Zelf restjes aanbieden
+              Zelf kliekjes aanbieden
             </Link>
           </div>
         </div>
@@ -53,12 +54,7 @@ export default function HomePage() {
 
       <HowItWorks />
 
-      {/* Footer */}
-      <footer className="border-t border-warm-100 bg-white px-6 py-8">
-        <div className="mx-auto max-w-6xl text-center text-sm text-warm-500">
-          <p>&copy; {new Date().getFullYear()} Restjes. Samen tegen voedselverspilling.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

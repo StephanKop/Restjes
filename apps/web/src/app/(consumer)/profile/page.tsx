@@ -26,7 +26,7 @@ export default async function ProfilePage() {
       <h1 className="mb-2 text-3xl font-extrabold text-warm-900">Mijn profiel</h1>
       <p className="mb-8 text-warm-500">Beheer je persoonlijke gegevens</p>
 
-      <div className="rounded-2xl bg-white p-8 shadow-card">
+      <div className="rounded-2xl bg-white p-8 shadow-card" data-reveal>
         <ProfileForm
           userId={user.id}
           email={user.email ?? ''}

@@ -26,7 +26,7 @@ export default function DashboardPage() {
 
       <div className="mt-8 rounded-2xl bg-white p-8 text-center shadow-card">
         <p className="mb-2 text-4xl">👨‍🍳</p>
-        <h2 className="mb-2 text-xl font-bold text-warm-900">Welkom bij Restjes!</h2>
+        <h2 className="mb-2 text-xl font-bold text-warm-900">Welkom bij Kliekjesclub!</h2>
         <p className="text-warm-500">
           Begin met het plaatsen van je eerste restje. Zo help je voedselverspilling tegen te gaan.
         </p>

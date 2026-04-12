@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { createBrowserClient } from '@supabase/ssr'
 import { formatRelativeDate } from '@/lib/format'
@@ -17,15 +17,24 @@ interface Notification {
 
 interface NotificationBellProps {
   userId: string
+  merchantId?: string | null
   initialCount: number
   initialItems: Notification[]
 }
 
-export function NotificationBell({ userId, initialCount, initialItems }: NotificationBellProps) {
+export function NotificationBell({ userId, merchantId, initialCount, initialItems }: NotificationBellProps) {
   const [open, setOpen] = useState(false)
   const [count, setCount] = useState(initialCount)
-  const [items] = useState(initialItems)
+  const [items, setItems] = useState(initialItems)
   const ref = useRef<HTMLDivElement>(null)
+
+  const supabase = useMemo(
+    () => createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    ),
+    [],
+  )
 
   // Close on outside click
   useEffect(() => {
@@ -38,35 +47,171 @@ export function NotificationBell({ userId, initialCount, initialItems }: Notific
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
-  // Listen for new messages via realtime
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  )
+  // Fetch notifications from the database
+  const fetchNotifications = useCallback(async () => {
+    const notifications: Notification[] = []
 
-  const handleNewMessage = useCallback(() => {
-    setCount((c) => c + 1)
-  }, [])
+    // 1. Unread messages (latest per conversation)
+    const [{ data: consumerConvs }, { data: merchant }] = await Promise.all([
+      supabase
+        .from('conversations')
+        .select('id, merchant:merchants!inner(business_name)')
+        .eq('consumer_id', userId),
+      supabase.from('merchants').select('id').eq('profile_id', userId).maybeSingle(),
+    ])
 
+    const convMap = new Map<string, { name: string; basePath: string }>()
+    for (const c of consumerConvs ?? []) {
+      const m = c.merchant as unknown as { business_name: string }
+      convMap.set(c.id, { name: m.business_name, basePath: '/messages' })
+    }
+
+    if (merchant) {
+      const { data: merchantConvs } = await supabase
+        .from('conversations')
+        .select('id, consumer:profiles!conversations_consumer_id_fkey(display_name)')
+        .eq('merchant_id', merchant.id)
+      for (const c of merchantConvs ?? []) {
+        const consumer = c.consumer as unknown as { display_name: string | null }
+        convMap.set(c.id, {
+          name: consumer?.display_name ?? 'Klant',
+          basePath: '/aanbieder/messages',
+        })
+      }
+    }
+
+    if (convMap.size > 0) {
+      const { data: unreadMessages } = await supabase
+        .from('messages')
+        .select('id, conversation_id, content, created_at')
+        .in('conversation_id', Array.from(convMap.keys()))
+        .eq('is_read', false)
+        .neq('sender_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(10)
+
+      const seenConvs = new Set<string>()
+      for (const msg of unreadMessages ?? []) {
+        if (seenConvs.has(msg.conversation_id)) continue
+        seenConvs.add(msg.conversation_id)
+        const conv = convMap.get(msg.conversation_id)
+        if (!conv) continue
+        notifications.push({
+          id: `msg-${msg.id}`,
+          type: 'message',
+          title: `Nieuw bericht van ${conv.name}`,
+          body: msg.content,
+          href: `${conv.basePath}/${msg.conversation_id}`,
+          time: msg.created_at,
+          read: false,
+        })
+      }
+    }
+
+    // 2. Recent reservation updates (last 7 days)
+    const { data: recentReservations } = await supabase
+      .from('reservations')
+      .select('id, status, updated_at, dish:dishes!inner(title)')
+      .eq('consumer_id', userId)
+      .in('status', ['confirmed', 'cancelled', 'collected'])
+      .gte('updated_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+      .order('updated_at', { ascending: false })
+      .limit(5)
+
+    const statusLabels: Record<string, string> = {
+      confirmed: 'bevestigd',
+      cancelled: 'geannuleerd',
+      collected: 'opgehaald',
+    }
+
+    for (const res of recentReservations ?? []) {
+      const dish = res.dish as unknown as { title: string }
+      notifications.push({
+        id: `res-${res.id}`,
+        type: 'reservation',
+        title: `Reservering ${statusLabels[res.status] ?? res.status}`,
+        body: dish.title,
+        href: '/reservations',
+        time: res.updated_at,
+        read: true,
+      })
+    }
+
+    // 3. New reservations for merchants
+    if (merchant) {
+      const { data: merchantReservations } = await supabase
+        .from('reservations')
+        .select('id, status, quantity, created_at, consumer:profiles!reservations_consumer_id_fkey(display_name), dish:dishes!inner(title)')
+        .eq('merchant_id', merchant.id)
+        .in('status', ['pending', 'confirmed'])
+        .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+        .order('created_at', { ascending: false })
+        .limit(10)
+
+      for (const res of merchantReservations ?? []) {
+        const consumer = res.consumer as unknown as { display_name: string | null }
+        const dish = res.dish as unknown as { title: string }
+        const consumerName = consumer?.display_name ?? 'Iemand'
+        const isPending = res.status === 'pending'
+        notifications.push({
+          id: `mres-${res.id}`,
+          type: 'reservation',
+          title: isPending ? 'Nieuwe reservering' : 'Reservering bevestigd',
+          body: `${consumerName} — ${res.quantity}x ${dish.title}`,
+          href: '/aanbieder/reservations',
+          time: res.created_at,
+          read: !isPending,
+        })
+      }
+    }
+
+    // Sort by time
+    notifications.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+    const top = notifications.slice(0, 10)
+
+    setItems(top)
+    setCount(top.filter((n) => !n.read).length)
+  }, [userId, supabase])
+
+  // Subscribe to realtime events and re-fetch
   useEffect(() => {
     const channel = supabase
       .channel('nav-notifications')
       .on(
         'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `sender_id=neq.${userId}`,
-        },
-        handleNewMessage,
+        { event: 'INSERT', schema: 'public', table: 'messages' },
+        () => fetchNotifications(),
       )
-      .subscribe()
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'messages' },
+        () => fetchNotifications(),
+      )
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'reservations' },
+        () => fetchNotifications(),
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'reservations' },
+        () => fetchNotifications(),
+      )
+
+    if (merchantId) {
+      channel.on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'reviews' },
+        () => fetchNotifications(),
+      )
+    }
+
+    channel.subscribe()
 
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [userId, supabase, handleNewMessage])
+  }, [userId, merchantId, supabase, fetchNotifications])
 
   return (
     <div ref={ref} className="relative">
@@ -76,7 +221,7 @@ export function NotificationBell({ userId, initialCount, initialItems }: Notific
           setOpen((o) => !o)
           if (!open) setCount(0)
         }}
-        className="relative flex h-9 w-9 items-center justify-center rounded-full text-warm-500 transition-all duration-150 hover:bg-warm-100 hover:text-warm-700 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2"
+        className="relative flex h-9 w-9 items-center justify-center rounded-full text-inherit transition-all duration-150 hover:bg-warm-100 hover:text-warm-700 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2"
         aria-label="Meldingen"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">

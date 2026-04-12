@@ -1,5 +1,5 @@
 {
-  "name": "@restjes/supabase",
+  "name": "@kliekjesclub/supabase",
   "version": "0.0.0",
   "private": true,
   "exports": {
@@ -21,7 +21,7 @@
     }
   },
   "devDependencies": {
-    "@restjes/types": "workspace:*",
+    "@kliekjesclub/types": "workspace:*",
     "typescript": "^5.7.0"
   }
 }

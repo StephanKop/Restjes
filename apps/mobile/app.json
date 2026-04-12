@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Restjes",
-    "slug": "restjes",
+    "name": "Kliekjesclub",
+    "slug": "kliekjesclub",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "restjes",
+    "scheme": "kliekjesclub",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.restjes.app"
+      "bundleIdentifier": "nl.kliekjesclub.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,7 +24,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.restjes.app"
+      "package": "nl.kliekjesclub.app"
     },
     "web": {
       "bundler": "metro",

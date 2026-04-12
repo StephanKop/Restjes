@@ -57,6 +57,11 @@ export function ChatReserveBanner({
     if (insertError) {
       setError('Kon reservering niet plaatsen.')
     } else {
+      // Decrement dish quantity via RPC (bypasses RLS)
+      await supabase.rpc('decrement_dish_quantity', {
+        p_dish_id: dishId,
+        p_quantity: quantity,
+      })
       setSuccess(true)
     }
     setLoading(false)

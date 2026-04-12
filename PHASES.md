@@ -1,4 +1,4 @@
-# Restjes - Implementation Phases
+# Kliekjesclub - Implementation Phases
 
 ## Phase 1: Foundation - DONE
 - [x] Turborepo monorepo setup with pnpm

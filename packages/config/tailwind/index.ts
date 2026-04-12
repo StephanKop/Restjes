@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-const restjesPreset: Config = {
+const kliekjesclubPreset: Config = {
   content: [],
   theme: {
     extend: {
@@ -50,4 +50,4 @@ const restjesPreset: Config = {
   plugins: [],
 };
 
-export default restjesPreset;
+export default kliekjesclubPreset;

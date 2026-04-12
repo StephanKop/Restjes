@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/aanbieder/', '/messages/', '/reservations/'],
       },
     ],
-    sitemap: 'https://restjes.nl/sitemap.xml',
+    sitemap: 'https://kliekjesclub.nl/sitemap.xml',
   }
 }

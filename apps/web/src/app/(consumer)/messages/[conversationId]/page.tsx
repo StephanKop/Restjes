@@ -26,12 +26,12 @@ export async function generateMetadata({
     .single()
 
   if (!conversation) {
-    return { title: 'Gesprek niet gevonden - Restjes' }
+    return { title: 'Gesprek niet gevonden - Kliekjesclub' }
   }
 
   const merchant = conversation.merchant as unknown as { business_name: string }
   return {
-    title: `Chat met ${merchant.business_name} - Restjes`,
+    title: `Chat met ${merchant.business_name} - Kliekjesclub`,
   }
 }
 
