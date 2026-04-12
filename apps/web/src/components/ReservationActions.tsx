@@ -49,12 +49,15 @@ export function ReservationActions({
 
       // Try setting cancelled_by separately (column may not exist yet)
       if (!error && cancelledBy) {
-        await supabase
-          .from('reservations')
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .update({ cancelled_by: cancelledBy } as any)
-          .eq('id', reservationId)
-          .catch(() => {})
+        try {
+          await supabase
+            .from('reservations')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .update({ cancelled_by: cancelledBy } as any)
+            .eq('id', reservationId)
+        } catch {
+          // Ignore — column may not exist yet
+        }
       }
 
       if (error) {
