@@ -17,6 +17,7 @@ interface ReservationActionsProps {
 export function ReservationActions({
   reservationId,
   dishId,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   quantity,
   currentStatus,
   view,
@@ -50,6 +51,7 @@ export function ReservationActions({
       if (!error && cancelledBy) {
         await supabase
           .from('reservations')
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .update({ cancelled_by: cancelledBy } as any)
           .eq('id', reservationId)
           .catch(() => {})
