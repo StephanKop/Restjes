@@ -66,6 +66,8 @@ export default async function EditDishPage({ params }: EditDishPageProps) {
     bring_own_container: dish.bring_own_container as boolean,
     is_vegetarian: dish.is_vegetarian as boolean,
     is_vegan: dish.is_vegan as boolean,
+    is_frozen: dish.is_frozen as boolean,
+    expires_at: dish.expires_at as string | null,
     ingredients: (ingredientRows ?? []).map((r) => r.name as string),
     allergens: (allergenRows ?? []).map((r) => r.allergen as string),
   }
