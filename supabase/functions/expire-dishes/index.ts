@@ -15,20 +15,51 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Expire dishes whose pickup window has passed
-    const { data: expiredDishes, error: expireError } = await supabase
+    // Expire dishes whose pickup window AND/OR expiration date have passed
+    // Uses whichever is later: both dates that are set must have passed
+    const now = new Date().toISOString()
+
+    // Dishes expired by pickup_end (no expires_at set)
+    const { data: expiredByPickup, error: expirePickupError } = await supabase
       .from('dishes')
       .update({ status: 'expired' })
       .eq('status', 'available')
-      .lt('pickup_end', new Date().toISOString())
+      .lt('pickup_end', now)
+      .is('expires_at', null)
       .select('id')
 
-    if (expireError) {
-      throw new Error(`Failed to expire dishes: ${expireError.message}`)
+    if (expirePickupError) {
+      throw new Error(`Failed to expire dishes by pickup: ${expirePickupError.message}`)
     }
 
-    const expiredCount = expiredDishes?.length ?? 0
-    console.log(`Expired ${expiredCount} dishes past pickup window`)
+    // Dishes expired by expires_at (no pickup_end set)
+    const { data: expiredByDate, error: expireDateError } = await supabase
+      .from('dishes')
+      .update({ status: 'expired' })
+      .eq('status', 'available')
+      .is('pickup_end', null)
+      .lt('expires_at', now)
+      .select('id')
+
+    if (expireDateError) {
+      throw new Error(`Failed to expire dishes by date: ${expireDateError.message}`)
+    }
+
+    // Dishes with both dates set: expire when BOTH have passed (whichever is later)
+    const { data: expiredByBoth, error: expireBothError } = await supabase
+      .from('dishes')
+      .update({ status: 'expired' })
+      .eq('status', 'available')
+      .lt('pickup_end', now)
+      .lt('expires_at', now)
+      .select('id')
+
+    if (expireBothError) {
+      throw new Error(`Failed to expire dishes by both dates: ${expireBothError.message}`)
+    }
+
+    const expiredCount = (expiredByPickup?.length ?? 0) + (expiredByDate?.length ?? 0) + (expiredByBoth?.length ?? 0)
+    console.log(`Expired ${expiredCount} dishes past their deadline`)
 
     // Mark dishes with no remaining quantity as reserved
     const { data: reservedDishes, error: reserveError } = await supabase

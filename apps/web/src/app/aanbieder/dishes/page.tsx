@@ -52,7 +52,7 @@ export default async function DishesPage() {
     .single()
 
   if (!merchant) {
-    redirect('/aanbieder/settings')
+    redirect('/profile')
   }
 
   const { data: dishes } = await supabase

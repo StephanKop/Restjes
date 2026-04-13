@@ -10,6 +10,19 @@ export async function GET(request: Request) {
     const supabase = await createServerComponentClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
+      // Sync avatar from OAuth provider if profile doesn't have one yet
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const avatarUrl = user.user_metadata?.avatar_url ?? user.user_metadata?.picture
+        if (avatarUrl) {
+          await supabase
+            .from('profiles')
+            .update({ avatar_url: avatarUrl })
+            .eq('id', user.id)
+            .is('avatar_url', null)
+        }
+      }
+
       return NextResponse.redirect(`${origin}${next}`)
     }
   }

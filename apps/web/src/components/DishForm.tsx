@@ -75,6 +75,8 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
   const [ingredientInput, setIngredientInput] = useState('')
   const [allergens, setAllergens] = useState<string[]>(initialData?.allergens ?? [])
 
+  const [autoExpire, setAutoExpire] = useState(initialData ? true : false)
+
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(initialData?.image_url ?? null)
 
@@ -119,6 +121,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
     if (!title.trim()) errs.title = 'Titel is verplicht'
     if (quantity < 1) errs.quantity = 'Minimaal 1'
     if (!isFrozen && !expiresAt) errs.expiresAt = 'Houdbaarheidsdatum is verplicht voor verse gerechten'
+    if (!autoExpire) errs.autoExpire = 'Je moet akkoord gaan met automatisch verlopen'
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -360,6 +363,24 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
           <p className="mt-3 text-sm text-warm-500">
             Ingevroren gerechten hebben geen houdbaarheidsdatum nodig op het platform.
           </p>
+        )}
+      </div>
+
+      {/* Auto-expire agreement */}
+      <div className="rounded-2xl bg-white p-6 shadow-card">
+        <label className="flex items-start gap-3 text-sm text-warm-800">
+          <input
+            type="checkbox"
+            checked={autoExpire}
+            onChange={(e) => setAutoExpire(e.target.checked)}
+            className="mt-0.5 h-5 w-5 rounded-lg border-warm-300 text-brand-500 focus:ring-brand-400"
+          />
+          <span className="font-medium">
+            Ik ga ermee akkoord dat dit gerecht automatisch op &quot;verlopen&quot; wordt gezet na de houdbaarheidsdatum of het einde van de ophaaltijd (de laatste van de twee).
+          </span>
+        </label>
+        {errors.autoExpire && (
+          <p className="mt-2 text-sm text-red-600">{errors.autoExpire}</p>
         )}
       </div>
 

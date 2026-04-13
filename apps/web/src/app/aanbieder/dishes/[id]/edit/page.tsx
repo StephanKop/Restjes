@@ -27,7 +27,7 @@ export default async function EditDishPage({ params }: EditDishPageProps) {
     .single()
 
   if (!merchant) {
-    redirect('/aanbieder/settings')
+    redirect('/profile')
   }
 
   // Fetch dish and verify ownership

@@ -7,7 +7,7 @@ const subNavItems = [
   { href: '/aanbieder/reservations', label: 'Reserveringen' },
   { href: '/aanbieder/reviews', label: 'Beoordelingen' },
   { href: '/aanbieder/messages', label: 'Berichten' },
-  { href: '/aanbieder/settings', label: 'Instellingen' },
+  { href: '/profile', label: 'Profiel' },
 ]
 
 export default function AanbiederLayout({ children }: { children: React.ReactNode }) {

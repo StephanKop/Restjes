@@ -59,7 +59,7 @@ export default async function MerchantReservationsPage({
     .single()
 
   if (!merchant) {
-    redirect('/aanbieder/settings')
+    redirect('/profile')
   }
 
   const { data: reservations } = await supabase

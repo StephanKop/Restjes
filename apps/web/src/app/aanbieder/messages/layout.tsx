@@ -27,7 +27,7 @@ export default async function MerchantMessagesLayout({
     .single()
 
   if (!merchant) {
-    redirect('/aanbieder/settings')
+    redirect('/profile')
   }
 
   const { data: conversations } = await supabase

@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     icon: '/favicon.png',
     apple: '/favicon.png',
   },
+  themeColor: '#22c55e',
   title: {
     default: 'Kliekjesclub - Deel je kliekjes, maak iemand blij',
     template: '%s | Kliekjesclub',
