@@ -4,3 +4,4 @@ export * from "./merchant";
 export * from "./reservation";
 export * from "./review";
 export * from "./chat";
+export * from "./cms";

@@ -47,6 +47,8 @@ export default function CreateDishScreen() {
   const [pickupEnd, setPickupEnd] = useState('')
   const [isVegetarian, setIsVegetarian] = useState(false)
   const [isVegan, setIsVegan] = useState(false)
+  const [isFrozen, setIsFrozen] = useState(false)
+  const [expiresAt, setExpiresAt] = useState('')
   const [bringOwnContainer, setBringOwnContainer] = useState(false)
   const [ingredientInput, setIngredientInput] = useState('')
   const [ingredients, setIngredients] = useState<string[]>([])
@@ -152,6 +154,10 @@ export default function CreateDishScreen() {
       Alert.alert('Verplicht veld', 'Vul een titel in voor je gerecht.')
       return
     }
+    if (!isFrozen && !expiresAt.trim()) {
+      Alert.alert('Verplicht veld', 'Vul een houdbaarheidsdatum in voor verse gerechten.')
+      return
+    }
     if (!user) return
 
     setSubmitting(true)
@@ -235,6 +241,8 @@ export default function CreateDishScreen() {
           pickup_end: pickupEndDate,
           is_vegetarian: isVegetarian || isVegan,
           is_vegan: isVegan,
+          is_frozen: isFrozen,
+          expires_at: !isFrozen && expiresAt ? new Date(`${new Date().toISOString().split('T')[0]}T${expiresAt}`).toISOString() : null,
           bring_own_container: bringOwnContainer,
           status: 'available',
         })
@@ -380,6 +388,69 @@ export default function CreateDishScreen() {
                 />
               </View>
             </View>
+
+            {/* Fresh / Frozen */}
+            <Text className="text-sm font-bold text-warm-600 mb-2">
+              Vers of ingevroren
+            </Text>
+            <View className="flex-row gap-3 mb-3">
+              <Pressable
+                className={`flex-1 rounded-xl px-4 py-3 border-2 items-center ${
+                  !isFrozen
+                    ? 'bg-brand-100 border-brand-300'
+                    : 'bg-white border-warm-200'
+                }`}
+                onPress={() => setIsFrozen(false)}
+              >
+                <Ionicons name="sunny-outline" size={24} color={!isFrozen ? '#15803d' : '#9e9589'} />
+                <Text
+                  className={`text-sm font-bold mt-1 ${
+                    !isFrozen ? 'text-brand-700' : 'text-warm-500'
+                  }`}
+                >
+                  Vers
+                </Text>
+              </Pressable>
+              <Pressable
+                className={`flex-1 rounded-xl px-4 py-3 border-2 items-center ${
+                  isFrozen
+                    ? 'bg-blue-50 border-blue-300'
+                    : 'bg-white border-warm-200'
+                }`}
+                onPress={() => setIsFrozen(true)}
+              >
+                <Ionicons name="snow-outline" size={24} color={isFrozen ? '#1d4ed8' : '#9e9589'} />
+                <Text
+                  className={`text-sm font-bold ${
+                    isFrozen ? 'text-blue-700' : 'text-warm-500'
+                  }`}
+                >
+                  Ingevroren
+                </Text>
+              </Pressable>
+            </View>
+            {!isFrozen && (
+              <View className="mb-4">
+                <Text className="text-sm font-bold text-warm-600 mb-1.5">
+                  Houdbaar tot
+                </Text>
+                <TextInput
+                  className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800"
+                  placeholder="Bijv. 18:00"
+                  placeholderTextColor="#9e9589"
+                  value={expiresAt}
+                  onChangeText={setExpiresAt}
+                />
+                <Text className="text-xs text-warm-400 mt-1">
+                  Tot wanneer is het gerecht vers en veilig te eten?
+                </Text>
+              </View>
+            )}
+            {isFrozen && (
+              <Text className="text-sm text-warm-500 mb-4">
+                Ingevroren gerechten hebben geen houdbaarheidsdatum nodig.
+              </Text>
+            )}
 
             {/* Toggle options */}
             <Text className="text-sm font-bold text-warm-600 mb-2">

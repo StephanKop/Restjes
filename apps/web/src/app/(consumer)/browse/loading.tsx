@@ -43,7 +43,7 @@ export default function BrowseLoading() {
           </div>
 
           {/* Card grid skeleton */}
-          <div className="grid gap-6 sm:grid-cols-2">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="overflow-hidden rounded-2xl bg-white shadow-card">
                 <div className="aspect-[4/3] animate-pulse bg-warm-100" />

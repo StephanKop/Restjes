@@ -5,8 +5,13 @@ import { BrowseResults } from '@/components/BrowseResults'
 import type { DishCardData } from '@/components/DishCard'
 
 export const metadata: Metadata = {
-  title: 'Ontdekken - Kliekjesclub',
-  description: 'Bekijk beschikbare kliekjes bij jou in de buurt.',
+  title: 'Ontdekken',
+  description: 'Bekijk beschikbare kliekjes bij jou in de buurt. Filter op dieet, allergenen en locatie.',
+  openGraph: {
+    title: 'Ontdekken - Kliekjesclub',
+    description: 'Bekijk beschikbare kliekjes bij jou in de buurt.',
+  },
+  alternates: { canonical: '/browse' },
 }
 
 interface BrowsePageProps {

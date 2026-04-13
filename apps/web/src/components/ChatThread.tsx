@@ -28,7 +28,7 @@ export function ChatThread({
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [newMessage, setNewMessage] = useState('')
   const [sending, setSending] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
   const messagesRef = useRef(messages)
   messagesRef.current = messages
 
@@ -48,7 +48,10 @@ export function ChatThread({
   }, [conversationId, initialMessages])
 
   const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    const el = scrollContainerRef.current
+    if (el) {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+    }
   }, [])
 
   // Scroll to bottom on new messages
@@ -179,7 +182,7 @@ export function ChatThread({
   return (
     <div className="flex h-full flex-col">
       {/* Messages area */}
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 py-6">
         {messages.length === 0 ? (
           <div className="flex h-full items-center justify-center">
             <p className="text-center text-warm-400">
@@ -217,7 +220,6 @@ export function ChatThread({
                 </div>
               )
             })}
-            <div ref={messagesEndRef} />
           </div>
         )}
       </div>

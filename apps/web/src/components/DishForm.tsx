@@ -38,6 +38,8 @@ interface DishData {
   bring_own_container: boolean
   is_vegetarian: boolean
   is_vegan: boolean
+  is_frozen: boolean
+  expires_at: string | null
   ingredients: string[]
   allergens: string[]
 }
@@ -67,6 +69,8 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
   const [bringOwnContainer, setBringOwnContainer] = useState(initialData?.bring_own_container ?? false)
   const [isVegetarian, setIsVegetarian] = useState(initialData?.is_vegetarian ?? false)
   const [isVegan, setIsVegan] = useState(initialData?.is_vegan ?? false)
+  const [isFrozen, setIsFrozen] = useState(initialData?.is_frozen ?? false)
+  const [expiresAt, setExpiresAt] = useState(toLocalDatetimeString(initialData?.expires_at ?? null))
   const [ingredients, setIngredients] = useState<string[]>(initialData?.ingredients ?? [])
   const [ingredientInput, setIngredientInput] = useState('')
   const [allergens, setAllergens] = useState<string[]>(initialData?.allergens ?? [])
@@ -114,6 +118,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
     const errs: Record<string, string> = {}
     if (!title.trim()) errs.title = 'Titel is verplicht'
     if (quantity < 1) errs.quantity = 'Minimaal 1'
+    if (!isFrozen && !expiresAt) errs.expiresAt = 'Houdbaarheidsdatum is verplicht voor verse gerechten'
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -169,6 +174,8 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
         bring_own_container: bringOwnContainer,
         is_vegetarian: isVegetarian,
         is_vegan: isVegan,
+        is_frozen: isFrozen,
+        expires_at: !isFrozen && expiresAt ? new Date(expiresAt).toISOString() : null,
         ...(initialData ? {} : { status: 'available' as const }),
       }
 
@@ -304,6 +311,58 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
         </div>
       </div>
 
+      {/* Fresh / Frozen */}
+      <div className="rounded-2xl bg-white p-6 shadow-card">
+        <h2 className="mb-4 text-lg font-bold text-warm-900">Vers of ingevroren</h2>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => setIsFrozen(false)}
+            className={`flex-1 rounded-xl border-2 px-4 py-3 text-sm font-bold transition-colors ${
+              !isFrozen
+                ? 'border-brand-500 bg-brand-50 text-brand-700'
+                : 'border-warm-200 text-warm-500 hover:border-warm-300'
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mx-auto mb-1 h-6 w-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+            </svg>
+            Vers
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsFrozen(true)}
+            className={`flex-1 rounded-xl border-2 px-4 py-3 text-sm font-bold transition-colors ${
+              isFrozen
+                ? 'border-blue-500 bg-blue-50 text-blue-700'
+                : 'border-warm-200 text-warm-500 hover:border-warm-300'
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mx-auto mb-1 h-6 w-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v20M12 6l-3-3m3 3 3-3M12 18l-3 3m3-3 3 3M2 12h20M6 12l-3-3m3 3-3 3M18 12l3-3m-3 3 3 3M7.05 4.93l9.9 9.9M7.05 4.93 5.64 7.76m1.41-2.83 2.83 1.42M16.95 19.07l-2.83-1.42m2.83 1.42 1.41-2.83M16.95 4.93l-9.9 9.9M16.95 4.93l1.41 2.83m-1.41-2.83-2.83 1.42M7.05 19.07l2.83-1.42m-2.83 1.42L5.64 16.24" />
+            </svg>
+            Ingevroren
+          </button>
+        </div>
+        {!isFrozen && (
+          <div className="mt-4">
+            <Input
+              label="Houdbaar tot"
+              type="datetime-local"
+              value={expiresAt}
+              onChange={(e) => setExpiresAt(e.target.value)}
+              error={errors.expiresAt}
+            />
+            <p className="mt-1 text-xs text-warm-400">Geef aan tot wanneer het gerecht vers en veilig te eten is.</p>
+          </div>
+        )}
+        {isFrozen && (
+          <p className="mt-3 text-sm text-warm-500">
+            Ingevroren gerechten hebben geen houdbaarheidsdatum nodig op het platform.
+          </p>
+        )}
+      </div>
+
       {/* Dietary & container */}
       <div className="rounded-2xl bg-white p-6 shadow-card">
         <h2 className="mb-4 text-lg font-bold text-warm-900">Dieet &amp; verpakking</h2>
@@ -400,8 +459,8 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
       )}
 
       {/* Submit */}
-      <div className="flex gap-3">
-        <Button type="submit" variant="primary" loading={loading}>
+      <div className="flex flex-col gap-3">
+        <Button type="submit" variant="primary" loading={loading} className="w-full">
           {initialData ? 'Opslaan' : 'Gerecht plaatsen'}
         </Button>
         <Button
@@ -409,6 +468,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
           variant="outline"
           onClick={() => router.push('/aanbieder/dishes')}
           disabled={loading}
+          className="w-full"
         >
           Annuleren
         </Button>

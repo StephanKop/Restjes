@@ -23,6 +23,8 @@ interface DishDetail {
   pickup_start: string | null
   pickup_end: string | null
   bring_own_container: boolean
+  is_frozen: boolean
+  expires_at: string | null
   is_vegetarian: boolean
   is_vegan: boolean
   merchant: {
@@ -64,7 +66,7 @@ export default function DishDetailScreen() {
         .select(
           `
           id, title, description, image_url, quantity_available,
-          pickup_start, pickup_end, bring_own_container, is_vegetarian, is_vegan,
+          pickup_start, pickup_end, bring_own_container, is_frozen, expires_at, is_vegetarian, is_vegan,
           merchant:merchants!merchant_id (id, business_name, city, address_line1, logo_url)
         `
         )
@@ -255,6 +257,32 @@ export default function DishDetailScreen() {
                 </Text>
               </View>
             </View>
+
+            <View className="bg-white rounded-xl p-4 flex-row items-center">
+              <View className={`${dish.is_frozen ? 'bg-blue-100' : 'bg-orange-100'} rounded-lg p-2 mr-3`}>
+                <Ionicons name={dish.is_frozen ? 'snow-outline' : 'sunny-outline'} size={20} color={dish.is_frozen ? '#1d4ed8' : '#ea580c'} />
+              </View>
+              <View className="flex-1">
+                <Text className="text-xs text-warm-500 uppercase">Type</Text>
+                <Text className="text-sm font-bold text-warm-800">
+                  {dish.is_frozen ? 'Ingevroren' : 'Vers'}
+                </Text>
+              </View>
+            </View>
+
+            {!dish.is_frozen && dish.expires_at && (
+              <View className="bg-white rounded-xl p-4 flex-row items-center">
+                <View className="bg-red-100 rounded-lg p-2 mr-3">
+                  <Ionicons name="time-outline" size={20} color="#dc2626" />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-xs text-warm-500 uppercase">Houdbaar tot</Text>
+                  <Text className="text-sm font-bold text-warm-800">
+                    {new Date(dish.expires_at).toLocaleString('nl-NL', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}
+                  </Text>
+                </View>
+              </View>
+            )}
 
             {dish.bring_own_container && (
               <View className="bg-white rounded-xl p-4 flex-row items-center">

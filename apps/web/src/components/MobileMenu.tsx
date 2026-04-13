@@ -129,6 +129,17 @@ export function MobileMenu({ isLoggedIn, displayName, initial, unreadCount }: Mo
                       </Link>
                     )
                   })}
+
+                  {/* Highlighted CTA */}
+                  <Link
+                    href="/aanbieder/dishes/new"
+                    className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-brand-600"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                      <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                    </svg>
+                    Gerecht aanmaken
+                  </Link>
                 </div>
               ) : (
                 <div className="space-y-1">

@@ -240,21 +240,13 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
         )}
       </div>
 
-      {/* City (only if not using geolocation) */}
-      {!hasLocation && userCity && (
-        <div>
-          <p className="mb-2 text-sm font-semibold text-warm-700">Stad</p>
-          <div className="flex items-center justify-between rounded-xl bg-warm-50 px-3 py-2.5">
-            <span className="flex items-center gap-1.5 text-sm text-warm-600"><MapPinIcon className="h-4 w-4" /> {userCity}</span>
-            <button
-              type="button"
-              onClick={() => updateParams({ city: 'alle' })}
-              className="text-xs font-semibold text-brand-600 hover:text-brand-700"
-            >
-              Wissen
-            </button>
-          </div>
-        </div>
+      {/* City search */}
+      {!hasLocation && (
+        <CitySearch
+          currentCity={searchParams.get('city') ?? userCity ?? null}
+          onSelect={(city) => updateParams({ city: city || null })}
+          onClear={() => updateParams({ city: 'alle' })}
+        />
       )}
 
       {/* Diet */}
@@ -319,5 +311,119 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
         </div>
       </div>
     </aside>
+  )
+}
+
+function CitySearch({
+  currentCity,
+  onSelect,
+  onClear,
+}: {
+  currentCity: string | null
+  onSelect: (city: string) => void
+  onClear: () => void
+}) {
+  const [query, setQuery] = useState('')
+  const [suggestions, setSuggestions] = useState<{ description: string; place_id: string }[]>([])
+  const [open, setOpen] = useState(false)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Close on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  function handleInputChange(value: string) {
+    setQuery(value)
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+
+    if (!value.trim()) {
+      setSuggestions([])
+      setOpen(false)
+      return
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/api/places-autocomplete?input=${encodeURIComponent(value.trim())}`,
+        )
+        if (!res.ok) return
+        const data = await res.json()
+        setSuggestions(data.predictions ?? [])
+        setOpen(true)
+      } catch {
+        // Ignore
+      }
+    }, 300)
+  }
+
+  function handleSelect(suggestion: { description: string }) {
+    // Extract city name (first part before comma)
+    const city = suggestion.description.split(',')[0].trim()
+    setQuery('')
+    setSuggestions([])
+    setOpen(false)
+    onSelect(city)
+  }
+
+  const showingCity = currentCity && currentCity !== 'alle'
+
+  return (
+    <div>
+      <p className="mb-2 text-sm font-semibold text-warm-700">Stad</p>
+
+      {showingCity && (
+        <div className="mb-2 flex items-center justify-between rounded-xl bg-brand-50 px-3 py-2.5">
+          <span className="flex items-center gap-1.5 text-sm font-medium text-brand-700">
+            <MapPinIcon className="h-4 w-4" /> {currentCity}
+          </span>
+          <button
+            type="button"
+            onClick={onClear}
+            className="text-xs font-semibold text-brand-600 hover:text-brand-700"
+          >
+            Wissen
+          </button>
+        </div>
+      )}
+
+      <div ref={containerRef} className="relative">
+        <div className="relative">
+          <MapPinIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-warm-400" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => handleInputChange(e.target.value)}
+            onFocus={() => suggestions.length > 0 && setOpen(true)}
+            placeholder={showingCity ? 'Andere stad zoeken...' : 'Zoek op stad...'}
+            className="w-full rounded-xl border border-warm-200 bg-white py-2.5 pl-9 pr-4 text-sm text-warm-800 placeholder:text-warm-400 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100"
+          />
+        </div>
+
+        {open && suggestions.length > 0 && (
+          <div className="absolute left-0 right-0 top-full z-30 mt-1 overflow-hidden rounded-xl border border-warm-100 bg-white shadow-lg">
+            {suggestions.map((s) => (
+              <button
+                key={s.place_id}
+                type="button"
+                onClick={() => handleSelect(s)}
+                className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm text-warm-700 transition-colors hover:bg-brand-50 hover:text-brand-700"
+              >
+                <MapPinIcon className="h-4 w-4 flex-shrink-0 text-warm-400" />
+                {s.description}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   )
 }

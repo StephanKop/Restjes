@@ -61,6 +61,8 @@ export default async function DishPage({ params }: DishPageProps) {
       bring_own_container,
       is_vegetarian,
       is_vegan,
+      is_frozen,
+      expires_at,
       dish_ingredients (
         id,
         name
@@ -193,6 +195,18 @@ export default async function DishPage({ params }: DishPageProps) {
                     Eigen bakje
                   </span>
                 )}
+                <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                  dish.is_frozen
+                    ? 'bg-blue-100 text-blue-800'
+                    : 'bg-orange-100 text-orange-800'
+                }`}>
+                  {dish.is_frozen ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-3 w-3"><path strokeLinecap="round" strokeLinejoin="round" d="M12 2v20M12 6l-3-3m3 3 3-3M12 18l-3 3m3-3 3 3M2 12h20M6 12l-3-3m3 3-3 3M18 12l3-3m-3 3 3 3M7.05 4.93l9.9 9.9M7.05 4.93 5.64 7.76m1.41-2.83 2.83 1.42M16.95 19.07l-2.83-1.42m2.83 1.42 1.41-2.83M16.95 4.93l-9.9 9.9M16.95 4.93l1.41 2.83m-1.41-2.83-2.83 1.42M7.05 19.07l2.83-1.42m-2.83 1.42L5.64 16.24" /></svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-3 w-3"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" /></svg>
+                  )}
+                  {dish.is_frozen ? 'Ingevroren' : 'Vers'}
+                </span>
               </div>
               <h1 className="mb-2 text-3xl font-extrabold text-warm-900 lg:text-4xl">{dish.title}</h1>
               {dish.description && (
@@ -330,6 +344,21 @@ export default async function DishPage({ params }: DishPageProps) {
               label="Beschikbaar"
               value={`${dish.quantity_available} portie${dish.quantity_available !== 1 ? 's' : ''}`}
             />
+            <InfoItem
+              icon={dish.is_frozen
+                ? <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 2v20M12 6l-3-3m3 3 3-3M12 18l-3 3m3-3 3 3M2 12h20M6 12l-3-3m3 3-3 3M18 12l3-3m-3 3 3 3M7.05 4.93l9.9 9.9M7.05 4.93 5.64 7.76m1.41-2.83 2.83 1.42M16.95 19.07l-2.83-1.42m2.83 1.42 1.41-2.83M16.95 4.93l-9.9 9.9M16.95 4.93l1.41 2.83m-1.41-2.83-2.83 1.42M7.05 19.07l2.83-1.42m-2.83 1.42L5.64 16.24" /></svg>
+                : <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" /></svg>
+              }
+              label="Type"
+              value={dish.is_frozen ? 'Ingevroren' : 'Vers'}
+            />
+            {!dish.is_frozen && dish.expires_at && (
+              <InfoItem
+                icon={<ClockIcon className="h-5 w-5" />}
+                label="Houdbaar tot"
+                value={new Date(dish.expires_at).toLocaleString('nl-NL', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}
+              />
+            )}
             <InfoItem
               icon={<ContainerIcon className="h-5 w-5" />}
               label="Eigen bakje meenemen"

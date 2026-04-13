@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import type { HowItWorksContent } from '@kliekjesclub/types'
 
 function CameraIcon({ className }: { className?: string }) {
   return (
@@ -35,45 +36,11 @@ function HandThumbUpIcon({ className }: { className?: string }) {
   )
 }
 
-const STEPS: { step: string; icon: ReactNode; title: string; description: string; detail: string }[] = [
-  {
-    step: '1',
-    icon: <CameraIcon className="h-8 w-8" />,
-    title: 'Restje plaatsen',
-    description:
-      'Heb je eten over? Maak een foto, voeg een beschrijving toe en plaats het in een paar seconden.',
-    detail: 'Gratis en zonder verplichtingen',
-  },
-  {
-    step: '2',
-    icon: <MagnifyingGlassIcon className="h-8 w-8" />,
-    title: 'Ontdekken & reserveren',
-    description:
-      'Mensen in de buurt zien jouw restje op de kaart en kunnen het met een tik reserveren.',
-    detail: 'Filter op afstand, dieet en allergenen',
-  },
-  {
-    step: '3',
-    icon: <ChatBubbleIcon className="h-8 w-8" />,
-    title: 'Even overleggen',
-    description:
-      'Chat direct met de aanbieder om een ophaaltijd af te spreken die voor jullie allebei werkt.',
-    detail: 'Ingebouwde chat, geen telefoonnummer nodig',
-  },
-  {
-    step: '4',
-    icon: <HandThumbUpIcon className="h-8 w-8" />,
-    title: 'Ophalen & genieten',
-    description:
-      'Loop even langs om de hoek, haal je maaltijd op en geniet! Laat daarna een beoordeling achter.',
-    detail: 'Samen tegen voedselverspilling',
-  },
-]
-
-const STATS = [
-  { target: 40, prefix: '', suffix: '%', label: 'van voedsel wordt verspild in Nederland' },
-  { target: 800, prefix: '€', suffix: '', label: 'gooit een gemiddeld huishouden per jaar weg' },
-  { target: 0, prefix: '', suffix: ',-', label: 'het kost je niks om mee te doen' },
+const STEP_ICONS: ReactNode[] = [
+  <CameraIcon key="camera" className="h-8 w-8" />,
+  <MagnifyingGlassIcon key="search" className="h-8 w-8" />,
+  <ChatBubbleIcon key="chat" className="h-8 w-8" />,
+  <HandThumbUpIcon key="thumbup" className="h-8 w-8" />,
 ]
 
 function AnimatedNumber({
@@ -137,7 +104,15 @@ function AnimatedNumber({
   )
 }
 
-export function HowItWorks() {
+export function HowItWorks({ content }: { content: HowItWorksContent }) {
+  const STEPS = content.steps.map((step, i) => ({
+    step: String(i + 1),
+    icon: STEP_ICONS[i] ?? STEP_ICONS[0],
+    title: step.title,
+    description: step.description,
+    detail: step.detail,
+  }))
+  const STATS = content.stats.map((s) => ({ target: s.value, prefix: s.prefix, suffix: s.suffix, label: s.label }))
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -193,10 +168,10 @@ export function HowItWorks() {
             <p
               className="animate-target mb-3 text-sm font-bold uppercase tracking-widest text-brand-600"
             >
-              Zo simpel is het
+              {content.section.subtitle}
             </p>
             <h2 className="animate-target text-4xl font-extrabold text-warm-900">
-              Hoe werkt Kliekjesclub?
+              {content.section.heading}
             </h2>
           </div>
 
@@ -278,50 +253,28 @@ export function HowItWorks() {
             {/* Text */}
             <div className="w-full lg:w-1/2" data-animate>
               <p className="animate-target mb-3 text-sm font-bold uppercase tracking-widest text-brand-600">
-                Meer dan eten delen
+                {content.community.subtitle}
               </p>
               <h2 className="animate-target mb-6 text-3xl font-extrabold text-warm-900 lg:text-4xl">
-                Verbind met je buren
+                {content.community.heading}
               </h2>
               <p className="animate-target mb-6 text-lg leading-relaxed text-warm-600">
-                Kliekjesclub gaat verder dan alleen voedselverspilling tegengaan. Het is een manier om
-                je buren te leren kennen, een praatje te maken aan de deur en samen te zorgen
-                voor een hechte buurt.
+                {content.community.description}
               </p>
               <div className="animate-target space-y-4">
-                <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-                    </svg>
+                {content.community.features.map((feature, i) => (
+                  <div key={i} className="flex items-start gap-4">
+                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-warm-900">{feature.title}</h3>
+                      <p className="text-sm text-warm-500">{feature.description}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-warm-900">Leer je buren kennen</h3>
-                    <p className="text-sm text-warm-500">Een bakje eten is het begin van een nieuw contact om de hoek.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-warm-900">Maak iemand blij</h3>
-                    <p className="text-sm text-warm-500">Een warme maaltijd kan iemands dag helemaal goed maken.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12.75 3.03v.568c0 .334.148.65.405.864l1.068.89c.442.369.535 1.01.216 1.49l-.51.766a2.25 2.25 0 0 1-1.161.886l-.143.048a1.107 1.107 0 0 0-.57 1.664c.369.555.169 1.307-.427 1.605L9 13.125l.423 1.059a.956.956 0 0 1-1.652.928l-.679-.906a1.125 1.125 0 0 0-1.906.172L4.5 15.75l-.612.153M12.75 3.031a9 9 0 1 0 6.69 14.036m-6.69-14.036a8.963 8.963 0 0 1 2.555-.568A9 9 0 0 1 21 12c0 .778-.099 1.533-.284 2.253" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-warm-900">Beter voor de planeet</h3>
-                    <p className="text-sm text-warm-500">Elke portie die gedeeld wordt is voedsel dat niet verspild wordt.</p>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
@@ -335,23 +288,23 @@ export function HowItWorks() {
           data-animate
         >
           <h2 className="animate-target mb-4 text-3xl font-extrabold text-white">
-            Klaar om mee te doen?
+            {content.cta.heading}
           </h2>
           <p className="animate-target mb-8 text-lg text-brand-100">
-            Samen zorgen we ervoor dat minder eten in de prullenbak belandt.
+            {content.cta.subheading}
           </p>
           <div className="animate-target flex flex-wrap items-center justify-center gap-4">
             <a
-              href="/browse"
+              href={content.cta.primaryCta.href}
               className="rounded-xl bg-white px-8 py-4 text-lg font-bold text-brand-600 shadow-button transition-all duration-150 hover:bg-brand-50 active:scale-[0.97] active:bg-brand-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
             >
-              Bekijk het aanbod
+              {content.cta.primaryCta.label}
             </a>
             <a
-              href="/signup"
+              href={content.cta.secondaryCta.href}
               className="rounded-xl border-2 border-white/80 px-8 py-4 text-lg font-bold text-white transition-all duration-150 hover:bg-white/10 active:scale-[0.97] active:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
             >
-              Maak een account
+              {content.cta.secondaryCta.label}
             </a>
           </div>
         </div>

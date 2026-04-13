@@ -66,8 +66,14 @@ export default async function DishesPage() {
       <RealtimeRefresh table="dishes" filter={`merchant_id=eq.${merchant.id}`} />
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-extrabold text-warm-900">Mijn gerechten</h1>
-        <Link href="/aanbieder/dishes/new">
-          <Button variant="primary">+ Nieuw gerecht</Button>
+        <Link
+          href="/aanbieder/dishes/new"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-500 p-2.5 text-sm font-bold text-white shadow-button transition-all duration-150 hover:bg-brand-600 active:scale-[0.97] sm:px-5"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 sm:h-4 sm:w-4">
+            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+          </svg>
+          <span className="hidden sm:inline">Nieuw gerecht</span>
         </Link>
       </div>
 

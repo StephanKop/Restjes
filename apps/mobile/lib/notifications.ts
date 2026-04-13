@@ -1,6 +1,7 @@
 import { Platform } from 'react-native'
 import * as Notifications from 'expo-notifications'
 import * as Device from 'expo-device'
+import Constants from 'expo-constants'
 import { router } from 'expo-router'
 import { supabase } from './supabase'
 
@@ -33,7 +34,10 @@ export async function registerForPushNotifications(userId: string) {
   }
 
   // Get the Expo push token
-  const tokenData = await Notifications.getExpoPushTokenAsync()
+  const projectId = Constants.expoConfig?.extra?.eas?.projectId
+  const tokenData = await Notifications.getExpoPushTokenAsync(
+    projectId ? { projectId } : undefined
+  )
   const token = tokenData.data
 
   // Upsert the token to the database
