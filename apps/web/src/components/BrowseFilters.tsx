@@ -18,6 +18,8 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
 
   const vegetarian = searchParams.get('vegetarian') === '1'
   const vegan = searchParams.get('vegan') === '1'
+  const frozen = searchParams.get('frozen') === '1'
+  const fresh = searchParams.get('fresh') === '1'
   const excludedAllergens = searchParams.get('allergens')?.split(',').filter(Boolean) ?? []
   const hasLocation = searchParams.has('lat') && searchParams.has('lng')
   const currentRadius = searchParams.get('radius') ?? '5'
@@ -273,6 +275,35 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
             />
             <span className={vegan ? 'font-semibold text-warm-800' : 'text-warm-600'}>
               Veganistisch
+            </span>
+          </label>
+        </div>
+      </div>
+
+      {/* Frozen / Fresh */}
+      <div>
+        <p className="mb-2 text-sm font-semibold text-warm-700">Bewaring</p>
+        <div className="space-y-2">
+          <label className="flex cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-warm-50">
+            <input
+              type="checkbox"
+              checked={fresh}
+              onChange={() => updateParams({ fresh: fresh ? null : '1' })}
+              className="h-4 w-4 rounded border-warm-300 text-brand-500 focus:ring-brand-400"
+            />
+            <span className={fresh ? 'font-semibold text-warm-800' : 'text-warm-600'}>
+              Vers
+            </span>
+          </label>
+          <label className="flex cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-warm-50">
+            <input
+              type="checkbox"
+              checked={frozen}
+              onChange={() => updateParams({ frozen: frozen ? null : '1' })}
+              className="h-4 w-4 rounded border-warm-300 text-brand-500 focus:ring-brand-400"
+            />
+            <span className={frozen ? 'font-semibold text-warm-800' : 'text-warm-600'}>
+              Ingevroren
             </span>
           </label>
         </div>

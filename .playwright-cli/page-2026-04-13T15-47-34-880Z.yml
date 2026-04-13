@@ -1,0 +1,176 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - link "Kliekjesclub" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img "Kliekjesclub" [ref=e6]
+        - navigation [ref=e7]:
+          - link "Ontdekken" [ref=e8] [cursor=pointer]:
+            - /url: /browse
+          - link "Mijn aanbod" [ref=e9] [cursor=pointer]:
+            - /url: /aanbieder/dishes
+          - link "Reserveringen" [ref=e10] [cursor=pointer]:
+            - /url: /reservations
+          - link "Berichten" [ref=e11] [cursor=pointer]:
+            - /url: /messages
+          - link "Inloggen" [ref=e12] [cursor=pointer]:
+            - /url: /login
+          - link "Aanmelden" [ref=e13] [cursor=pointer]:
+            - /url: /signup
+    - main [ref=e14]:
+      - generic [ref=e17]:
+        - heading "Deel je kliekjes, maak iemand blij" [level=1] [ref=e18]:
+          - text: Deel je kliekjes,
+          - text: maak iemand blij
+        - paragraph [ref=e19]: Heb je eten over? Zonde om weg te gooien! Via Kliekjesclub deel je jouw overgebleven gerechten met mensen in de buurt. Samen maken we voedselverspilling een stuk leuker.
+        - generic [ref=e20]:
+          - link "Bekijk beschikbare gerechten" [ref=e21] [cursor=pointer]:
+            - /url: /browse
+          - link "Zelf kliekjes aanbieden" [ref=e22] [cursor=pointer]:
+            - /url: /aanbieder/dishes
+    - generic [ref=e23]:
+      - generic [ref=e25]:
+        - generic [ref=e26]:
+          - paragraph [ref=e27]:
+            - generic [ref=e28]: 11%
+          - paragraph [ref=e29]: van voedsel wordt verspild in Nederland
+        - generic [ref=e30]:
+          - paragraph [ref=e31]:
+            - generic [ref=e32]: €209
+          - paragraph [ref=e33]: gooit een gemiddeld huishouden per jaar weg
+        - generic [ref=e34]:
+          - paragraph [ref=e35]:
+            - generic [ref=e36]: 0,-
+          - paragraph [ref=e37]: het kost je niks om mee te doen
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - paragraph [ref=e41]: Zo simpel is het
+          - heading "Hoe werkt Kliekjesclub?" [level=2] [ref=e42]
+        - generic [ref=e45]:
+          - generic [ref=e46]:
+            - generic [ref=e48]:
+              - img [ref=e50]
+              - heading "Restje plaatsen" [level=3] [ref=e53]
+              - paragraph [ref=e54]: Heb je eten over? Maak een foto, voeg een beschrijving toe en plaats het in een paar seconden.
+              - paragraph [ref=e55]: Gratis en zonder verplichtingen
+            - generic [ref=e57]: "1"
+          - generic [ref=e58]:
+            - generic [ref=e60]:
+              - img [ref=e62]
+              - heading "Ontdekken & reserveren" [level=3] [ref=e64]
+              - paragraph [ref=e65]: Mensen in de buurt zien jouw restje op de kaart en kunnen het met een tik reserveren.
+              - paragraph [ref=e66]: Filter op afstand, dieet en allergenen
+            - generic [ref=e68]: "2"
+          - generic [ref=e69]:
+            - generic [ref=e71]:
+              - img [ref=e73]
+              - heading "Even overleggen" [level=3] [ref=e75]
+              - paragraph [ref=e76]: Chat direct met de aanbieder om een ophaaltijd af te spreken die voor jullie allebei werkt.
+              - paragraph [ref=e77]: Ingebouwde chat, geen telefoonnummer nodig
+            - generic [ref=e79]: "3"
+          - generic [ref=e80]:
+            - generic [ref=e82]:
+              - img [ref=e84]
+              - heading "Ophalen & genieten" [level=3] [ref=e86]
+              - paragraph [ref=e87]: Loop even langs om de hoek, haal je maaltijd op en geniet! Laat daarna een beoordeling achter.
+              - paragraph [ref=e88]: Samen tegen voedselverspilling
+            - generic [ref=e90]: "4"
+      - generic [ref=e93]:
+        - img "Buren die eten delen" [ref=e96]
+        - generic [ref=e98]:
+          - paragraph [ref=e99]: Meer dan eten delen
+          - heading "Verbind met je buren" [level=2] [ref=e100]
+          - paragraph [ref=e101]: Kliekjesclub gaat verder dan alleen voedselverspilling tegengaan. Het is een manier om je buren te leren kennen, een praatje te maken aan de deur en samen te zorgen voor een hechte buurt.
+          - generic [ref=e102]:
+            - generic [ref=e103]:
+              - img [ref=e105]
+              - generic [ref=e107]:
+                - heading "Leer je buren kennen" [level=3] [ref=e108]
+                - paragraph [ref=e109]: Een bakje eten is het begin van een nieuw contact om de hoek.
+            - generic [ref=e110]:
+              - img [ref=e112]
+              - generic [ref=e114]:
+                - heading "Maak iemand blij" [level=3] [ref=e115]
+                - paragraph [ref=e116]: Een warme maaltijd kan iemands dag helemaal goed maken.
+            - generic [ref=e117]:
+              - img [ref=e119]
+              - generic [ref=e121]:
+                - heading "Beter voor de planeet" [level=3] [ref=e122]
+                - paragraph [ref=e123]: Elke portie die gedeeld wordt is voedsel dat niet verspild wordt.
+      - generic [ref=e125]:
+        - heading "Klaar om mee te doen?" [level=2] [ref=e126]
+        - paragraph [ref=e127]: Samen zorgen we ervoor dat minder eten in de prullenbak belandt.
+        - generic [ref=e128]:
+          - link "Bekijk het aanbod" [ref=e129] [cursor=pointer]:
+            - /url: /browse
+          - link "Maak een account" [ref=e130] [cursor=pointer]:
+            - /url: /signup
+    - contentinfo [ref=e131]:
+      - generic [ref=e132]:
+        - generic [ref=e133]:
+          - generic [ref=e134]:
+            - link "Kliekjesclub" [ref=e135] [cursor=pointer]:
+              - /url: /
+              - img "Kliekjesclub" [ref=e136]
+            - paragraph [ref=e137]: Kliekjesclub verbindt mensen die eten over hebben met mensen die er blij mee zijn. Samen tegen voedselverspilling!
+            - generic [ref=e138]:
+              - link "Instagram" [ref=e139] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e140]
+              - link "Facebook" [ref=e142] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e143]
+              - link "TikTok" [ref=e145] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e146]
+              - link "LinkedIn" [ref=e148] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e149]
+          - generic [ref=e151]:
+            - heading "Navigatie" [level=3] [ref=e152]
+            - list [ref=e153]:
+              - listitem [ref=e154]:
+                - link "Ontdekken" [ref=e155] [cursor=pointer]:
+                  - /url: /browse
+              - listitem [ref=e156]:
+                - link "Reserveringen" [ref=e157] [cursor=pointer]:
+                  - /url: /reservations
+              - listitem [ref=e158]:
+                - link "Berichten" [ref=e159] [cursor=pointer]:
+                  - /url: /messages
+              - listitem [ref=e160]:
+                - link "Mijn aanbod" [ref=e161] [cursor=pointer]:
+                  - /url: /aanbieder/dishes
+          - generic [ref=e162]:
+            - heading "Informatie" [level=3] [ref=e163]
+            - list [ref=e164]:
+              - listitem [ref=e165]:
+                - link "Over ons" [ref=e166] [cursor=pointer]:
+                  - /url: /about
+              - listitem [ref=e167]:
+                - link "Veelgestelde vragen" [ref=e168] [cursor=pointer]:
+                  - /url: /faq
+              - listitem [ref=e169]:
+                - link "Contact" [ref=e170] [cursor=pointer]:
+                  - /url: /contact
+              - listitem [ref=e171]:
+                - link "Privacybeleid" [ref=e172] [cursor=pointer]:
+                  - /url: /privacy
+              - listitem [ref=e173]:
+                - link "Algemene voorwaarden" [ref=e174] [cursor=pointer]:
+                  - /url: /terms
+          - generic [ref=e175]:
+            - heading "Blijf op de hoogte" [level=3] [ref=e176]
+            - paragraph [ref=e177]: Schrijf je in voor onze nieuwsbrief en ontvang updates over nieuwe functies en aanbiedingen.
+            - generic [ref=e178]:
+              - textbox "E-mailadres" [ref=e179]
+              - button "Aanmelden" [ref=e180] [cursor=pointer]
+        - generic [ref=e181]:
+          - paragraph [ref=e182]: © 2026 Kliekjesclub.nl — Samen tegen voedselverspilling.
+          - generic [ref=e183]:
+            - link "Privacy" [ref=e184] [cursor=pointer]:
+              - /url: /privacy
+            - link "Voorwaarden" [ref=e185] [cursor=pointer]:
+              - /url: /terms
+  - alert [ref=e186]

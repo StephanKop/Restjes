@@ -1,0 +1,138 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - link "Kliekjesclub" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img "Kliekjesclub" [ref=e6]
+        - navigation [ref=e7]:
+          - link "Ontdekken" [ref=e8] [cursor=pointer]:
+            - /url: /browse
+          - link "Mijn aanbod" [ref=e9] [cursor=pointer]:
+            - /url: /aanbieder/dishes
+          - link "Reserveringen" [ref=e10] [cursor=pointer]:
+            - /url: /reservations
+          - link "Berichten" [ref=e11] [cursor=pointer]:
+            - /url: /messages
+          - link "Inloggen" [ref=e12] [cursor=pointer]:
+            - /url: /login
+          - link "Aanmelden" [ref=e13] [cursor=pointer]:
+            - /url: /signup
+    - main [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e18]:
+          - img [ref=e21]
+          - generic [ref=e23]:
+            - generic [ref=e24]:
+              - heading "Stephan Kop" [level=1] [ref=e25]
+              - img [ref=e26]
+            - paragraph [ref=e28]: Prinses marijkestraat 33, 2404BA Alphen aan den Rijn
+            - generic [ref=e29]:
+              - generic [ref=e30]:
+                - generic [ref=e31]: ★
+                - generic [ref=e32]: ★
+                - generic [ref=e33]: ★
+                - generic [ref=e34]: ★
+                - generic [ref=e35]: ★
+              - generic [ref=e36]: "0.0"
+              - generic [ref=e37]: (0 beoordelingen)
+        - generic [ref=e38]:
+          - heading "Beschikbare gerechten" [level=2] [ref=e39]
+          - generic [ref=e40]:
+            - link "Pasta pesto Pasta pesto Stephan Kop · Alphen aan den Rijn Vandaag 16:00 - 18:00 Eigen bakje 1 allergeen Nog 1 beschikbaar" [ref=e41] [cursor=pointer]:
+              - /url: /dish/1c9c46a5-5292-4ad8-84dd-a36db0420c59
+              - img "Pasta pesto" [ref=e43]
+              - generic [ref=e44]:
+                - heading "Pasta pesto" [level=3] [ref=e45]
+                - paragraph [ref=e46]: Stephan Kop · Alphen aan den Rijn
+                - paragraph [ref=e47]:
+                  - img [ref=e48]
+                  - text: Vandaag 16:00 - 18:00
+                - generic [ref=e50]:
+                  - generic [ref=e51]: Eigen bakje
+                  - generic [ref=e52]: 1 allergeen
+                - paragraph [ref=e53]: Nog 1 beschikbaar
+            - link "Pizza margaritha Pizza margaritha Stephan Kop · Alphen aan den Rijn Vandaag 16:00 - 18:00 Eigen bakje 1 allergeen Nog 1 beschikbaar" [ref=e54] [cursor=pointer]:
+              - /url: /dish/5623e89c-164b-44a9-a1c7-f6e015b868d3
+              - img "Pizza margaritha" [ref=e56]
+              - generic [ref=e57]:
+                - heading "Pizza margaritha" [level=3] [ref=e58]
+                - paragraph [ref=e59]: Stephan Kop · Alphen aan den Rijn
+                - paragraph [ref=e60]:
+                  - img [ref=e61]
+                  - text: Vandaag 16:00 - 18:00
+                - generic [ref=e63]:
+                  - generic [ref=e64]: Eigen bakje
+                  - generic [ref=e65]: 1 allergeen
+                - paragraph [ref=e66]: Nog 1 beschikbaar
+        - generic [ref=e67]:
+          - heading "Beoordelingen" [level=2] [ref=e69]
+          - paragraph [ref=e71]: Nog geen beoordelingen
+    - contentinfo [ref=e72]:
+      - generic [ref=e73]:
+        - generic [ref=e74]:
+          - generic [ref=e75]:
+            - link "Kliekjesclub" [ref=e76] [cursor=pointer]:
+              - /url: /
+              - img "Kliekjesclub" [ref=e77]
+            - paragraph [ref=e78]: Kliekjesclub verbindt mensen die eten over hebben met mensen die er blij mee zijn. Samen tegen voedselverspilling!
+            - generic [ref=e79]:
+              - link "Instagram" [ref=e80] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e81]
+              - link "Facebook" [ref=e83] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e84]
+              - link "TikTok" [ref=e86] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e87]
+              - link "LinkedIn" [ref=e89] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e90]
+          - generic [ref=e92]:
+            - heading "Navigatie" [level=3] [ref=e93]
+            - list [ref=e94]:
+              - listitem [ref=e95]:
+                - link "Ontdekken" [ref=e96] [cursor=pointer]:
+                  - /url: /browse
+              - listitem [ref=e97]:
+                - link "Reserveringen" [ref=e98] [cursor=pointer]:
+                  - /url: /reservations
+              - listitem [ref=e99]:
+                - link "Berichten" [ref=e100] [cursor=pointer]:
+                  - /url: /messages
+              - listitem [ref=e101]:
+                - link "Mijn aanbod" [ref=e102] [cursor=pointer]:
+                  - /url: /aanbieder/dishes
+          - generic [ref=e103]:
+            - heading "Informatie" [level=3] [ref=e104]
+            - list [ref=e105]:
+              - listitem [ref=e106]:
+                - link "Over ons" [ref=e107] [cursor=pointer]:
+                  - /url: /about
+              - listitem [ref=e108]:
+                - link "Veelgestelde vragen" [ref=e109] [cursor=pointer]:
+                  - /url: /faq
+              - listitem [ref=e110]:
+                - link "Contact" [ref=e111] [cursor=pointer]:
+                  - /url: /contact
+              - listitem [ref=e112]:
+                - link "Privacybeleid" [ref=e113] [cursor=pointer]:
+                  - /url: /privacy
+              - listitem [ref=e114]:
+                - link "Algemene voorwaarden" [ref=e115] [cursor=pointer]:
+                  - /url: /terms
+          - generic [ref=e116]:
+            - heading "Blijf op de hoogte" [level=3] [ref=e117]
+            - paragraph [ref=e118]: Schrijf je in voor onze nieuwsbrief en ontvang updates over nieuwe functies en aanbiedingen.
+            - generic [ref=e119]:
+              - textbox "E-mailadres" [ref=e120]
+              - button "Aanmelden" [ref=e121] [cursor=pointer]
+        - generic [ref=e122]:
+          - paragraph [ref=e123]: © 2026 Kliekjesclub.nl — Samen tegen voedselverspilling.
+          - generic [ref=e124]:
+            - link "Privacy" [ref=e125] [cursor=pointer]:
+              - /url: /privacy
+            - link "Voorwaarden" [ref=e126] [cursor=pointer]:
+              - /url: /terms
+  - alert [ref=e127]

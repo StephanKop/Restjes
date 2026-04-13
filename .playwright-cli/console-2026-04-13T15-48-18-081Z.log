@@ -1,0 +1,9 @@
+[    1125ms] Error: Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+    at rD (https://www.kliekjesclub.nl/_next/static/chunks/47eccc2d-29c666e379ccf6ab.js:1:35055)
+    at https://www.kliekjesclub.nl/_next/static/chunks/47eccc2d-29c666e379ccf6ab.js:1:119644
+    at ix (https://www.kliekjesclub.nl/_next/static/chunks/47eccc2d-29c666e379ccf6ab.js:1:122948)
+    at ik (https://www.kliekjesclub.nl/_next/static/chunks/47eccc2d-29c666e379ccf6ab.js:1:114736)
+    at https://www.kliekjesclub.nl/_next/static/chunks/47eccc2d-29c666e379ccf6ab.js:1:110723
+    at iu (https://www.kliekjesclub.nl/_next/static/chunks/47eccc2d-29c666e379ccf6ab.js:1:110824)
+    at iX (https://www.kliekjesclub.nl/_next/static/chunks/47eccc2d-29c666e379ccf6ab.js:1:132927)
+    at MessagePort.w (https://www.kliekjesclub.nl/_next/static/chunks/2585-54c4aa402653d38f.js:1:11532)

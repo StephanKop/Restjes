@@ -46,6 +46,10 @@ body {
   color: var(--color-warm-800);
 }
 
+input[type="checkbox"] {
+  accent-color: var(--color-brand-500);
+}
+
 button,
 [role="button"],
 a,

@@ -24,6 +24,8 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   const city = typeof params.city === 'string' ? params.city : undefined
   const vegetarian = params.vegetarian === '1'
   const vegan = params.vegan === '1'
+  const frozen = params.frozen === '1'
+  const fresh = params.fresh === '1'
   const excludeAllergens =
     typeof params.allergens === 'string'
       ? params.allergens.split(',').filter(Boolean)
@@ -120,6 +122,14 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
     query = query.eq('is_vegan', true)
   }
 
+  if (frozen) {
+    query = query.eq('is_frozen', true)
+  }
+
+  if (fresh) {
+    query = query.eq('is_frozen', false)
+  }
+
   // If location filter is active but no dishes are in range, skip the query
   const noNearbyResults = nearbyDishIds !== null && nearbyDishIds.length === 0
   const { data: dishes, error } = noNearbyResults
@@ -192,7 +202,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
                 </svg>
                 Filters
-                {(filterCity || hasLocation || vegetarian || vegan || excludeAllergens.length > 0) && (
+                {(filterCity || hasLocation || vegetarian || vegan || frozen || fresh || excludeAllergens.length > 0) && (
                   <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-100 px-1.5 text-[10px] font-bold text-brand-700">
                     !
                   </span>
