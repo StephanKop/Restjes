@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { Nunito } from 'next/font/google'
 import { NavigationProgress } from '@/components/NavigationProgress'
 import { ScrollReveal } from '@/components/ScrollReveal'
@@ -45,6 +46,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="nl" className={nunito.variable}>
+      <head>
+        <Script id="microsoft-clarity" strategy="beforeInteractive">
+          {`(function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+          })(window, document, "clarity", "script", "wbotmzule1");`}
+        </Script>
+      </head>
       <body suppressHydrationWarning className="min-h-screen bg-offwhite text-warm-800 antialiased">
         <Suspense>
           <NavigationProgress />
