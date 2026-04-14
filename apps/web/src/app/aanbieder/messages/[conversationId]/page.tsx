@@ -53,7 +53,7 @@ export default async function MerchantConversationPage({
     .single()
 
   if (!merchant) {
-    redirect('/profile')
+    redirect('/aanbieder/profile?setup=aanbieder')
   }
 
   const { data: conversation } = await supabase

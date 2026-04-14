@@ -24,7 +24,7 @@ export default async function AanbiederReviewsPage() {
     .single()
 
   if (!merchant) {
-    redirect('/profile')
+    redirect('/aanbieder/profile?setup=aanbieder')
   }
 
   const { data: reviews } = await supabase

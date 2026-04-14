@@ -26,7 +26,10 @@ export function NotificationBell({ userId, merchantId, initialCount, initialItem
   const [open, setOpen] = useState(false)
   const [count, setCount] = useState(initialCount)
   const [items, setItems] = useState(initialItems)
+  const [permission, setPermission] = useState<NotificationPermission>('default')
   const ref = useRef<HTMLDivElement>(null)
+  const knownIds = useRef<Set<string>>(new Set())
+  const initialized = useRef(false)
 
   const supabase = useMemo(
     () => createBrowserClient(
@@ -35,6 +38,36 @@ export function NotificationBell({ userId, merchantId, initialCount, initialItem
     ),
     [],
   )
+
+  // Check browser notification permission on mount
+  useEffect(() => {
+    if ('Notification' in window) {
+      setPermission(Notification.permission)
+    }
+  }, [])
+
+  const requestPermission = async () => {
+    if (!('Notification' in window)) return
+    const result = await window.Notification.requestPermission()
+    setPermission(result)
+  }
+
+  const showBrowserNotification = useCallback((item: Notification) => {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return
+    // Don't show if the tab is focused and the bell is open
+    if (document.hasFocus() && open) return
+
+    const n = new window.Notification(item.title, {
+      body: item.body,
+      icon: '/favicon.png',
+      tag: item.id,
+    })
+    n.onclick = () => {
+      window.focus()
+      window.location.href = item.href
+      n.close()
+    }
+  }, [open])
 
   // Close on outside click
   useEffect(() => {
@@ -169,12 +202,27 @@ export function NotificationBell({ userId, merchantId, initialCount, initialItem
     notifications.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
     const top = notifications.slice(0, 10)
 
+    // Show browser notifications for new unread items (skip the initial fetch)
+    if (initialized.current) {
+      for (const item of top) {
+        if (!item.read && !knownIds.current.has(item.id)) {
+          showBrowserNotification(item)
+        }
+      }
+    }
+
+    // Update known IDs
+    knownIds.current = new Set(top.map((n) => n.id))
+    initialized.current = true
+
     setItems(top)
     setCount(top.filter((n) => !n.read).length)
-  }, [userId, supabase])
+  }, [userId, supabase, showBrowserNotification])
 
   // Subscribe to realtime events and re-fetch
   useEffect(() => {
+    fetchNotifications()
+
     const channel = supabase
       .channel('nav-notifications')
       .on(
@@ -290,6 +338,22 @@ export function NotificationBell({ userId, merchantId, initialCount, initialItem
                   </div>
                 </Link>
               ))}
+            </div>
+          )}
+
+          {/* Browser notification permission prompt */}
+          {permission === 'default' && (
+            <div className="border-t border-warm-100 px-4 py-3">
+              <button
+                type="button"
+                onClick={requestPermission}
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand-50 px-3 py-2 text-xs font-semibold text-brand-700 transition-colors hover:bg-brand-100"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                  <path fillRule="evenodd" d="M10 2a6 6 0 0 0-6 6c0 1.887-.454 3.665-1.257 5.234a.75.75 0 0 0 .515 1.076 32.91 32.91 0 0 0 3.256.508 3.5 3.5 0 0 0 6.972 0 32.903 32.903 0 0 0 3.256-.508.75.75 0 0 0 .515-1.076A11.448 11.448 0 0 1 16 8a6 6 0 0 0-6-6ZM8.05 14.943a33.54 33.54 0 0 0 3.9 0 2 2 0 0 1-3.9 0Z" clipRule="evenodd" />
+                </svg>
+                Browsermeldingen inschakelen
+              </button>
             </div>
           )}
         </div>

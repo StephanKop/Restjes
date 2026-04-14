@@ -100,6 +100,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
     )
     .eq('status', 'available')
     .gt('quantity_available', 0)
+    .or(`pickup_end.gt.${new Date().toISOString()},pickup_end.is.null`)
     .order('pickup_start', { ascending: true })
 
   if (nearbyDishIds !== null && nearbyDishIds.length > 0) {

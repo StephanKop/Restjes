@@ -22,7 +22,7 @@ export default async function NewDishPage() {
     .single()
 
   if (!merchant) {
-    redirect('/profile')
+    redirect('/aanbieder/profile?setup=aanbieder')
   }
 
   return (

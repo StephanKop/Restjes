@@ -1,0 +1,35 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - link "Kliekjesclub" [ref=e5] [cursor=pointer]:
+      - /url: /
+      - img "Kliekjesclub" [ref=e6]
+    - generic [ref=e7]:
+      - heading "Welkom terug!" [level=1] [ref=e8]
+      - button "Doorgaan met Google" [ref=e10] [cursor=pointer]:
+        - img [ref=e11]
+        - text: Doorgaan met Google
+      - generic [ref=e20]: of met e-mail
+      - generic [ref=e21]:
+        - generic [ref=e22]:
+          - generic [ref=e23]: E-mailadres
+          - textbox "E-mailadres" [ref=e24]:
+            - /placeholder: jouw@email.nl
+            - text: stephan.kop@outlook.com
+        - generic [ref=e25]:
+          - generic [ref=e26]: Wachtwoord
+          - textbox "Wachtwoord" [ref=e27]:
+            - /placeholder: Je wachtwoord
+            - text: Test1234!
+        - paragraph [ref=e44]: Onjuist e-mailadres of wachtwoord.
+        - button "Inloggen" [ref=e28] [cursor=pointer]
+      - generic [ref=e29]:
+        - paragraph [ref=e30]:
+          - link "Wachtwoord vergeten?" [ref=e31] [cursor=pointer]:
+            - /url: /forgot-password
+        - paragraph [ref=e32]:
+          - text: Nog geen account?
+          - link "Aanmelden" [ref=e33] [cursor=pointer]:
+            - /url: /signup
+  - button "Open Next.js Dev Tools" [ref=e39] [cursor=pointer]:
+    - img [ref=e40]
+  - alert [ref=e43]

@@ -2,14 +2,12 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { SocialAuthButtons } from '@/components/SocialAuthButtons'
 
 export default function LoginPage() {
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -45,7 +43,7 @@ export default function LoginPage() {
       return
     }
 
-    router.push('/browse')
+    window.location.href = '/browse'
   }
 
   return (

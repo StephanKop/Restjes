@@ -109,52 +109,62 @@ export function ReviewPromptBanner() {
           : '-translate-y-2 opacity-0'
       }`}
     >
-      <div className="flex items-center gap-4 p-4 sm:p-5">
-        {/* Dish image */}
-        <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-warm-100">
-          {reservation.dish.image_url ? (
-            <Image
-              src={reservation.dish.image_url}
-              alt={reservation.dish.title}
-              fill
-              className="object-cover"
-              sizes="64px"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-warm-300">
-              <CookingPotIcon className="h-6 w-6" />
-            </div>
-          )}
-        </div>
+      <div className="relative p-4 sm:p-5">
+        {/* Dismiss button */}
+        <button
+          onClick={handleDismiss}
+          className="absolute right-3 top-3 rounded-lg p-1.5 text-warm-400 transition-colors hover:bg-warm-50 hover:text-warm-600"
+          aria-label="Sluiten"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
+            <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+          </svg>
+        </button>
 
-        {/* Text */}
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-bold text-warm-900">
-            Hoe was {reservation.dish.title}?
-          </p>
-          <p className="text-sm text-warm-500">
-            Opgehaald bij {reservation.merchant.business_name} — laat een beoordeling achter!
-          </p>
-        </div>
+        <div className="flex items-center gap-4 pr-8 sm:pr-0">
+          {/* Dish image */}
+          <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-warm-100">
+            {reservation.dish.image_url ? (
+              <Image
+                src={reservation.dish.image_url}
+                alt={reservation.dish.title}
+                fill
+                className="object-cover"
+                sizes="64px"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center text-warm-300">
+                <CookingPotIcon className="h-6 w-6" />
+              </div>
+            )}
+          </div>
 
-        {/* Actions */}
-        <div className="flex flex-shrink-0 items-center gap-2">
-          <button
-            onClick={handleDismiss}
-            className="rounded-lg p-2 text-warm-400 transition-colors hover:bg-warm-50 hover:text-warm-600"
-            aria-label="Sluiten"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
-              <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
-            </svg>
-          </button>
+          {/* Text */}
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-bold text-warm-900">
+              Hoe was {reservation.dish.title}?
+            </p>
+            <p className="text-sm text-warm-500">
+              Opgehaald bij {reservation.merchant.business_name} — laat een beoordeling achter!
+            </p>
+          </div>
+
+          {/* Desktop CTA */}
           <Link
             href={`/review/${reservation.id}`}
-            className="rounded-xl bg-brand-500 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-brand-600 active:scale-[0.97]"
+            className="hidden flex-shrink-0 rounded-xl bg-brand-500 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-brand-600 active:scale-[0.97] sm:inline-flex"
           >
             Beoordelen
           </Link>
         </div>
+
+        {/* Mobile CTA */}
+        <Link
+          href={`/review/${reservation.id}`}
+          className="mt-3 flex w-full items-center justify-center rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand-600 active:scale-[0.97] sm:hidden"
+        >
+          Beoordelen
+        </Link>
       </div>
     </div>
   )
