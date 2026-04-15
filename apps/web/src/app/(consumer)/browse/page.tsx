@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
+import Image from 'next/image'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { BrowseFilters } from '@/components/BrowseFilters'
 import { BrowseResults } from '@/components/BrowseResults'
@@ -221,6 +223,65 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
           <BrowseResults dishes={cards} />
         </div>
       </div>
+
+      {/* CTA section */}
+      <BrowseCta />
     </div>
+  )
+}
+
+async function BrowseCta() {
+  const user = await getUser()
+
+  return (
+    <section className="mt-12 overflow-hidden rounded-2xl bg-white shadow-card">
+      <div className="flex flex-col sm:flex-row">
+        <div className="relative aspect-[4/3] sm:aspect-auto sm:w-2/5">
+          <Image
+            src="/cta-section.png"
+            alt="Iemand deelt een zelfgemaakt gerecht bij de voordeur"
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 100vw, 40vw"
+          />
+        </div>
+        <div className="flex flex-1 flex-col justify-center p-8 sm:p-10">
+          {user ? (
+            <>
+              <h2 className="mb-3 text-2xl font-extrabold text-warm-900">
+                Heb je iets lekkers over?
+              </h2>
+              <p className="mb-6 text-warm-500">
+                Maak iemand blij met je kliekjes! Plaats je gerecht in een paar stappen en help mee tegen voedselverspilling in jouw buurt.
+              </p>
+              <Link
+                href="/aanbieder/dishes/new"
+                className="inline-flex w-fit items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 font-bold text-white shadow-button transition-all duration-150 hover:bg-brand-600 active:scale-[0.97]"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
+                  <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                </svg>
+                Gerecht plaatsen
+              </Link>
+            </>
+          ) : (
+            <>
+              <h2 className="mb-3 text-2xl font-extrabold text-warm-900">
+                Doe mee met de Kliekjesclub
+              </h2>
+              <p className="mb-6 text-warm-500">
+                Deel je kliekjes met buren of ontdek heerlijke gerechten bij jou in de buurt. Samen maken we voedselverspilling een stuk leuker.
+              </p>
+              <Link
+                href="/signup"
+                className="inline-flex w-fit rounded-xl bg-brand-500 px-6 py-3 font-bold text-white shadow-button transition-all duration-150 hover:bg-brand-600 active:scale-[0.97]"
+              >
+                Gratis aanmelden
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+    </section>
   )
 }

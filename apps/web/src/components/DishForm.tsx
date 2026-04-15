@@ -26,6 +26,14 @@ const ALLERGEN_LABELS: Record<string, string> = {
 
 const ALL_ALLERGENS = Object.keys(ALLERGEN_LABELS)
 
+const CHECKBOX = "h-5 w-5 flex-shrink-0 cursor-pointer appearance-none rounded-lg border-2 border-warm-300 bg-white transition-colors checked:border-brand-500 checked:bg-brand-500 checked:bg-[url('data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22white%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M12.207%204.793a1%201%200%20010%201.414l-5%205a1%201%200%2001-1.414%200l-2.5-2.5a1%201%200%20011.414-1.414L6.5%209.086l4.293-4.293a1%201%200%20011.414%200z%22%2F%3E%3C%2Fsvg%3E')] checked:bg-center checked:bg-no-repeat focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2"
+
+const STEPS = [
+  { label: 'Gerecht', shortLabel: 'Gerecht' },
+  { label: 'Ophalen', shortLabel: 'Ophalen' },
+  { label: 'Details', shortLabel: 'Details' },
+] as const
+
 interface DishData {
   id: string
   title: string
@@ -61,6 +69,8 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  const [step, setStep] = useState(0)
+
   const [title, setTitle] = useState(initialData?.title ?? '')
   const [description, setDescription] = useState(initialData?.description ?? '')
   const [quantity, setQuantity] = useState(initialData?.quantity_available ?? 1)
@@ -79,21 +89,33 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
 
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(initialData?.image_url ?? null)
+  const [dragging, setDragging] = useState(false)
 
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [tried, setTried] = useState(false)
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   )
 
+  function processFile(file: File) {
+    if (!file.type.startsWith('image/')) return
+    setImageFile(file)
+    setImagePreview(URL.createObjectURL(file))
+  }
+
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
-    if (!file) return
-    setImageFile(file)
-    const url = URL.createObjectURL(file)
-    setImagePreview(url)
+    if (file) processFile(file)
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault()
+    setDragging(false)
+    const file = e.dataTransfer.files[0]
+    if (file) processFile(file)
   }
 
   function addIngredient(e: KeyboardEvent<HTMLInputElement>) {
@@ -116,34 +138,61 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
     )
   }
 
-  function validate(): boolean {
+  const hasImage = !!(imagePreview || imageFile)
+  const step0Complete = !!title.trim() && hasImage
+
+  function validateStep(s: number): boolean {
     const errs: Record<string, string> = {}
-    if (!title.trim()) errs.title = 'Titel is verplicht'
-    if (quantity < 1) errs.quantity = 'Minimaal 1'
-    if (!isFrozen && !expiresAt) errs.expiresAt = 'Houdbaarheidsdatum is verplicht voor verse gerechten'
-    if (!autoExpire) errs.autoExpire = 'Je moet akkoord gaan met automatisch verlopen'
+
+    if (s === 0) {
+      if (!title.trim()) errs.title = 'Titel is verplicht'
+      if (!hasImage) errs.image = 'Foto is verplicht'
+    }
+
+    if (s === 1) {
+      if (quantity < 1) errs.quantity = 'Minimaal 1'
+      if (!pickupStart) errs.pickupStart = 'Ophalen vanaf is verplicht'
+      if (!isFrozen && !expiresAt) errs.expiresAt = 'Houdbaarheidsdatum is verplicht voor verse gerechten'
+    }
+
+    if (s === 2) {
+      if (!autoExpire) errs.autoExpire = 'Je moet akkoord gaan met automatisch verlopen'
+    }
+
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
 
+  function goNext() {
+    setTried(true)
+    if (!validateStep(step)) return
+    setTried(false)
+    setStep((s) => Math.min(s + 1, STEPS.length - 1))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function goBack() {
+    setTried(false)
+    setErrors({})
+    setStep((s) => Math.max(s - 1, 0))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    if (!validate()) return
+    if (!validateStep(step)) return
 
     setLoading(true)
 
     try {
       let imageUrl = initialData?.image_url ?? null
 
-      // Determine dish ID for storage path
       const dishId = initialData?.id ?? crypto.randomUUID()
 
-      // Upload image if a new file was selected
       if (imageFile) {
         const timestamp = Date.now()
         const filePath = `${merchantId}/${dishId}-${timestamp}.webp`
 
-        // Remove old image if replacing
         if (initialData?.image_url) {
           const oldUrl = new URL(initialData.image_url)
           const oldPathParts = oldUrl.pathname.split('/dish-images/')
@@ -188,7 +237,6 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
 
       if (dishError) throw dishError
 
-      // Delete existing ingredients and allergens, then re-insert
       await supabase.from('dish_ingredients').delete().eq('dish_id', dishId)
       await supabase.from('dish_allergies').delete().eq('dish_id', dishId)
 
@@ -221,49 +269,86 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      {/* Basic info */}
-      <div className="rounded-2xl bg-white p-6 shadow-card">
-        <h2 className="mb-4 text-lg font-bold text-warm-900">Basisgegevens</h2>
-        <div className="space-y-4">
-          <Input
-            label="Titel"
-            placeholder="Bijv. Pasta bolognese"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            error={errors.title}
-            required
-          />
-
-          <div>
-            <label htmlFor="description" className="mb-1.5 block text-sm font-semibold text-warm-800">
-              Beschrijving
-            </label>
-            <textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Beschrijf je gerecht..."
-              rows={3}
-              className="w-full rounded-xl border border-warm-200 bg-white px-4 py-3 text-warm-800 placeholder:text-warm-400 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100"
-            />
-          </div>
-
-          <div>
-            <label className="mb-1.5 block text-sm font-semibold text-warm-800">Foto</label>
-            <div className="flex items-start gap-4">
-              {imagePreview && (
-                <div className="relative h-24 w-24 overflow-hidden rounded-xl border border-warm-200">
-                  <Image
-                    src={imagePreview}
-                    alt="Voorbeeld"
-                    fill
-                    className="object-cover"
-                    sizes="96px"
+    <form onSubmit={handleSubmit}>
+      {/* Progress indicator */}
+      <div className="mb-8">
+        <div className="flex items-center">
+          {STEPS.map((s, i) => (
+            <div key={s.label} className={`flex items-center ${i < STEPS.length - 1 ? 'flex-1' : ''}`}>
+              <div className="flex flex-col items-center">
+                <div
+                  className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-colors ${
+                    i < step
+                      ? 'bg-brand-500 text-white'
+                      : i === step
+                        ? 'bg-brand-500 text-white ring-4 ring-brand-100'
+                        : 'bg-warm-100 text-warm-400'
+                  }`}
+                >
+                  {i < step ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
+                      <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" />
+                    </svg>
+                  ) : (
+                    i + 1
+                  )}
+                </div>
+                <span
+                  className={`mt-1.5 text-xs font-semibold ${
+                    i <= step ? 'text-brand-700' : 'text-warm-400'
+                  }`}
+                >
+                  {s.shortLabel}
+                </span>
+              </div>
+              {i < STEPS.length - 1 && (
+                <div className="mx-3 mb-5 h-0.5 flex-1">
+                  <div
+                    className={`h-full rounded-full transition-colors ${
+                      i < step ? 'bg-brand-500' : 'bg-warm-100'
+                    }`}
                   />
                 </div>
               )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Step 1: Basic info */}
+      {step === 0 && (
+        <div className="space-y-6">
+          <div className="rounded-2xl bg-white p-6 shadow-card">
+            <h2 className="mb-1 text-lg font-bold text-warm-900">Wat deel je?</h2>
+            <p className="mb-5 text-sm text-warm-500">Geef je gerecht een naam en voeg een foto toe.</p>
+            <div className="space-y-4">
+              <Input
+                label={<>Titel <span className="text-red-500">*</span></>}
+                placeholder="Bijv. Pasta bolognese"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                error={tried && !title.trim() ? 'Titel is verplicht' : undefined}
+                required
+              />
+
               <div>
+                <label htmlFor="description" className="mb-1.5 block text-sm font-semibold text-warm-800">
+                  Beschrijving
+                </label>
+                <textarea
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Beschrijf je gerecht..."
+                  rows={3}
+                  className="w-full rounded-xl border border-warm-200 bg-white px-4 py-3 text-base sm:text-sm text-warm-800 placeholder:text-warm-400 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-sm font-semibold text-warm-800">
+                  Foto <span className="text-red-500">*</span>
+                </label>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -271,228 +356,304 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
                   onChange={handleImageChange}
                   className="hidden"
                 />
-                <Button
-                  type="button"
-                  variant="outline"
+                <div
+                  role="button"
+                  tabIndex={0}
                   onClick={() => fileInputRef.current?.click()}
-                  className="text-sm"
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') fileInputRef.current?.click() }}
+                  onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
+                  onDragLeave={() => setDragging(false)}
+                  onDrop={handleDrop}
+                  className={`relative cursor-pointer overflow-hidden rounded-xl border-2 border-dashed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 ${
+                    tried && !hasImage
+                      ? 'border-red-300 bg-red-50/50'
+                      : dragging
+                        ? 'border-brand-400 bg-brand-50'
+                        : 'border-warm-200 bg-warm-50/50 hover:border-warm-300 hover:bg-warm-50'
+                  }`}
                 >
-                  {imagePreview ? 'Foto wijzigen' : 'Foto uploaden'}
-                </Button>
-                <p className="mt-1 text-xs text-warm-400">JPG, PNG of WebP</p>
+                  {imagePreview ? (
+                    <div className="relative aspect-[16/9]">
+                      <Image
+                        src={imagePreview}
+                        alt="Voorbeeld"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 100vw, 500px"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-warm-900/0 transition-colors hover:bg-warm-900/40">
+                        <span className="rounded-lg bg-white/90 px-3 py-1.5 text-sm font-semibold text-warm-700 opacity-0 shadow transition-opacity hover:opacity-100 [div:hover>&]:opacity-100">
+                          Foto wijzigen
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center px-6 py-10">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`mb-3 h-10 w-10 ${tried && !hasImage ? 'text-red-300' : 'text-warm-300'}`}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21ZM16.5 7.5a1.125 1.125 0 1 1-2.25 0 1.125 1.125 0 0 1 2.25 0Z" />
+                      </svg>
+                      <p className="text-sm font-semibold text-warm-600">
+                        Sleep een foto hierheen of <span className="text-brand-600">klik om te uploaden</span>
+                      </p>
+                      <p className="mt-1 text-xs text-warm-400">JPG, PNG of WebP</p>
+                    </div>
+                  )}
+                </div>
+                {tried && !hasImage && (
+                  <p className="mt-2 text-sm text-red-600">Foto is verplicht</p>
+                )}
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Pickup & quantity */}
-      <div className="rounded-2xl bg-white p-6 shadow-card">
-        <h2 className="mb-4 text-lg font-bold text-warm-900">Ophalen &amp; beschikbaarheid</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Input
-            label="Aantal beschikbaar"
-            type="number"
-            min={1}
-            value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
-            error={errors.quantity}
-          />
-          <div className="hidden sm:block" />
-          <Input
-            label="Ophalen vanaf"
-            type="datetime-local"
-            value={pickupStart}
-            onChange={(e) => setPickupStart(e.target.value)}
-          />
-          <Input
-            label="Ophalen tot"
-            type="datetime-local"
-            value={pickupEnd}
-            onChange={(e) => setPickupEnd(e.target.value)}
-          />
-        </div>
-      </div>
-
-      {/* Fresh / Frozen */}
-      <div className="rounded-2xl bg-white p-6 shadow-card">
-        <h2 className="mb-4 text-lg font-bold text-warm-900">Vers of ingevroren</h2>
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={() => setIsFrozen(false)}
-            className={`flex-1 rounded-xl border-2 px-4 py-3 text-sm font-bold transition-colors ${
-              !isFrozen
-                ? 'border-brand-500 bg-brand-50 text-brand-700'
-                : 'border-warm-200 text-warm-500 hover:border-warm-300'
-            }`}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mx-auto mb-1 h-6 w-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
-            </svg>
-            Vers
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsFrozen(true)}
-            className={`flex-1 rounded-xl border-2 px-4 py-3 text-sm font-bold transition-colors ${
-              isFrozen
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                : 'border-warm-200 text-warm-500 hover:border-warm-300'
-            }`}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mx-auto mb-1 h-6 w-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v20M12 6l-3-3m3 3 3-3M12 18l-3 3m3-3 3 3M2 12h20M6 12l-3-3m3 3-3 3M18 12l3-3m-3 3 3 3M7.05 4.93l9.9 9.9M7.05 4.93 5.64 7.76m1.41-2.83 2.83 1.42M16.95 19.07l-2.83-1.42m2.83 1.42 1.41-2.83M16.95 4.93l-9.9 9.9M16.95 4.93l1.41 2.83m-1.41-2.83-2.83 1.42M7.05 19.07l2.83-1.42m-2.83 1.42L5.64 16.24" />
-            </svg>
-            Ingevroren
-          </button>
-        </div>
-        {!isFrozen && (
-          <div className="mt-4">
-            <Input
-              label="Houdbaar tot"
-              type="datetime-local"
-              value={expiresAt}
-              onChange={(e) => setExpiresAt(e.target.value)}
-              error={errors.expiresAt}
-            />
-            <p className="mt-1 text-xs text-warm-400">Geef aan tot wanneer het gerecht vers en veilig te eten is.</p>
+      {/* Step 2: Pickup & availability */}
+      {step === 1 && (
+        <div className="space-y-6">
+          <div className="rounded-2xl bg-white p-6 shadow-card">
+            <h2 className="mb-1 text-lg font-bold text-warm-900">Ophalen &amp; beschikbaarheid</h2>
+            <p className="mb-5 text-sm text-warm-500">Wanneer en hoeveel porties kunnen opgehaald worden?</p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Input
+                label="Aantal beschikbaar"
+                type="number"
+                min={1}
+                value={quantity}
+                onChange={(e) => setQuantity(Number(e.target.value))}
+                error={errors.quantity}
+              />
+              <div className="hidden sm:block" />
+              <Input
+                label={<>Ophalen vanaf <span className="text-red-500">*</span></>}
+                type="datetime-local"
+                value={pickupStart}
+                onChange={(e) => {
+                  const val = e.target.value
+                  setPickupStart(val)
+                  if (val && !pickupEnd) {
+                    const d = new Date(val)
+                    d.setHours(d.getHours() + 1)
+                    setPickupEnd(toLocalDatetimeString(d.toISOString()))
+                  }
+                }}
+                error={errors.pickupStart}
+                required
+              />
+              <Input
+                label="Ophalen tot"
+                type="datetime-local"
+                value={pickupEnd}
+                onChange={(e) => setPickupEnd(e.target.value)}
+              />
+            </div>
           </div>
-        )}
-        {isFrozen && (
-          <p className="mt-3 text-sm text-warm-500">
-            Ingevroren gerechten hebben geen houdbaarheidsdatum nodig op het platform.
-          </p>
-        )}
-      </div>
 
-      {/* Auto-expire agreement */}
-      <div className="rounded-2xl bg-white p-6 shadow-card">
-        <label className="flex items-start gap-3 text-sm text-warm-800">
-          <input
-            type="checkbox"
-            checked={autoExpire}
-            onChange={(e) => setAutoExpire(e.target.checked)}
-            className="mt-0.5 h-5 w-5 rounded-lg border-warm-300 text-brand-500 focus:ring-brand-400"
-          />
-          <span className="font-medium">
-            Ik ga ermee akkoord dat dit gerecht automatisch op &quot;verlopen&quot; wordt gezet na de houdbaarheidsdatum of het einde van de ophaaltijd (de laatste van de twee).
-          </span>
-        </label>
-        {errors.autoExpire && (
-          <p className="mt-2 text-sm text-red-600">{errors.autoExpire}</p>
-        )}
-      </div>
-
-      {/* Dietary & container */}
-      <div className="rounded-2xl bg-white p-6 shadow-card">
-        <h2 className="mb-4 text-lg font-bold text-warm-900">Dieet &amp; verpakking</h2>
-        <div className="space-y-3">
-          <label className="flex items-center gap-3 text-sm text-warm-800">
-            <input
-              type="checkbox"
-              checked={bringOwnContainer}
-              onChange={(e) => setBringOwnContainer(e.target.checked)}
-              className="h-5 w-5 rounded-lg border-warm-300 text-brand-500 focus:ring-brand-400"
-            />
-            <span className="font-medium">Eigen bakje meenemen</span>
-          </label>
-          <label className="flex items-center gap-3 text-sm text-warm-800">
-            <input
-              type="checkbox"
-              checked={isVegetarian}
-              onChange={(e) => setIsVegetarian(e.target.checked)}
-              className="h-5 w-5 rounded-lg border-warm-300 text-brand-500 focus:ring-brand-400"
-            />
-            <span className="font-medium">Vegetarisch</span>
-          </label>
-          <label className="flex items-center gap-3 text-sm text-warm-800">
-            <input
-              type="checkbox"
-              checked={isVegan}
-              onChange={(e) => setIsVegan(e.target.checked)}
-              className="h-5 w-5 rounded-lg border-warm-300 text-brand-500 focus:ring-brand-400"
-            />
-            <span className="font-medium">Veganistisch</span>
-          </label>
-        </div>
-      </div>
-
-      {/* Ingredients */}
-      <div className="rounded-2xl bg-white p-6 shadow-card">
-        <h2 className="mb-4 text-lg font-bold text-warm-900">Ingrediënten</h2>
-        <div className="mb-3 flex flex-wrap gap-2">
-          {ingredients.map((ing) => (
-            <span
-              key={ing}
-              className="inline-flex items-center gap-1 rounded-xl bg-brand-50 px-3 py-1.5 text-sm font-medium text-brand-800"
-            >
-              {ing}
+          <div className="rounded-2xl bg-white p-6 shadow-card">
+            <h2 className="mb-4 text-lg font-bold text-warm-900">Vers of ingevroren</h2>
+            <div className="flex gap-3">
               <button
                 type="button"
-                onClick={() => removeIngredient(ing)}
-                className="ml-1 text-brand-400 hover:text-brand-700"
-                aria-label={`Verwijder ${ing}`}
+                onClick={() => setIsFrozen(false)}
+                className={`flex-1 rounded-xl border-2 px-4 py-3 text-sm font-bold transition-colors ${
+                  !isFrozen
+                    ? 'border-brand-500 bg-brand-50 text-brand-700'
+                    : 'border-warm-200 text-warm-500 hover:border-warm-300'
+                }`}
               >
-                &times;
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mx-auto mb-1 h-6 w-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                </svg>
+                Vers
               </button>
-            </span>
-          ))}
+              <button
+                type="button"
+                onClick={() => setIsFrozen(true)}
+                className={`flex-1 rounded-xl border-2 px-4 py-3 text-sm font-bold transition-colors ${
+                  isFrozen
+                    ? 'border-blue-500 bg-blue-50 text-blue-700'
+                    : 'border-warm-200 text-warm-500 hover:border-warm-300'
+                }`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mx-auto mb-1 h-6 w-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v20M12 6l-3-3m3 3 3-3M12 18l-3 3m3-3 3 3M2 12h20M6 12l-3-3m3 3-3 3M18 12l3-3m-3 3 3 3M7.05 4.93l9.9 9.9M7.05 4.93 5.64 7.76m1.41-2.83 2.83 1.42M16.95 19.07l-2.83-1.42m2.83 1.42 1.41-2.83M16.95 4.93l-9.9 9.9M16.95 4.93l1.41 2.83m-1.41-2.83-2.83 1.42M7.05 19.07l2.83-1.42m-2.83 1.42L5.64 16.24" />
+                </svg>
+                Ingevroren
+              </button>
+            </div>
+            {!isFrozen && (
+              <div className="mt-4">
+                <Input
+                  label="Houdbaar tot"
+                  type="datetime-local"
+                  value={expiresAt}
+                  onChange={(e) => setExpiresAt(e.target.value)}
+                  error={errors.expiresAt}
+                />
+                <p className="mt-1 text-xs text-warm-400">Geef aan tot wanneer het gerecht vers en veilig te eten is.</p>
+              </div>
+            )}
+            {isFrozen && (
+              <p className="mt-3 text-sm text-warm-500">
+                Ingevroren gerechten hebben geen houdbaarheidsdatum nodig op het platform.
+              </p>
+            )}
+          </div>
         </div>
-        <Input
-          placeholder="Typ een ingrediënt en druk op Enter"
-          value={ingredientInput}
-          onChange={(e) => setIngredientInput(e.target.value)}
-          onKeyDown={addIngredient}
-        />
-      </div>
+      )}
 
-      {/* Allergens */}
-      <div className="rounded-2xl bg-white p-6 shadow-card">
-        <h2 className="mb-4 text-lg font-bold text-warm-900">Allergenen</h2>
-        <p className="mb-3 text-sm text-warm-500">Selecteer de aanwezige allergenen (EU-14).</p>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
-          {ALL_ALLERGENS.map((key) => (
-            <label
-              key={key}
-              className={`flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-sm transition-colors ${
-                allergens.includes(key)
-                  ? 'border-brand-400 bg-brand-50 text-brand-800'
-                  : 'border-warm-200 bg-white text-warm-600 hover:border-warm-300'
-              }`}
-            >
+      {/* Step 3: Details */}
+      {step === 2 && (
+        <div className="space-y-6">
+          <div className="rounded-2xl bg-white p-6 shadow-card">
+            <h2 className="mb-1 text-lg font-bold text-warm-900">Dieet &amp; verpakking</h2>
+            <p className="mb-4 text-sm text-warm-500">Geef aan wat van toepassing is.</p>
+            <div className="space-y-3">
+              <label className="flex items-center gap-3 text-sm text-warm-800">
+                <input
+                  type="checkbox"
+                  checked={bringOwnContainer}
+                  onChange={(e) => setBringOwnContainer(e.target.checked)}
+                  className={CHECKBOX}
+                />
+                <span className="font-medium">Eigen bakje meenemen</span>
+              </label>
+              <label className="flex items-center gap-3 text-sm text-warm-800">
+                <input
+                  type="checkbox"
+                  checked={isVegetarian}
+                  onChange={(e) => setIsVegetarian(e.target.checked)}
+                  className={CHECKBOX}
+                />
+                <span className="font-medium">Vegetarisch</span>
+              </label>
+              <label className="flex items-center gap-3 text-sm text-warm-800">
+                <input
+                  type="checkbox"
+                  checked={isVegan}
+                  onChange={(e) => setIsVegan(e.target.checked)}
+                  className={CHECKBOX}
+                />
+                <span className="font-medium">Veganistisch</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-white p-6 shadow-card">
+            <h2 className="mb-1 text-lg font-bold text-warm-900">Ingrediënten</h2>
+            <p className="mb-4 text-sm text-warm-500">Voeg ingrediënten toe zodat anderen weten wat erin zit.</p>
+            <div className="mb-3 flex flex-wrap gap-2">
+              {ingredients.map((ing) => (
+                <span
+                  key={ing}
+                  className="inline-flex items-center gap-1 rounded-xl bg-brand-50 px-3 py-1.5 text-sm font-medium text-brand-800"
+                >
+                  {ing}
+                  <button
+                    type="button"
+                    onClick={() => removeIngredient(ing)}
+                    className="ml-1 text-brand-400 hover:text-brand-700"
+                    aria-label={`Verwijder ${ing}`}
+                  >
+                    &times;
+                  </button>
+                </span>
+              ))}
+            </div>
+            <Input
+              placeholder="Typ een ingrediënt en druk op Enter"
+              value={ingredientInput}
+              onChange={(e) => setIngredientInput(e.target.value)}
+              onKeyDown={addIngredient}
+            />
+          </div>
+
+          <div className="rounded-2xl bg-white p-6 shadow-card">
+            <h2 className="mb-1 text-lg font-bold text-warm-900">Allergenen</h2>
+            <p className="mb-3 text-sm text-warm-500">Selecteer de aanwezige allergenen (EU-14).</p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+              {ALL_ALLERGENS.map((key) => (
+                <label
+                  key={key}
+                  className={`flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-sm transition-colors ${
+                    allergens.includes(key)
+                      ? 'border-brand-400 bg-brand-50 text-brand-800'
+                      : 'border-warm-200 bg-white text-warm-600 hover:border-warm-300'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={allergens.includes(key)}
+                    onChange={() => toggleAllergen(key)}
+                    className="sr-only"
+                  />
+                  {ALLERGEN_LABELS[key]}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-white p-6 shadow-card">
+            <label className="flex items-start gap-3 text-sm text-warm-800">
               <input
                 type="checkbox"
-                checked={allergens.includes(key)}
-                onChange={() => toggleAllergen(key)}
-                className="sr-only"
+                checked={autoExpire}
+                onChange={(e) => setAutoExpire(e.target.checked)}
+                className={`mt-0.5 ${CHECKBOX}`}
               />
-              {ALLERGEN_LABELS[key]}
+              <span className="font-medium">
+                Ik ga ermee akkoord dat dit gerecht automatisch op &quot;verlopen&quot; wordt gezet na de houdbaarheidsdatum of het einde van de ophaaltijd (de laatste van de twee).
+              </span>
             </label>
-          ))}
+            {errors.autoExpire && (
+              <p className="mt-2 text-sm text-red-600">{errors.autoExpire}</p>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {errors.submit && (
-        <div className="rounded-xl bg-red-50 p-4 text-sm text-red-700">
+        <div className="mt-6 rounded-xl bg-red-50 p-4 text-sm text-red-700">
           {errors.submit}
         </div>
       )}
 
-      {/* Submit */}
-      <div className="flex flex-col gap-3">
-        <Button type="submit" variant="primary" loading={loading} className="w-full">
-          {initialData ? 'Opslaan' : 'Gerecht plaatsen'}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => router.push('/aanbieder/dishes')}
-          disabled={loading}
-          className="w-full"
-        >
-          Annuleren
-        </Button>
+      {/* Navigation buttons */}
+      <div className="mt-8 flex items-center gap-3">
+        {step === 0 && (
+          <button
+            type="button"
+            onClick={() => router.push('/aanbieder/dishes')}
+            className="text-sm font-semibold text-warm-500 transition-colors hover:text-warm-700"
+          >
+            Annuleren
+          </button>
+        )}
+        {step > 0 && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={goBack}
+            disabled={loading}
+          >
+            Vorige
+          </Button>
+        )}
+        <div className="flex-1" />
+        {step < STEPS.length - 1 ? (
+          <Button
+            type="button"
+            variant="primary"
+            onClick={goNext}
+            className={step === 0 && !step0Complete ? 'opacity-50' : ''}
+          >
+            Volgende
+          </Button>
+        ) : (
+          <Button type="submit" variant="primary" loading={loading}>
+            {initialData ? 'Opslaan' : 'Gerecht plaatsen'}
+          </Button>
+        )}
       </div>
     </form>
   )

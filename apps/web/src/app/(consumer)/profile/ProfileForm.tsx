@@ -257,7 +257,7 @@ export function ProfileForm({ userId, email, profile, merchant }: ProfileFormPro
               rows={3}
               defaultValue={merchant?.description ?? ''}
               placeholder="Vertel iets over jezelf of wat je aanbiedt..."
-              className="w-full rounded-xl border border-warm-200 bg-white px-4 py-3 text-warm-800 placeholder:text-warm-400 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              className="w-full rounded-xl border border-warm-200 bg-white px-4 py-3 text-base sm:text-sm text-warm-800 placeholder:text-warm-400 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100"
             />
           </div>
 

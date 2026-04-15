@@ -64,17 +64,8 @@ export default async function DishesPage() {
   return (
     <div>
       <RealtimeRefresh table="dishes" filter={`merchant_id=eq.${merchant.id}`} />
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8">
         <h1 className="text-3xl font-extrabold text-warm-900">Mijn gerechten</h1>
-        <Link
-          href="/aanbieder/dishes/new"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-500 p-2.5 text-sm font-bold text-white shadow-button transition-all duration-150 hover:bg-brand-600 active:scale-[0.97] sm:px-5"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 sm:h-4 sm:w-4">
-            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
-          </svg>
-          <span className="hidden sm:inline">Nieuw gerecht</span>
-        </Link>
       </div>
 
       {!dishes || dishes.length === 0 ? (
@@ -104,56 +95,58 @@ export default async function DishesPage() {
                 data-reveal="scale"
                 className="overflow-hidden rounded-2xl bg-white shadow-card transition-shadow hover:shadow-lg"
               >
-                <div className="relative aspect-[4/3] bg-warm-100">
-                  {dish.image_url ? (
-                    <Image
-                      src={dish.image_url}
-                      alt={dish.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-warm-300">
-                      <CookingPotIcon className="h-10 w-10" />
+                <Link href={`/dish/${dish.id}`} className="block">
+                  <div className="relative aspect-[4/3] bg-warm-100">
+                    {dish.image_url ? (
+                      <Image
+                        src={dish.image_url}
+                        alt={dish.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-warm-300">
+                        <CookingPotIcon className="h-10 w-10" />
+                      </div>
+                    )}
+                    <span
+                      className={`absolute right-3 top-3 rounded-xl px-3 py-1 text-xs font-bold ${badge.className}`}
+                    >
+                      {badge.label}
+                    </span>
+                  </div>
+
+                  <div className="p-5 pb-0">
+                    <h3 className="mb-1 text-lg font-bold text-warm-900 line-clamp-1">
+                      {dish.title}
+                    </h3>
+                    {dish.description && (
+                      <p className="mb-3 text-sm text-warm-500 line-clamp-2">{dish.description}</p>
+                    )}
+
+                    <div className="flex flex-wrap gap-2 text-xs text-warm-600">
+                      <span className="rounded-lg bg-warm-50 px-2 py-1">
+                        Aantal: {dish.quantity_available}
+                      </span>
+                      <span className="rounded-lg bg-warm-50 px-2 py-1">
+                        {formatPickupTime(dish.pickup_start, dish.pickup_end)}
+                      </span>
                     </div>
-                  )}
-                  <span
-                    className={`absolute right-3 top-3 rounded-xl px-3 py-1 text-xs font-bold ${badge.className}`}
-                  >
-                    {badge.label}
-                  </span>
-                </div>
-
-                <div className="p-5">
-                  <h3 className="mb-1 text-lg font-bold text-warm-900 line-clamp-1">
-                    {dish.title}
-                  </h3>
-                  {dish.description && (
-                    <p className="mb-3 text-sm text-warm-500 line-clamp-2">{dish.description}</p>
-                  )}
-
-                  <div className="mb-4 flex flex-wrap gap-2 text-xs text-warm-600">
-                    <span className="rounded-lg bg-warm-50 px-2 py-1">
-                      Aantal: {dish.quantity_available}
-                    </span>
-                    <span className="rounded-lg bg-warm-50 px-2 py-1">
-                      {formatPickupTime(dish.pickup_start, dish.pickup_end)}
-                    </span>
                   </div>
+                </Link>
 
-                  <div className="flex gap-2">
-                    <Link href={`/aanbieder/dishes/${dish.id}/edit`} className="flex-1">
-                      <Button variant="outline" className="w-full text-sm">
-                        Bewerken
-                      </Button>
-                    </Link>
-                    <DeleteDishButton
-                      dishId={dish.id}
-                      imageUrl={dish.image_url}
-                      merchantId={merchant.id}
-                    />
-                  </div>
+                <div className="flex gap-2 p-5">
+                  <Link href={`/aanbieder/dishes/${dish.id}/edit`} className="flex-1">
+                    <Button variant="outline" className="w-full text-sm">
+                      Bewerken
+                    </Button>
+                  </Link>
+                  <DeleteDishButton
+                    dishId={dish.id}
+                    imageUrl={dish.image_url}
+                    merchantId={merchant.id}
+                  />
                 </div>
               </div>
             )

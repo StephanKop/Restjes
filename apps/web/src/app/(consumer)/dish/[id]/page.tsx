@@ -108,6 +108,18 @@ export default async function DishPage({ params }: DishPageProps) {
   // Check auth for reserve button
   const user = await getUser()
 
+  // Check if the current user is the owner of this dish
+  let isOwner = false
+  if (user) {
+    const { data: ownMerchant } = await supabase
+      .from('merchants')
+      .select('id')
+      .eq('profile_id', user.id)
+      .eq('id', merchant.id)
+      .maybeSingle()
+    isOwner = !!ownMerchant
+  }
+
   const productJsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -301,7 +313,14 @@ export default async function DishPage({ params }: DishPageProps) {
           {/* Reserve + chat */}
           {isAvailable && (
             <div className="space-y-3" data-reveal>
-              {user ? (
+              {isOwner ? (
+                <Link
+                  href={`/aanbieder/dishes/${dish.id}/edit`}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-warm-100 px-6 py-3 font-bold text-warm-700 transition-all duration-150 hover:bg-warm-200 active:scale-[0.97]"
+                >
+                  Dit is jouw gerecht — Bewerken
+                </Link>
+              ) : user ? (
                 <>
                   <ReserveButton
                     dishId={dish.id}

@@ -28,8 +28,12 @@ export function NotificationBell({ userId, merchantId, initialCount, initialItem
   const [items, setItems] = useState(initialItems)
   const [permission, setPermission] = useState<NotificationPermission>('default')
   const ref = useRef<HTMLDivElement>(null)
+  const openRef = useRef(open)
   const knownIds = useRef<Set<string>>(new Set())
   const initialized = useRef(false)
+  const itemsFetched = useRef(false)
+
+  useEffect(() => { openRef.current = open }, [open])
 
   const supabase = useMemo(
     () => createBrowserClient(
@@ -54,8 +58,7 @@ export function NotificationBell({ userId, merchantId, initialCount, initialItem
 
   const showBrowserNotification = useCallback((item: Notification) => {
     if (!('Notification' in window) || Notification.permission !== 'granted') return
-    // Don't show if the tab is focused and the bell is open
-    if (document.hasFocus() && open) return
+    if (document.hasFocus() && openRef.current) return
 
     const n = new window.Notification(item.title, {
       body: item.body,
@@ -67,7 +70,7 @@ export function NotificationBell({ userId, merchantId, initialCount, initialItem
       window.location.href = item.href
       n.close()
     }
-  }, [open])
+  }, [])
 
   // Close on outside click
   useEffect(() => {
@@ -80,11 +83,21 @@ export function NotificationBell({ userId, merchantId, initialCount, initialItem
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
-  // Fetch notifications from the database
-  const fetchNotifications = useCallback(async () => {
+  // ── Fast count query (same as RealtimeUnreadBadge) ──
+  const fetchCount = useCallback(async () => {
+    const { count: unread } = await supabase
+      .from('messages')
+      .select('id', { count: 'exact', head: true })
+      .eq('is_read', false)
+      .neq('sender_id', userId)
+
+    setCount(unread ?? 0)
+  }, [userId, supabase])
+
+  // ── Heavy fetch for the dropdown items (only when opened) ──
+  const fetchItems = useCallback(async () => {
     const notifications: Notification[] = []
 
-    // 1. Unread messages (latest per conversation)
     const [{ data: consumerConvs }, { data: merchant }] = await Promise.all([
       supabase
         .from('conversations')
@@ -141,7 +154,6 @@ export function NotificationBell({ userId, merchantId, initialCount, initialItem
       }
     }
 
-    // 2. Recent reservation updates (last 7 days)
     const { data: recentReservations } = await supabase
       .from('reservations')
       .select('id, status, updated_at, dish:dishes!inner(title)')
@@ -170,7 +182,6 @@ export function NotificationBell({ userId, merchantId, initialCount, initialItem
       })
     }
 
-    // 3. New reservations for merchants
     if (merchant) {
       const { data: merchantReservations } = await supabase
         .from('reservations')
@@ -198,7 +209,6 @@ export function NotificationBell({ userId, merchantId, initialCount, initialItem
       }
     }
 
-    // Sort by time
     notifications.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
     const top = notifications.slice(0, 10)
 
@@ -211,46 +221,44 @@ export function NotificationBell({ userId, merchantId, initialCount, initialItem
       }
     }
 
-    // Update known IDs
     knownIds.current = new Set(top.map((n) => n.id))
     initialized.current = true
 
     setItems(top)
-    setCount(top.filter((n) => !n.read).length)
   }, [userId, supabase, showBrowserNotification])
 
-  // Subscribe to realtime events and re-fetch
+  // ── Realtime: fast count query on every event ──
   useEffect(() => {
-    fetchNotifications()
+    fetchCount()
 
     const channel = supabase
-      .channel('nav-notifications')
+      .channel('bell-count')
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'messages' },
-        () => fetchNotifications(),
+        () => fetchCount(),
       )
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'messages' },
-        () => fetchNotifications(),
+        () => fetchCount(),
       )
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'reservations' },
-        () => fetchNotifications(),
+        () => fetchCount(),
       )
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'reservations' },
-        () => fetchNotifications(),
+        () => fetchCount(),
       )
 
     if (merchantId) {
       channel.on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'reviews' },
-        () => fetchNotifications(),
+        () => fetchCount(),
       )
     }
 
@@ -259,7 +267,20 @@ export function NotificationBell({ userId, merchantId, initialCount, initialItem
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [userId, merchantId, supabase, fetchNotifications])
+  }, [userId, merchantId, supabase, fetchCount])
+
+  // ── Fetch full items when dropdown opens ──
+  useEffect(() => {
+    if (open) {
+      itemsFetched.current = true
+      fetchItems()
+    }
+  }, [open, fetchItems])
+
+  // Also fetch items on mount once (for browser notifications)
+  useEffect(() => {
+    fetchItems()
+  }, [fetchItems])
 
   return (
     <div ref={ref} className="relative">

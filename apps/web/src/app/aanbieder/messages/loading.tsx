@@ -15,7 +15,7 @@ export default function Loading() {
   return (
     <div
       className="overflow-hidden rounded-2xl bg-white shadow-card"
-      style={{ height: 'calc(100vh - 7rem)' }}
+      style={{ height: 'calc(100vh - 12rem)' }}
     >
       <div className="flex h-full">
         {/* Sidebar */}
