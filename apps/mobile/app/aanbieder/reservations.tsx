@@ -335,7 +335,7 @@ export default function MerchantReservationsScreen() {
           }
           ListEmptyComponent={
             <View className="items-center justify-center py-20">
-              <Ionicons name="calendar-outline" size={48} color="#c4bdb4" />
+              <Ionicons name="calendar-outline" size={48} color="#d1cbc4" />
               <Text className="text-warm-400 text-base text-center mt-4">
                 {activeTab === 'alle'
                   ? 'Er zijn nog geen reserveringen binnengekomen'

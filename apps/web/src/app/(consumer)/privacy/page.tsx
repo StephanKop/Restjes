@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { JsonLd } from '@/components/JsonLd'
 
 export const metadata: Metadata = {
   title: 'Privacybeleid',
@@ -9,6 +10,15 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <div className="mx-auto max-w-3xl">
+      <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: 'Privacybeleid - Kliekjesclub',
+        description: 'Lees hoe Kliekjesclub omgaat met je persoonsgegevens en privacy.',
+        url: 'https://kliekjesclub.nl/privacy',
+        inLanguage: 'nl',
+        isPartOf: { '@type': 'WebSite', name: 'Kliekjesclub', url: 'https://kliekjesclub.nl' },
+      }} />
       <h1 className="mb-2 text-3xl font-extrabold text-warm-900">Privacybeleid</h1>
       <p className="mb-8 text-sm text-warm-400">Laatst bijgewerkt: 13 april 2026</p>
 

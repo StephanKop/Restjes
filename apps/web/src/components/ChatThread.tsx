@@ -233,7 +233,7 @@ export function ChatThread({
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={`Bericht aan ${otherPartyName}...`}
-            className="flex-1 rounded-xl border border-warm-200 bg-offwhite px-4 py-2.5 text-sm text-warm-800 placeholder:text-warm-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="flex-1 rounded-xl border border-warm-200 bg-offwhite px-4 py-2.5 text-base sm:text-sm text-warm-800 placeholder:text-warm-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
           />
           <button
             onClick={handleSend}

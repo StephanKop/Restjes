@@ -108,7 +108,7 @@ export default function ForgotPasswordScreen() {
           <TextInput
             className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-base mb-6"
             placeholder="E-mailadres"
-            placeholderTextColor="#9e9589"
+            placeholderTextColor="#b0a89e"
             value={email}
             onChangeText={setEmail}
             autoCapitalize="none"

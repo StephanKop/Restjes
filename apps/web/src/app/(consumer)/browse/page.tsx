@@ -5,6 +5,7 @@ import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { BrowseFilters } from '@/components/BrowseFilters'
 import { BrowseResults } from '@/components/BrowseResults'
 import type { DishCardData } from '@/components/DishCard'
+import { JsonLd } from '@/components/JsonLd'
 
 export const metadata: Metadata = {
   title: 'Ontdekken',
@@ -180,8 +181,23 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
     }
   })
 
+  const itemListJsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Beschikbare gerechten',
+    description: 'Bekijk beschikbare kliekjes bij jou in de buurt.',
+    numberOfItems: cards.length,
+    itemListElement: cards.slice(0, 20).map((dish, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `https://kliekjesclub.nl/dish/${dish.id}`,
+      name: dish.title,
+    })),
+  }
+
   return (
     <div>
+      <JsonLd data={itemListJsonLd} />
       <div className="mb-8">
         <h1 className="mb-2 text-3xl font-extrabold text-warm-900">Ontdekken</h1>
         <p className="text-warm-500">Bekijk wat er bij jou in de buurt beschikbaar is</p>

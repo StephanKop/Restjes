@@ -9,8 +9,8 @@ import {
 } from 'react-native'
 import { useLocalSearchParams, useNavigation, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
-import { supabase } from '../../lib/supabase'
-import { formatPickupTime, formatRelativeDate } from '../../lib/format'
+import { supabase } from '../../../lib/supabase'
+import { formatPickupTime, formatRelativeDate } from '../../../lib/format'
 
 interface Merchant {
   id: string
@@ -55,7 +55,7 @@ function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
     } else if (i - 0.5 <= rating) {
       stars.push(<Ionicons key={i} name="star-half" size={size} color="#f59e0b" />)
     } else {
-      stars.push(<Ionicons key={i} name="star-outline" size={size} color="#c4bdb4" />)
+      stars.push(<Ionicons key={i} name="star-outline" size={size} color="#d1cbc4" />)
     }
   }
   return <View className="flex-row">{stars}</View>
@@ -277,11 +277,32 @@ export default function MerchantDetailScreen() {
           )}
 
           {/* Reviews */}
-          <Text className="text-lg font-bold text-warm-800 mt-8 mb-3">
-            Beoordelingen
-          </Text>
+          <View className="flex-row items-center justify-between mt-8 mb-3">
+            <Text className="text-lg font-bold text-warm-800">
+              Beoordelingen
+            </Text>
+            {reviews.length > 0 && (
+              <Pressable onPress={() => router.push(`/merchant/${merchant.id}/reviews` as any)}>
+                <Text className="text-sm font-bold text-brand-600">
+                  Alles bekijken
+                </Text>
+              </Pressable>
+            )}
+          </View>
           {reviews.length > 0 ? (
-            reviews.map(renderReview)
+            <>
+              {reviews.map(renderReview)}
+              {merchant.review_count > 3 && (
+                <Pressable
+                  className="bg-white rounded-xl py-3.5 items-center mt-1"
+                  onPress={() => router.push(`/merchant/${merchant.id}/reviews` as any)}
+                >
+                  <Text className="text-sm font-bold text-brand-600">
+                    Alle {merchant.review_count} beoordelingen bekijken
+                  </Text>
+                </Pressable>
+              )}
+            </>
           ) : (
             <View className="bg-white rounded-xl p-4">
               <Text className="text-sm text-warm-400 text-center">

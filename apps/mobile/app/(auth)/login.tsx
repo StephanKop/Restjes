@@ -154,7 +154,7 @@ export default function LoginScreen() {
             className="bg-white rounded-xl px-6 py-3.5 mb-3 flex-row items-center justify-center active:opacity-90"
           >
             {googleLoading ? (
-              <ActivityIndicator color="#302b26" />
+              <ActivityIndicator color="#3d3833" />
             ) : (
               <>
                 <GoogleIcon />
@@ -177,7 +177,7 @@ export default function LoginScreen() {
             <TextInput
               className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-base"
               placeholder="E-mailadres"
-              placeholderTextColor="#9e9589"
+              placeholderTextColor="#b0a89e"
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
@@ -187,7 +187,7 @@ export default function LoginScreen() {
             <TextInput
               className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-base"
               placeholder="Wachtwoord"
-              placeholderTextColor="#9e9589"
+              placeholderTextColor="#b0a89e"
               value={password}
               onChangeText={setPassword}
               secureTextEntry

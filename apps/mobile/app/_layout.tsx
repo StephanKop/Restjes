@@ -43,10 +43,21 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
-          name="merchant/[id]"
+          name="merchant/[id]/index"
           options={{
             headerShown: true,
             headerTitle: '',
+            headerBackTitle: 'Terug',
+            headerStyle: { backgroundColor: '#faf9f6' },
+            headerShadowVisible: false,
+            headerTintColor: '#3d3833',
+          }}
+        />
+        <Stack.Screen
+          name="merchant/[id]/reviews"
+          options={{
+            headerShown: true,
+            headerTitle: 'Beoordelingen',
             headerBackTitle: 'Terug',
             headerStyle: { backgroundColor: '#faf9f6' },
             headerShadowVisible: false,

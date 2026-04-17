@@ -14,9 +14,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import * as ImagePicker from 'expo-image-picker'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
+import { pickImage as pickImageFromLib, type ImagePickerAsset } from '../../lib/image-picker'
 
 interface MerchantProfile {
   id: string
@@ -44,7 +44,7 @@ export default function MerchantSettingsScreen() {
   const [phone, setPhone] = useState('')
   const [website, setWebsite] = useState('')
   const [existingLogoUrl, setExistingLogoUrl] = useState<string | null>(null)
-  const [newLogo, setNewLogo] = useState<ImagePicker.ImagePickerAsset | null>(null)
+  const [newLogo, setNewLogo] = useState<ImagePickerAsset | null>(null)
 
   const fetchMerchant = useCallback(async () => {
     if (!user) return
@@ -74,18 +74,8 @@ export default function MerchantSettingsScreen() {
   }, [fetchMerchant])
 
   const pickLogo = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    if (status !== 'granted') {
-      Alert.alert('Toestemming nodig', 'We hebben toegang tot je foto\'s nodig.')
-      return
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    })
-    if (!result.canceled && result.assets[0]) setNewLogo(result.assets[0])
+    const asset = await pickImageFromLib()
+    if (asset) setNewLogo(asset)
   }
 
   const uploadLogo = async (merchantId: string): Promise<string | null> => {
@@ -234,7 +224,7 @@ export default function MerchantSettingsScreen() {
                 />
               ) : (
                 <View className="w-24 h-24 rounded-2xl bg-warm-100 items-center justify-center">
-                  <Ionicons name="storefront-outline" size={36} color="#9e9589" />
+                  <Ionicons name="storefront-outline" size={36} color="#b0a89e" />
                 </View>
               )}
               <View className="absolute bottom-0 right-0 bg-brand-500 rounded-full p-1.5">
@@ -249,7 +239,7 @@ export default function MerchantSettingsScreen() {
           <TextInput
             className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 mb-4"
             placeholder="Naam van je bedrijf of keuken"
-            placeholderTextColor="#9e9589"
+            placeholderTextColor="#b0a89e"
             value={businessName}
             onChangeText={setBusinessName}
           />
@@ -259,7 +249,7 @@ export default function MerchantSettingsScreen() {
           <TextInput
             className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 mb-4"
             placeholder="Vertel iets over je aanbod..."
-            placeholderTextColor="#9e9589"
+            placeholderTextColor="#b0a89e"
             value={description}
             onChangeText={setDescription}
             multiline
@@ -272,7 +262,7 @@ export default function MerchantSettingsScreen() {
           <TextInput
             className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 mb-3"
             placeholder="Straatnaam en huisnummer"
-            placeholderTextColor="#9e9589"
+            placeholderTextColor="#b0a89e"
             value={addressLine1}
             onChangeText={setAddressLine1}
           />
@@ -280,14 +270,14 @@ export default function MerchantSettingsScreen() {
             <TextInput
               className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800"
               placeholder="Postcode"
-              placeholderTextColor="#9e9589"
+              placeholderTextColor="#b0a89e"
               value={postalCode}
               onChangeText={setPostalCode}
             />
             <TextInput
               className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800"
               placeholder="Plaats"
-              placeholderTextColor="#9e9589"
+              placeholderTextColor="#b0a89e"
               value={city}
               onChangeText={setCity}
             />
@@ -298,7 +288,7 @@ export default function MerchantSettingsScreen() {
           <TextInput
             className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 mb-4"
             placeholder="06-12345678"
-            placeholderTextColor="#9e9589"
+            placeholderTextColor="#b0a89e"
             value={phone}
             onChangeText={setPhone}
             keyboardType="phone-pad"
@@ -309,7 +299,7 @@ export default function MerchantSettingsScreen() {
           <TextInput
             className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 mb-6"
             placeholder="https://www.voorbeeld.nl"
-            placeholderTextColor="#9e9589"
+            placeholderTextColor="#b0a89e"
             value={website}
             onChangeText={setWebsite}
             keyboardType="url"

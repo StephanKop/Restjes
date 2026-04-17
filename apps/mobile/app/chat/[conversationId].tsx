@@ -223,7 +223,7 @@ export default function ChatScreen() {
         contentContainerStyle={{ padding: 20, paddingBottom: 8 }}
         ListEmptyComponent={
           <View className="items-center justify-center py-20">
-            <Ionicons name="chatbubble-outline" size={48} color="#c4bdb4" />
+            <Ionicons name="chatbubble-outline" size={48} color="#d1cbc4" />
             <Text className="text-warm-400 text-base text-center mt-4">
               Stuur het eerste bericht
             </Text>
@@ -236,7 +236,7 @@ export default function ChatScreen() {
         <TextInput
           className="flex-1 bg-warm-100 rounded-xl px-4 py-3 text-base text-warm-800 max-h-24"
           placeholder="Schrijf een bericht..."
-          placeholderTextColor="#9e9589"
+          placeholderTextColor="#b0a89e"
           value={input}
           onChangeText={setInput}
           multiline
@@ -252,7 +252,7 @@ export default function ChatScreen() {
           <Ionicons
             name="send"
             size={18}
-            color={input.trim() ? '#ffffff' : '#9e9589'}
+            color={input.trim() ? '#ffffff' : '#b0a89e'}
           />
         </Pressable>
       </View>

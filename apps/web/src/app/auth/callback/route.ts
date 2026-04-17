@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { createServerComponentClient } from '@/lib/supabase-server'
 
 export async function GET(request: Request) {
@@ -22,6 +23,9 @@ export async function GET(request: Request) {
             .is('avatar_url', null)
         }
       }
+
+      // Invalidate cached layouts so navigation shows logged-in state
+      revalidatePath('/', 'layout')
 
       return NextResponse.redirect(`${origin}${next}`)
     }

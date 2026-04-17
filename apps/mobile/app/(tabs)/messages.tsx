@@ -218,7 +218,7 @@ export default function MessagesScreen() {
             }
             ListEmptyComponent={
               <View className="items-center justify-center py-20">
-                <Ionicons name="chatbubbles-outline" size={48} color="#c4bdb4" />
+                <Ionicons name="chatbubbles-outline" size={48} color="#d1cbc4" />
                 <Text className="text-warm-400 text-base text-center mt-4">
                   Je hebt nog geen berichten
                 </Text>

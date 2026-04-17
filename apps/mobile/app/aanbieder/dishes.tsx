@@ -213,7 +213,7 @@ export default function MerchantDishesScreen() {
           }
           ListEmptyComponent={
             <View className="items-center justify-center py-20">
-              <Ionicons name="restaurant-outline" size={48} color="#c4bdb4" />
+              <Ionicons name="restaurant-outline" size={48} color="#d1cbc4" />
               <Text className="text-warm-400 text-base text-center mt-4 mb-2">
                 Je hebt nog geen gerechten geplaatst
               </Text>

@@ -27,12 +27,16 @@ interface DishDetail {
   expires_at: string | null
   is_vegetarian: boolean
   is_vegan: boolean
+  status: string
   merchant: {
     id: string
     business_name: string
     city: string
     address_line1: string | null
     logo_url: string | null
+    avg_rating: number | null
+    review_count: number
+    is_verified: boolean
   }
 }
 
@@ -65,9 +69,9 @@ export default function DishDetailScreen() {
         .from('dishes')
         .select(
           `
-          id, title, description, image_url, quantity_available,
+          id, title, description, image_url, quantity_available, status,
           pickup_start, pickup_end, bring_own_container, is_frozen, expires_at, is_vegetarian, is_vegan,
-          merchant:merchants!merchant_id (id, business_name, city, address_line1, logo_url)
+          merchant:merchants!merchant_id (id, business_name, city, address_line1, logo_url, avg_rating, review_count, is_verified)
         `
         )
         .eq('id', id)
@@ -196,6 +200,8 @@ export default function DishDetailScreen() {
       </View>
     )
   }
+
+  const isAvailable = dish?.status === 'available' && (dish?.quantity_available ?? 0) > 0
 
   if (!dish) {
     return (
@@ -364,56 +370,82 @@ export default function DishDetailScreen() {
               </View>
             )}
             <View className="flex-1 ml-3">
-              <Text className="text-base font-bold text-warm-800">
-                {dish.merchant.business_name}
-              </Text>
+              <View className="flex-row items-center">
+                <Text className="text-base font-bold text-warm-800">
+                  {dish.merchant.business_name}
+                </Text>
+                {dish.merchant.is_verified && (
+                  <Ionicons name="checkmark-circle" size={16} color="#22c55e" style={{ marginLeft: 4 }} />
+                )}
+              </View>
               <Text className="text-sm text-warm-500">
                 {dish.merchant.address_line1 ? `${dish.merchant.address_line1}, ` : ''}
                 {dish.merchant.city}
               </Text>
+              {dish.merchant.avg_rating != null && dish.merchant.review_count > 0 && (
+                <View className="flex-row items-center mt-0.5">
+                  <Ionicons name="star" size={12} color="#f59e0b" />
+                  <Text className="text-xs text-warm-500 ml-1">
+                    {dish.merchant.avg_rating} ({dish.merchant.review_count} beoordelingen)
+                  </Text>
+                </View>
+              )}
             </View>
-            <Ionicons name="chevron-forward" size={20} color="#9e9589" />
+            <Ionicons name="chevron-forward" size={20} color="#b0a89e" />
           </Pressable>
         </View>
       </ScrollView>
 
-      {/* Bottom actions — hidden for own dishes */}
-      {!isOwnDish && <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-warm-200 px-5 pt-4 pb-8">
-        <View className="flex-row items-center justify-between">
+      {/* Bottom actions */}
+      <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-warm-200 px-5 pt-4 pb-8">
+        {isOwnDish ? (
           <Pressable
-            className="w-12 h-12 rounded-xl bg-warm-100 items-center justify-center"
-            onPress={handleChat}
+            className="bg-brand-500 rounded-xl py-4 items-center"
+            onPress={() => router.push(`/dish/${dish.id}/edit`)}
           >
-            <Ionicons name="chatbubble-outline" size={22} color="#302b26" />
+            <Text className="text-white font-bold text-base">Gerecht bewerken</Text>
           </Pressable>
-          <View className="flex-row items-center ml-3">
+        ) : isAvailable ? (
+          <View className="flex-row items-center justify-between">
             <Pressable
-              className="w-10 h-10 rounded-xl bg-warm-100 items-center justify-center"
-              onPress={() => setQuantity((q) => Math.max(1, q - 1))}
+              className="w-12 h-12 rounded-xl bg-warm-100 items-center justify-center"
+              onPress={handleChat}
             >
-              <Ionicons name="remove" size={20} color="#302b26" />
+              <Ionicons name="chatbubble-outline" size={22} color="#3d3833" />
             </Pressable>
-            <Text className="text-lg font-bold text-warm-800 mx-4">{quantity}</Text>
+            <View className="flex-row items-center ml-3">
+              <Pressable
+                className="w-10 h-10 rounded-xl bg-warm-100 items-center justify-center"
+                onPress={() => setQuantity((q) => Math.max(1, q - 1))}
+              >
+                <Ionicons name="remove" size={20} color="#3d3833" />
+              </Pressable>
+              <Text className="text-lg font-bold text-warm-800 mx-4">{quantity}</Text>
+              <Pressable
+                className="w-10 h-10 rounded-xl bg-warm-100 items-center justify-center"
+                onPress={() =>
+                  setQuantity((q) => Math.min(dish.quantity_available, q + 1))
+                }
+              >
+                <Ionicons name="add" size={20} color="#3d3833" />
+              </Pressable>
+            </View>
             <Pressable
-              className="w-10 h-10 rounded-xl bg-warm-100 items-center justify-center"
-              onPress={() =>
-                setQuantity((q) => Math.min(dish.quantity_available, q + 1))
-              }
+              className="bg-brand-500 rounded-xl px-6 py-3.5 flex-1 ml-3"
+              onPress={handleReserve}
+              disabled={reserving}
             >
-              <Ionicons name="add" size={20} color="#302b26" />
+              <Text className="text-white font-bold text-center text-base">
+                {reserving ? 'Bezig...' : 'Reserveren'}
+              </Text>
             </Pressable>
           </View>
-          <Pressable
-            className="bg-brand-500 rounded-xl px-6 py-3.5 flex-1 ml-3"
-            onPress={handleReserve}
-            disabled={reserving}
-          >
-            <Text className="text-white font-bold text-center text-base">
-              {reserving ? 'Bezig...' : 'Reserveren'}
-            </Text>
-          </Pressable>
-        </View>
-      </View>}
+        ) : (
+          <View className="rounded-xl bg-warm-100 py-4 items-center">
+            <Text className="text-warm-500 font-bold text-base">Niet meer beschikbaar</Text>
+          </View>
+        )}
+      </View>
     </View>
   )
 }

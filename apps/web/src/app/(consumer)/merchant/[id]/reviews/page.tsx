@@ -1,9 +1,12 @@
+export const dynamic = 'force-dynamic'
+
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerComponentClient } from '@/lib/supabase-server'
 import { ReviewList, type ReviewData } from '@/components/ReviewList'
 import { StarRating } from '@/components/StarRating'
+import { JsonLd } from '@/components/JsonLd'
 
 interface MerchantReviewsPageProps {
   params: Promise<{ id: string }>
@@ -85,8 +88,42 @@ export default async function MerchantReviewsPage({ params }: MerchantReviewsPag
   }
   const totalReviews = reviewList.length
 
+  const reviewsJsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: merchant.business_name,
+    url: `https://kliekjesclub.nl/merchant/${id}`,
+    ...(merchant.avg_rating !== null
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: merchant.avg_rating,
+            reviewCount: merchant.review_count,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
+    review: reviewList.slice(0, 10).map((r) => ({
+      '@type': 'Review',
+      author: {
+        '@type': 'Person',
+        name: r.consumer?.display_name ?? 'Anoniem',
+      },
+      datePublished: r.created_at,
+      reviewRating: {
+        '@type': 'Rating',
+        ratingValue: r.rating,
+        bestRating: 5,
+        worstRating: 1,
+      },
+      ...(r.comment ? { reviewBody: r.comment } : {}),
+    })),
+  }
+
   return (
     <div>
+      <JsonLd data={reviewsJsonLd} />
       {/* Back link */}
       <Link
         href={`/merchant/${id}`}

@@ -126,16 +126,31 @@ export default async function DishPage({ params }: DishPageProps) {
     name: dish.title,
     description: dish.description ?? undefined,
     image: dish.image_url ?? undefined,
+    url: `https://kliekjesclub.nl/dish/${dish.id}`,
     offers: {
       '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'EUR',
       availability: isAvailable
         ? 'https://schema.org/InStock'
         : 'https://schema.org/SoldOut',
       seller: {
         '@type': 'Organization',
         name: merchant.business_name,
+        url: `https://kliekjesclub.nl/merchant/${merchant.id}`,
       },
     },
+    ...(merchant.avg_rating !== null && merchant.review_count > 0
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: merchant.avg_rating,
+            reviewCount: merchant.review_count,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
   }
 
   return (

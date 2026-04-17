@@ -80,7 +80,7 @@ export default function TabsLayout() {
         headerTintColor: '#3d3833',
         headerTitleStyle: { fontWeight: '700' },
         tabBarActiveTintColor: '#22c55e',
-        tabBarInactiveTintColor: '#9e9589',
+        tabBarInactiveTintColor: '#b0a89e',
         tabBarStyle: {
           backgroundColor: '#ffffff',
           borderTopColor: '#e5e1dc',

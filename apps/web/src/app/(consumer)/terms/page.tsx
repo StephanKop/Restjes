@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { JsonLd } from '@/components/JsonLd'
 
 export const metadata: Metadata = {
   title: 'Algemene voorwaarden',
@@ -9,6 +10,15 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <div className="mx-auto max-w-3xl">
+      <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: 'Algemene voorwaarden - Kliekjesclub',
+        description: 'Lees de algemene voorwaarden van Kliekjesclub.',
+        url: 'https://kliekjesclub.nl/terms',
+        inLanguage: 'nl',
+        isPartOf: { '@type': 'WebSite', name: 'Kliekjesclub', url: 'https://kliekjesclub.nl' },
+      }} />
       <h1 className="mb-2 text-3xl font-extrabold text-warm-900">Algemene voorwaarden</h1>
       <p className="mb-8 text-sm text-warm-400">Laatst bijgewerkt: 13 april 2026</p>
 

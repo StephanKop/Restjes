@@ -14,10 +14,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { useLocalSearchParams, router } from 'expo-router'
-import * as ImagePicker from 'expo-image-picker'
 import { supabase } from '../../../lib/supabase'
 import { useAuth } from '../../../lib/auth-context'
 import { allergenLabel } from '../../../lib/format'
+import { pickImage as pickImageFromLib, takePhoto as takePhotoFromLib, type ImagePickerAsset } from '../../../lib/image-picker'
 
 const ALL_ALLERGENS = [
   'gluten', 'crustaceans', 'eggs', 'fish', 'peanuts', 'soybeans',
@@ -32,7 +32,7 @@ export default function EditDishScreen() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null)
-  const [newImage, setNewImage] = useState<ImagePicker.ImagePickerAsset | null>(null)
+  const [newImage, setNewImage] = useState<ImagePickerAsset | null>(null)
   const [quantity, setQuantity] = useState('1')
   const [pickupStart, setPickupStart] = useState('')
   const [pickupEnd, setPickupEnd] = useState('')
@@ -86,32 +86,13 @@ export default function EditDishScreen() {
   }, [fetchDish])
 
   const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    if (status !== 'granted') {
-      Alert.alert('Toestemming nodig', 'We hebben toegang tot je foto\'s nodig.')
-      return
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [16, 9],
-      quality: 0.8,
-    })
-    if (!result.canceled && result.assets[0]) setNewImage(result.assets[0])
+    const asset = await pickImageFromLib()
+    if (asset) setNewImage(asset)
   }
 
   const takePhoto = async () => {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync()
-    if (status !== 'granted') {
-      Alert.alert('Toestemming nodig', 'We hebben toegang tot je camera nodig.')
-      return
-    }
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [16, 9],
-      quality: 0.8,
-    })
-    if (!result.canceled && result.assets[0]) setNewImage(result.assets[0])
+    const asset = await takePhotoFromLib()
+    if (asset) setNewImage(asset)
   }
 
   const showImageOptions = () => {
@@ -271,7 +252,7 @@ export default function EditDishScreen() {
               <Image source={{ uri: displayImage }} className="w-full h-56" resizeMode="cover" />
             ) : (
               <View className="w-full h-56 bg-warm-100 items-center justify-center">
-                <Ionicons name="camera-outline" size={48} color="#9e9589" />
+                <Ionicons name="camera-outline" size={48} color="#b0a89e" />
                 <Text className="text-warm-500 text-sm mt-2">Voeg een foto toe</Text>
               </View>
             )}
@@ -283,7 +264,7 @@ export default function EditDishScreen() {
             <TextInput
               className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 mb-4"
               placeholder="Bijv. Pasta bolognese"
-              placeholderTextColor="#9e9589"
+              placeholderTextColor="#b0a89e"
               value={title}
               onChangeText={setTitle}
             />
@@ -293,7 +274,7 @@ export default function EditDishScreen() {
             <TextInput
               className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 mb-4"
               placeholder="Omschrijf je gerecht..."
-              placeholderTextColor="#9e9589"
+              placeholderTextColor="#b0a89e"
               value={description}
               onChangeText={setDescription}
               multiline
@@ -308,7 +289,7 @@ export default function EditDishScreen() {
                 className="w-10 h-10 rounded-xl bg-warm-100 items-center justify-center"
                 onPress={() => setQuantity((q) => String(Math.max(1, parseInt(q, 10) - 1)))}
               >
-                <Ionicons name="remove" size={20} color="#302b26" />
+                <Ionicons name="remove" size={20} color="#3d3833" />
               </Pressable>
               <TextInput
                 className="bg-white border border-warm-200 rounded-xl px-4 py-2.5 text-base text-warm-800 text-center mx-3 w-16"
@@ -320,7 +301,7 @@ export default function EditDishScreen() {
                 className="w-10 h-10 rounded-xl bg-warm-100 items-center justify-center"
                 onPress={() => setQuantity((q) => String(parseInt(q, 10) + 1))}
               >
-                <Ionicons name="add" size={20} color="#302b26" />
+                <Ionicons name="add" size={20} color="#3d3833" />
               </Pressable>
             </View>
 
@@ -330,14 +311,14 @@ export default function EditDishScreen() {
               <TextInput
                 className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800"
                 placeholder="Van (bijv. 18:00)"
-                placeholderTextColor="#9e9589"
+                placeholderTextColor="#b0a89e"
                 value={pickupStart}
                 onChangeText={setPickupStart}
               />
               <TextInput
                 className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800"
                 placeholder="Tot (bijv. 19:00)"
-                placeholderTextColor="#9e9589"
+                placeholderTextColor="#b0a89e"
                 value={pickupEnd}
                 onChangeText={setPickupEnd}
               />
@@ -352,7 +333,7 @@ export default function EditDishScreen() {
                 }`}
                 onPress={() => setIsVegetarian((v) => !v)}
               >
-                <Ionicons name="leaf-outline" size={18} color={isVegetarian ? '#15803d' : '#9e9589'} />
+                <Ionicons name="leaf-outline" size={18} color={isVegetarian ? '#15803d' : '#b0a89e'} />
                 <Text className={`text-sm font-bold ml-2 ${isVegetarian ? 'text-brand-700' : 'text-warm-600'}`}>
                   Vegetarisch
                 </Text>
@@ -363,7 +344,7 @@ export default function EditDishScreen() {
                 }`}
                 onPress={() => setIsVegan((v) => !v)}
               >
-                <Ionicons name="leaf-outline" size={18} color={isVegan ? '#15803d' : '#9e9589'} />
+                <Ionicons name="leaf-outline" size={18} color={isVegan ? '#15803d' : '#b0a89e'} />
                 <Text className={`text-sm font-bold ml-2 ${isVegan ? 'text-brand-700' : 'text-warm-600'}`}>
                   Veganistisch
                 </Text>
@@ -374,7 +355,7 @@ export default function EditDishScreen() {
                 }`}
                 onPress={() => setBringOwnContainer((v) => !v)}
               >
-                <Ionicons name="cube-outline" size={18} color={bringOwnContainer ? '#d97706' : '#9e9589'} />
+                <Ionicons name="cube-outline" size={18} color={bringOwnContainer ? '#d97706' : '#b0a89e'} />
                 <Text className={`text-sm font-bold ml-2 ${bringOwnContainer ? 'text-amber-700' : 'text-warm-600'}`}>
                   Eigen bakje meenemen
                 </Text>
@@ -387,7 +368,7 @@ export default function EditDishScreen() {
               <TextInput
                 className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800"
                 placeholder="Voeg ingrediënt toe..."
-                placeholderTextColor="#9e9589"
+                placeholderTextColor="#b0a89e"
                 value={ingredientInput}
                 onChangeText={setIngredientInput}
                 onSubmitEditing={addIngredient}
@@ -406,7 +387,7 @@ export default function EditDishScreen() {
                     onPress={() => setIngredients((prev) => prev.filter((i) => i !== name))}
                   >
                     <Text className="text-sm text-warm-700 mr-1">{name}</Text>
-                    <Ionicons name="close-circle" size={16} color="#9e9589" />
+                    <Ionicons name="close-circle" size={16} color="#b0a89e" />
                   </Pressable>
                 ))}
               </View>

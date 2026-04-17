@@ -198,7 +198,7 @@ export default function ReviewScreen() {
                 <Ionicons
                   name={star <= rating ? 'star' : 'star-outline'}
                   size={36}
-                  color={star <= rating ? '#f59e0b' : '#c4bdb4'}
+                  color={star <= rating ? '#f59e0b' : '#d1cbc4'}
                 />
               </Pressable>
             ))}
@@ -219,7 +219,7 @@ export default function ReviewScreen() {
             <TextInput
               className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 min-h-[120px]"
               placeholder={PLACEHOLDERS[rating] ?? 'Deel je ervaring...'}
-              placeholderTextColor="#9e9589"
+              placeholderTextColor="#b0a89e"
               value={comment}
               onChangeText={(text) => {
                 if (text.length <= maxChars) setComment(text)

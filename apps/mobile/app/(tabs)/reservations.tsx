@@ -194,7 +194,7 @@ export default function ReservationsScreen() {
         </View>
 
         <View className="flex-row items-center mt-1">
-          <Ionicons name="time-outline" size={14} color="#736b62" />
+          <Ionicons name="time-outline" size={14} color="#8a8680" />
           <Text className="text-sm text-warm-500 ml-1">
             {formatPickupTime(item.dish.pickup_start, item.dish.pickup_end)}
           </Text>
@@ -228,7 +228,7 @@ export default function ReservationsScreen() {
                       key={star}
                       name={star <= reviewMap[item.id] ? 'star' : 'star-outline'}
                       size={14}
-                      color={star <= reviewMap[item.id] ? '#f59e0b' : '#c4bdb4'}
+                      color={star <= reviewMap[item.id] ? '#f59e0b' : '#d1cbc4'}
                     />
                   ))}
                 </View>
@@ -296,7 +296,7 @@ export default function ReservationsScreen() {
                       : 'close-circle-outline'
                   }
                   size={48}
-                  color="#c4bdb4"
+                  color="#d1cbc4"
                 />
                 <Text className="text-warm-400 text-base text-center mt-4">
                   {activeTab === 'actief'

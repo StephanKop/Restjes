@@ -12,9 +12,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import * as ImagePicker from 'expo-image-picker'
 import { useAuth } from '../../lib/auth-context'
 import { supabase } from '../../lib/supabase'
+import { pickImage as pickImageFromLib } from '../../lib/image-picker'
 
 interface ProfileData {
   display_name: string | null
@@ -80,24 +80,10 @@ export default function ProfileScreen() {
   }
 
   const handlePickAvatar = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    if (status !== 'granted') {
-      Alert.alert('Toestemming nodig', 'We hebben toegang tot je foto\'s nodig.')
-      return
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    })
-
-    if (result.canceled || !result.assets[0] || !user) return
+    const asset = await pickImageFromLib()
+    if (!asset || !user) return
 
     setUploadingAvatar(true)
-
-    const asset = result.assets[0]
     const ext = asset.uri.split('.').pop() ?? 'jpg'
     const fileName = `avatars/${user.id}/${Date.now()}.${ext}`
 
@@ -159,7 +145,7 @@ export default function ProfileScreen() {
           <TextInput
             className="flex-1 bg-warm-100 border border-warm-200 rounded-xl px-4 py-2.5 text-base text-warm-800"
             placeholder={placeholder}
-            placeholderTextColor="#9e9589"
+            placeholderTextColor="#b0a89e"
             value={fieldInput}
             onChangeText={setFieldInput}
             autoFocus
@@ -179,7 +165,7 @@ export default function ProfileScreen() {
             )}
           </Pressable>
           <Pressable className="ml-2" onPress={() => setEditingField(null)}>
-            <Ionicons name="close" size={22} color="#9e9589" />
+            <Ionicons name="close" size={22} color="#b0a89e" />
           </Pressable>
         </View>
       )
@@ -193,11 +179,11 @@ export default function ProfileScreen() {
         }}
         className="flex-row items-center bg-warm-100 rounded-xl px-4 py-3 mb-3 active:opacity-80"
       >
-        <Ionicons name={icon} size={18} color="#736b62" />
+        <Ionicons name={icon} size={18} color="#8a8680" />
         <Text className="text-warm-700 text-sm ml-2 flex-1">
           {value || placeholder}
         </Text>
-        <Ionicons name="pencil-outline" size={16} color="#9e9589" />
+        <Ionicons name="pencil-outline" size={16} color="#b0a89e" />
       </Pressable>
     )
   }
@@ -270,7 +256,7 @@ export default function ProfileScreen() {
               <Text className="text-warm-800 text-base font-bold flex-1">
                 Mijn aanbod
               </Text>
-              <Ionicons name="chevron-forward" size={18} color="#9e9589" />
+              <Ionicons name="chevron-forward" size={18} color="#b0a89e" />
             </Pressable>
             <Pressable
               onPress={() => router.push('/dish/create')}
@@ -292,31 +278,31 @@ export default function ProfileScreen() {
               onPress={() => {}}
               className="flex-row items-center px-5 py-4 border-b border-warm-100 active:bg-warm-100"
             >
-              <Ionicons name="settings-outline" size={20} color="#302b26" />
+              <Ionicons name="settings-outline" size={20} color="#3d3833" />
               <Text className="text-warm-800 text-base ml-3 flex-1">
                 Instellingen
               </Text>
-              <Ionicons name="chevron-forward" size={18} color="#9e9589" />
+              <Ionicons name="chevron-forward" size={18} color="#b0a89e" />
             </Pressable>
             <Pressable
               onPress={() => {}}
               className="flex-row items-center px-5 py-4 border-b border-warm-100 active:bg-warm-100"
             >
-              <Ionicons name="help-circle-outline" size={20} color="#302b26" />
+              <Ionicons name="help-circle-outline" size={20} color="#3d3833" />
               <Text className="text-warm-800 text-base ml-3 flex-1">
                 Hulp en ondersteuning
               </Text>
-              <Ionicons name="chevron-forward" size={18} color="#9e9589" />
+              <Ionicons name="chevron-forward" size={18} color="#b0a89e" />
             </Pressable>
             <Pressable
               onPress={() => {}}
               className="flex-row items-center px-5 py-4 active:bg-warm-100"
             >
-              <Ionicons name="information-circle-outline" size={20} color="#302b26" />
+              <Ionicons name="information-circle-outline" size={20} color="#3d3833" />
               <Text className="text-warm-800 text-base ml-3 flex-1">
                 Over Kliekjesclub
               </Text>
-              <Ionicons name="chevron-forward" size={18} color="#9e9589" />
+              <Ionicons name="chevron-forward" size={18} color="#b0a89e" />
             </Pressable>
           </View>
 

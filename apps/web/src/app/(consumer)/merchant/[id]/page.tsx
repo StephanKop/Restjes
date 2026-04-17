@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -93,7 +95,7 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
     .order('pickup_start', { ascending: true })
 
   // Fetch latest 3 reviews
-  const { data: latestReviews } = await supabase
+  const { data: latestReviews, error: reviewsError } = await supabase
     .from('reviews')
     .select(
       `
@@ -112,6 +114,10 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
     .eq('merchant_id', id)
     .order('created_at', { ascending: false })
     .limit(3)
+
+  if (reviewsError) {
+    console.error('Reviews query error:', reviewsError)
+  }
 
   const reviewList: ReviewData[] = (latestReviews ?? []).map((r) => ({
     id: r.id,

@@ -142,7 +142,7 @@ export default function AanbiederDashboard() {
       label: 'Instellingen',
       subtitle: 'Profiel en bedrijfsgegevens',
       href: '/aanbieder/settings',
-      color: '#736b62',
+      color: '#8a8680',
       bg: 'bg-warm-100',
     },
   ]
@@ -213,7 +213,7 @@ export default function AanbiederDashboard() {
                   </Text>
                 </View>
               ) : null}
-              <Ionicons name="chevron-forward" size={18} color="#9e9589" />
+              <Ionicons name="chevron-forward" size={18} color="#b0a89e" />
             </Pressable>
           ))}
         </View>

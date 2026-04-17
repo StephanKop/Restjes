@@ -46,7 +46,7 @@ function StarRow({ rating, size = 14 }: { rating: number; size?: number }) {
           key={star}
           name={star <= Math.floor(rating) ? 'star' : star - 0.5 <= rating ? 'star-half' : 'star-outline'}
           size={size}
-          color={star <= rating ? '#f59e0b' : '#c4bdb4'}
+          color={star <= rating ? '#f59e0b' : '#d1cbc4'}
         />
       ))}
     </View>
@@ -221,7 +221,7 @@ export default function MerchantReviewsScreen() {
             <TextInput
               className="bg-warm-50 border border-warm-200 rounded-xl px-4 py-3 text-sm text-warm-800 min-h-[80px]"
               placeholder="Reageer op deze beoordeling..."
-              placeholderTextColor="#9e9589"
+              placeholderTextColor="#b0a89e"
               value={replyText}
               onChangeText={(text) => {
                 if (text.length <= maxReplyChars) setReplyText(text)
@@ -353,7 +353,7 @@ export default function MerchantReviewsScreen() {
         }
         ListEmptyComponent={
           <View className="items-center justify-center py-20">
-            <Ionicons name="star-outline" size={48} color="#c4bdb4" />
+            <Ionicons name="star-outline" size={48} color="#d1cbc4" />
             <Text className="text-warm-400 text-base text-center mt-4">
               Je hebt nog geen beoordelingen ontvangen
             </Text>

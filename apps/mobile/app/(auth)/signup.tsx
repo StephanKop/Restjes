@@ -193,7 +193,7 @@ export default function SignupScreen() {
             className="bg-white rounded-xl px-6 py-3.5 mb-3 flex-row items-center justify-center active:opacity-90"
           >
             {googleLoading ? (
-              <ActivityIndicator color="#302b26" />
+              <ActivityIndicator color="#3d3833" />
             ) : (
               <>
                 <View style={{ width: 20, height: 20, alignItems: 'center', justifyContent: 'center' }}>
