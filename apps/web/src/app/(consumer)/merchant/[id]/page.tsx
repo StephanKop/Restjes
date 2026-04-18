@@ -53,7 +53,8 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
     notFound()
   }
 
-  const reviewList: ReviewData[] = (latestReviews ?? []).map((r: Record<string, unknown>) => ({
+  const reviewList: ReviewData[] = (latestReviews ?? [])// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  .map((r: any) => ({
     id: r.id,
     rating: r.rating,
     comment: r.comment,

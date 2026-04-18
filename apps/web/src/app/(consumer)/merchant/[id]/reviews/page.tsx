@@ -42,7 +42,8 @@ export default async function MerchantReviewsPage({ params }: MerchantReviewsPag
     notFound()
   }
 
-  const reviewList: ReviewData[] = (reviews ?? []).map((r: Record<string, unknown>) => {
+  const reviewList: ReviewData[] = (reviews ?? [])// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  .map((r: any) => {
     const reservation = r.reservation as { dish: { title: string } } | null
     return {
       id: r.id,
