@@ -4,6 +4,7 @@ import Script from 'next/script'
 import { Nunito } from 'next/font/google'
 import { NavigationProgress } from '@/components/NavigationProgress'
 import { ScrollReveal } from '@/components/ScrollReveal'
+import { AuthRefresh } from '@/components/AuthRefresh'
 import './globals.css'
 
 const nunito = Nunito({
@@ -65,6 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <NavigationProgress />
         </Suspense>
         <ScrollReveal />
+        <AuthRefresh />
         {children}
       </body>
     </html>
