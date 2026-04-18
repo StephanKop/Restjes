@@ -1,5 +1,3 @@
-export const revalidate = 3600 // ISR: revalidate every hour
-
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { MainNav } from '@/components/MainNav'

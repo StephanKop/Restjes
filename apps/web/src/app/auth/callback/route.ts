@@ -1,15 +1,39 @@
 import { NextResponse } from 'next/server'
-import { revalidatePath } from 'next/cache'
-import { createServerComponentClient } from '@/lib/supabase-server'
+import { createServerClient } from '@supabase/ssr'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/browse'
 
+  const redirectUrl = code ? `${origin}${next}` : `${origin}/login?error=auth`
+  const response = NextResponse.redirect(redirectUrl)
+
   if (code) {
-    const supabase = await createServerComponentClient()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return [...new URL(request.url).searchParams].length
+              ? Array.from(request.headers.get('cookie')?.split('; ') ?? []).map((c) => {
+                  const [name, ...rest] = c.split('=')
+                  return { name, value: rest.join('=') }
+                })
+              : []
+          },
+          setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+            for (const { name, value, options } of cookiesToSet) {
+              response.cookies.set(name, value, options as any)
+            }
+          },
+        },
+      },
+    )
+
     const { error } = await supabase.auth.exchangeCodeForSession(code)
+
     if (!error) {
       // Sync avatar from OAuth provider if profile doesn't have one yet
       const { data: { user } } = await supabase.auth.getUser()
@@ -24,13 +48,9 @@ export async function GET(request: Request) {
         }
       }
 
-      // Invalidate cached layouts so navigation shows logged-in state
-      revalidatePath('/', 'layout')
-
-      return NextResponse.redirect(`${origin}${next}`)
+      return response
     }
   }
 
-  // Auth error — redirect to login with error indicator
   return NextResponse.redirect(`${origin}/login?error=auth`)
 }

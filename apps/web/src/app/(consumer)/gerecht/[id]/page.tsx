@@ -1,5 +1,3 @@
-export const revalidate = 60 // ISR: revalidate every minute
-
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
