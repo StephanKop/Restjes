@@ -1,13 +1,23 @@
 import { unstable_cache } from 'next/cache'
-import { createServerComponentClient } from '@/lib/supabase-server'
+import { createClient } from '@supabase/supabase-js'
+
+/**
+ * Anonymous Supabase client for cached queries.
+ * Does NOT use cookies — only for public data that doesn't need auth.
+ */
+function getPublicClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  )
+}
 
 /**
  * Cached dish detail — revalidates every 60 seconds.
- * Public data only (no auth-dependent fields).
  */
 export const getCachedDish = unstable_cache(
   async (id: string) => {
-    const supabase = await createServerComponentClient()
+    const supabase = getPublicClient()
     const { data, error } = await supabase
       .from('dishes')
       .select(
@@ -38,7 +48,7 @@ export const getCachedDish = unstable_cache(
  */
 export const getCachedMerchant = unstable_cache(
   async (id: string) => {
-    const supabase = await createServerComponentClient()
+    const supabase = getPublicClient()
     const { data } = await supabase
       .from('merchants')
       .select(
@@ -59,7 +69,7 @@ export const getCachedMerchant = unstable_cache(
  */
 export const getCachedMerchantDishes = unstable_cache(
   async (merchantId: string) => {
-    const supabase = await createServerComponentClient()
+    const supabase = getPublicClient()
     const { data } = await supabase
       .from('dishes')
       .select(
@@ -83,7 +93,7 @@ export const getCachedMerchantDishes = unstable_cache(
  */
 export const getCachedMerchantReviews = unstable_cache(
   async (merchantId: string, limit?: number) => {
-    const supabase = await createServerComponentClient()
+    const supabase = getPublicClient()
     let query = supabase
       .from('reviews')
       .select(
@@ -107,7 +117,7 @@ export const getCachedMerchantReviews = unstable_cache(
  */
 export const getCachedMerchantReviewsFull = unstable_cache(
   async (merchantId: string) => {
-    const supabase = await createServerComponentClient()
+    const supabase = getPublicClient()
     const { data } = await supabase
       .from('reviews')
       .select(
@@ -122,30 +132,4 @@ export const getCachedMerchantReviewsFull = unstable_cache(
   },
   ['merchant-reviews-full'],
   { revalidate: 300, tags: ['reviews'] },
-)
-
-/**
- * Cached browse dishes — revalidates every 30 seconds.
- * Note: only used for non-personalized browse (no city/location filter).
- */
-export const getCachedBrowseDishes = unstable_cache(
-  async () => {
-    const supabase = await createServerComponentClient()
-    const { data } = await supabase
-      .from('dishes')
-      .select(
-        `id, title, description, image_url, quantity_available,
-         pickup_start, pickup_end, bring_own_container, is_vegetarian, is_vegan,
-         merchant:merchants!inner (business_name, city, latitude, longitude),
-         dish_allergies (allergen)`,
-      )
-      .eq('status', 'available')
-      .gt('quantity_available', 0)
-      .or(`pickup_end.gt.${new Date().toISOString()},pickup_end.is.null`)
-      .order('pickup_start', { ascending: true })
-
-    return data ?? []
-  },
-  ['browse-dishes'],
-  { revalidate: 30, tags: ['dishes'] },
 )
