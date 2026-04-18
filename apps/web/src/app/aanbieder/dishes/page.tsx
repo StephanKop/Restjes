@@ -38,13 +38,15 @@ function formatPickupTime(start: string | null, end: string | null): string {
 }
 
 export default async function DishesPage() {
-  const user = await getUser()
+  const [user, supabase] = await Promise.all([
+    getUser(),
+    createServerComponentClient(),
+  ])
 
   if (!user) {
     redirect('/login')
   }
 
-  const supabase = await createServerComponentClient()
   const { data: merchant } = await supabase
     .from('merchants')
     .select('id')
@@ -57,7 +59,7 @@ export default async function DishesPage() {
 
   const { data: dishes } = await supabase
     .from('dishes')
-    .select('*')
+    .select('id, title, description, image_url, quantity_available, status, pickup_start, pickup_end, created_at')
     .eq('merchant_id', merchant.id)
     .order('created_at', { ascending: false })
 
