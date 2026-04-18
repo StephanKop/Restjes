@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerComponentClient } from '@/lib/supabase-server'
+import { getCachedMerchant, getCachedMerchantReviewsFull } from '@/lib/cached-queries'
 import { ReviewList, type ReviewData } from '@/components/ReviewList'
 import { StarRating } from '@/components/StarRating'
 import { JsonLd } from '@/components/JsonLd'
@@ -31,42 +32,18 @@ export async function generateMetadata({ params }: MerchantReviewsPageProps): Pr
 
 export default async function MerchantReviewsPage({ params }: MerchantReviewsPageProps) {
   const { id } = await params
-  const supabase = await createServerComponentClient()
 
-  const { data: merchant, error: merchantError } = await supabase
-    .from('merchants')
-    .select('id, business_name, avg_rating, review_count')
-    .eq('id', id)
-    .single()
+  const [merchant, reviews] = await Promise.all([
+    getCachedMerchant(id),
+    getCachedMerchantReviewsFull(id),
+  ])
 
-  if (merchantError || !merchant) {
+  if (!merchant) {
     notFound()
   }
 
-  const { data: reviews } = await supabase
-    .from('reviews')
-    .select(
-      `
-      id,
-      rating,
-      comment,
-      created_at,
-      merchant_reply,
-      merchant_replied_at,
-      consumer:profiles!consumer_id (
-        display_name,
-        avatar_url
-      ),
-      reservation:reservations (
-        dish:dishes ( title )
-      )
-    `,
-    )
-    .eq('merchant_id', id)
-    .order('created_at', { ascending: false })
-
-  const reviewList: ReviewData[] = (reviews ?? []).map((r) => {
-    const reservation = r.reservation as unknown as { dish: { title: string } } | null
+  const reviewList: ReviewData[] = (reviews ?? []).map((r: Record<string, unknown>) => {
+    const reservation = r.reservation as { dish: { title: string } } | null
     return {
       id: r.id,
       rating: r.rating,
@@ -74,7 +51,7 @@ export default async function MerchantReviewsPage({ params }: MerchantReviewsPag
       created_at: r.created_at,
       merchant_reply: r.merchant_reply,
       merchant_replied_at: r.merchant_replied_at,
-      consumer: r.consumer as unknown as { display_name: string | null; avatar_url: string | null },
+      consumer: r.consumer as { display_name: string | null; avatar_url: string | null },
       dish_title: reservation?.dish?.title ?? null,
     }
   })

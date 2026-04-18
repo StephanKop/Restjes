@@ -34,10 +34,7 @@ export async function GET(request: Request) {
     },
   )
 
-  const { data: sessionData, error } = await supabase.auth.exchangeCodeForSession(code)
-
-  console.log('[Auth Callback] exchangeCodeForSession result:', error ? `ERROR: ${error.message}` : `SUCCESS, user: ${sessionData?.user?.email}`)
-  console.log('[Auth Callback] Setting cookies on response, redirect to:', `${origin}${next}`)
+  const { error } = await supabase.auth.exchangeCodeForSession(code)
 
   if (error) {
     return NextResponse.redirect(`${origin}/login?error=auth`)

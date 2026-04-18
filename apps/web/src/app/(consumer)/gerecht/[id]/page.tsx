@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
+import { getCachedDish } from '@/lib/cached-queries'
 import { formatPickupTime, allergenLabel } from '@/lib/format'
 import { ReserveButton } from '@/components/ReserveButton'
 import { StartChatButton } from '@/components/StartChatButton'
@@ -43,49 +44,10 @@ export async function generateMetadata({ params }: DishPageProps): Promise<Metad
 
 export default async function DishPage({ params }: DishPageProps) {
   const { id } = await params
-  const supabase = await createServerComponentClient()
 
-  const { data: dish, error } = await supabase
-    .from('dishes')
-    .select(
-      `
-      id,
-      merchant_id,
-      title,
-      description,
-      image_url,
-      quantity_available,
-      status,
-      pickup_start,
-      pickup_end,
-      bring_own_container,
-      is_vegetarian,
-      is_vegan,
-      is_frozen,
-      expires_at,
-      dish_ingredients (
-        id,
-        name
-      ),
-      dish_allergies (
-        id,
-        allergen
-      ),
-      merchant:merchants!inner (
-        id,
-        business_name,
-        city,
-        logo_url,
-        avg_rating,
-        review_count,
-        is_verified
-      )
-    `,
-    )
-    .eq('id', id)
-    .single()
+  const dish = await getCachedDish(id)
 
-  if (error || !dish) {
+  if (!dish) {
     notFound()
   }
 
@@ -111,6 +73,7 @@ export default async function DishPage({ params }: DishPageProps) {
   // Check if the current user is the owner of this dish
   let isOwner = false
   if (user) {
+    const supabase = await createServerComponentClient()
     const { data: ownMerchant } = await supabase
       .from('merchants')
       .select('id')

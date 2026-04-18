@@ -38,7 +38,6 @@ async function Notifications() {
 /** Async: resolves the user-dependent parts (avatar, notifications, mobile menu) */
 async function UserNav() {
   const user = await getUser()
-  console.log('[MainNav] getUser result:', user ? `logged in as ${user.email}` : 'no user')
 
   if (!user) {
     return (

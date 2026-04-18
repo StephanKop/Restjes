@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerComponentClient } from '@/lib/supabase-server'
+import { getCachedMerchant, getCachedMerchantDishes, getCachedMerchantReviews } from '@/lib/cached-queries'
 import { DishCard, type DishCardData } from '@/components/DishCard'
 import { ReviewList, type ReviewData } from '@/components/ReviewList'
 import { StarRating } from '@/components/StarRating'
@@ -41,83 +42,18 @@ export async function generateMetadata({ params }: MerchantPageProps): Promise<M
 
 export default async function MerchantPage({ params }: MerchantPageProps) {
   const { id } = await params
-  const supabase = await createServerComponentClient()
 
-  const { data: merchant, error } = await supabase
-    .from('merchants')
-    .select(
-      `
-      id,
-      business_name,
-      description,
-      address_line1,
-      city,
-      postal_code,
-      logo_url,
-      banner_url,
-      avg_rating,
-      review_count,
-      is_verified
-    `,
-    )
-    .eq('id', id)
-    .single()
+  const [merchant, dishes, latestReviews] = await Promise.all([
+    getCachedMerchant(id),
+    getCachedMerchantDishes(id),
+    getCachedMerchantReviews(id, 3),
+  ])
 
-  if (error || !merchant) {
+  if (!merchant) {
     notFound()
   }
 
-  // Fetch available dishes for this merchant
-  const { data: dishes } = await supabase
-    .from('dishes')
-    .select(
-      `
-      id,
-      title,
-      description,
-      image_url,
-      quantity_available,
-      pickup_start,
-      pickup_end,
-      bring_own_container,
-      is_vegetarian,
-      is_vegan,
-      dish_allergies (
-        allergen
-      )
-    `,
-    )
-    .eq('merchant_id', id)
-    .eq('status', 'available')
-    .gt('quantity_available', 0)
-    .order('pickup_start', { ascending: true })
-
-  // Fetch latest 3 reviews
-  const { data: latestReviews, error: reviewsError } = await supabase
-    .from('reviews')
-    .select(
-      `
-      id,
-      rating,
-      comment,
-      created_at,
-      merchant_reply,
-      merchant_replied_at,
-      consumer:profiles!consumer_id (
-        display_name,
-        avatar_url
-      )
-    `,
-    )
-    .eq('merchant_id', id)
-    .order('created_at', { ascending: false })
-    .limit(3)
-
-  if (reviewsError) {
-    console.error('Reviews query error:', reviewsError)
-  }
-
-  const reviewList: ReviewData[] = (latestReviews ?? []).map((r) => ({
+  const reviewList: ReviewData[] = (latestReviews ?? []).map((r: Record<string, unknown>) => ({
     id: r.id,
     rating: r.rating,
     comment: r.comment,
