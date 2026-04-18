@@ -190,7 +190,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
     itemListElement: cards.slice(0, 20).map((dish, i) => ({
       '@type': 'ListItem',
       position: i + 1,
-      url: `https://kliekjesclub.nl/dish/${dish.id}`,
+      url: `https://kliekjesclub.nl/gerecht/${dish.id}`,
       name: dish.title,
     })),
   }

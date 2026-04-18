@@ -202,7 +202,7 @@ export default async function ConsumerReservationsPage({
                 <div className="flex flex-1 flex-col justify-between min-w-0">
                   <div>
                     <div className="mb-1 flex items-start justify-between gap-2">
-                      <Link href={`/dish/${dish.id}`}>
+                      <Link href={`/gerecht/${dish.id}`}>
                         <h3 className="font-bold text-warm-900 hover:text-brand-600 line-clamp-1">
                           {dish.title}
                         </h3>

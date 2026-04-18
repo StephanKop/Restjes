@@ -111,7 +111,7 @@ export function DishMap({ dishes }: DishMapProps) {
           const pickup = formatPickupTime(dish.pickup_start, dish.pickup_end)
           infoWindow.setContent(`
             <div style="font-family: inherit; max-width: 220px;">
-              <a href="/dish/${dish.id}" style="text-decoration: none; color: inherit;">
+              <a href="/gerecht/${dish.id}" style="text-decoration: none; color: inherit;">
                 <p style="margin: 0 0 4px; font-weight: 700; font-size: 14px; color: #1c1917;">
                   ${dish.title}
                 </p>

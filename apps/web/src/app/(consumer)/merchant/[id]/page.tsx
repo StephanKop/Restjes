@@ -281,7 +281,7 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
           <h2 className="text-2xl font-extrabold text-warm-900">Beoordelingen</h2>
           {reviewList.length > 0 && (
             <Link
-              href={`/merchant/${id}/reviews`}
+              href={`/aanbieder/${id}/reviews`}
               className="text-sm font-semibold text-brand-600 hover:text-brand-700"
             >
               Alle beoordelingen bekijken &rarr;
@@ -295,7 +295,7 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
             {(merchant.review_count ?? 0) > 3 && (
               <div className="mt-6 text-center">
                 <Link
-                  href={`/merchant/${id}/reviews`}
+                  href={`/aanbieder/${id}/reviews`}
                   className="inline-block rounded-xl bg-white px-6 py-3 font-bold text-brand-600 shadow-card transition-colors hover:bg-brand-50"
                 >
                   Alle {merchant.review_count} beoordelingen bekijken

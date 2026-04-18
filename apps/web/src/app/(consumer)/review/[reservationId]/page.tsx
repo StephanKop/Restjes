@@ -167,7 +167,7 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
 
               <div className="text-center">
                 <Link
-                  href={`/merchant/${merchant.id}`}
+                  href={`/aanbieder/${merchant.id}`}
                   className="text-sm font-semibold text-brand-600 hover:text-brand-700"
                 >
                   Bekijk {merchant.business_name} &rarr;

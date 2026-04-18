@@ -71,14 +71,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   const dishPages: MetadataRoute.Sitemap = (dishes ?? []).map((dish) => ({
-    url: `${BASE_URL}/dish/${dish.id}`,
+    url: `${BASE_URL}/gerecht/${dish.id}`,
     lastModified: dish.updated_at ? new Date(dish.updated_at) : new Date(),
     changeFrequency: 'hourly' as const,
     priority: 0.8,
   }))
 
   const merchantPages: MetadataRoute.Sitemap = (merchants ?? []).map((merchant) => ({
-    url: `${BASE_URL}/merchant/${merchant.id}`,
+    url: `${BASE_URL}/aanbieder/${merchant.id}`,
     lastModified: merchant.updated_at ? new Date(merchant.updated_at) : new Date(),
     changeFrequency: 'daily' as const,
     priority: 0.7,

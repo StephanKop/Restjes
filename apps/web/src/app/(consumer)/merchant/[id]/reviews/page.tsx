@@ -92,7 +92,7 @@ export default async function MerchantReviewsPage({ params }: MerchantReviewsPag
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     name: merchant.business_name,
-    url: `https://kliekjesclub.nl/merchant/${id}`,
+    url: `https://kliekjesclub.nl/aanbieder/${id}`,
     ...(merchant.avg_rating !== null
       ? {
           aggregateRating: {
@@ -126,7 +126,7 @@ export default async function MerchantReviewsPage({ params }: MerchantReviewsPag
       <JsonLd data={reviewsJsonLd} />
       {/* Back link */}
       <Link
-        href={`/merchant/${id}`}
+        href={`/aanbieder/${id}`}
         className="mb-6 inline-flex items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700"
       >
         <span aria-hidden="true">&larr;</span> Terug naar {merchant.business_name}

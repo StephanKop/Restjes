@@ -95,7 +95,7 @@ export default async function DishesPage() {
                 data-reveal="scale"
                 className="overflow-hidden rounded-2xl bg-white shadow-card transition-shadow hover:shadow-lg"
               >
-                <Link href={`/dish/${dish.id}`} className="block">
+                <Link href={`/gerecht/${dish.id}`} className="block">
                   <div className="relative aspect-[4/3] bg-warm-100">
                     {dish.image_url ? (
                       <Image

@@ -126,7 +126,7 @@ export default async function DishPage({ params }: DishPageProps) {
     name: dish.title,
     description: dish.description ?? undefined,
     image: dish.image_url ?? undefined,
-    url: `https://kliekjesclub.nl/dish/${dish.id}`,
+    url: `https://kliekjesclub.nl/gerecht/${dish.id}`,
     offers: {
       '@type': 'Offer',
       price: '0',
@@ -137,7 +137,7 @@ export default async function DishPage({ params }: DishPageProps) {
       seller: {
         '@type': 'Organization',
         name: merchant.business_name,
-        url: `https://kliekjesclub.nl/merchant/${merchant.id}`,
+        url: `https://kliekjesclub.nl/aanbieder/${merchant.id}`,
       },
     },
     ...(merchant.avg_rating !== null && merchant.review_count > 0
@@ -164,7 +164,7 @@ export default async function DishPage({ params }: DishPageProps) {
         <span className="text-warm-600">{dish.title}</span>
       </nav>
 
-      {/* Hero: Image + title/merchant/reserve */}
+      {/* Hero: Image + title/aanbieder/reserve */}
       <div className="gap-6 lg:flex" style={{ minHeight: 480 }}>
         {/* Image */}
         <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-warm-100 shadow-card lg:aspect-auto lg:flex-[7_7_0%]" data-reveal="left">
@@ -243,7 +243,7 @@ export default async function DishPage({ params }: DishPageProps) {
 
             {/* Merchant info */}
             <Link
-              href={`/merchant/${merchant.id}`}
+              href={`/aanbieder/${merchant.id}`}
               className="flex items-center gap-4 rounded-xl border border-warm-200 bg-warm-50/50 p-4 transition-all duration-150 hover:border-brand-200 hover:bg-brand-50/50 active:scale-[0.98]"
             >
               {merchant.logo_url ? (
