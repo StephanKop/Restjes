@@ -22,147 +22,40 @@ function NotificationSetup() {
   return null
 }
 
+const headerOptions = {
+  headerShown: true,
+  headerStyle: { backgroundColor: '#faf9f6' },
+  headerShadowVisible: false,
+  headerTintColor: '#3d3833',
+  headerBackTitle: 'Terug',
+  headerBlurEffect: 'none' as const,
+}
+
 export default function RootLayout() {
   return (
     <AuthProvider>
       <StatusBar style="dark" />
       <NotificationSetup />
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack screenOptions={{
+        headerShown: false,
+        ...headerOptions,
+        headerShown: false,
+      }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen
-          name="dish/create"
-          options={{
-            headerShown: true,
-            headerTitle: 'Nieuw gerecht',
-            headerBackTitle: 'Terug',
-            headerStyle: { backgroundColor: '#faf9f6' },
-            headerShadowVisible: false,
-            headerTintColor: '#3d3833',
-          }}
-        />
-        <Stack.Screen
-          name="merchant/[id]/index"
-          options={{
-            headerShown: true,
-            headerTitle: '',
-            headerBackTitle: 'Terug',
-            headerStyle: { backgroundColor: '#faf9f6' },
-            headerShadowVisible: false,
-            headerTintColor: '#3d3833',
-          }}
-        />
-        <Stack.Screen
-          name="merchant/[id]/reviews"
-          options={{
-            headerShown: true,
-            headerTitle: 'Beoordelingen',
-            headerBackTitle: 'Terug',
-            headerStyle: { backgroundColor: '#faf9f6' },
-            headerShadowVisible: false,
-            headerTintColor: '#3d3833',
-          }}
-        />
-        <Stack.Screen
-          name="chat/[conversationId]"
-          options={{
-            headerShown: true,
-            headerTitle: '',
-            headerBackTitle: 'Terug',
-            headerStyle: { backgroundColor: '#faf9f6' },
-            headerShadowVisible: false,
-            headerTintColor: '#3d3833',
-          }}
-        />
-        <Stack.Screen
-          name="review/[reservationId]"
-          options={{
-            headerShown: true,
-            headerTitle: 'Beoordeling',
-            headerBackTitle: 'Terug',
-            headerStyle: { backgroundColor: '#faf9f6' },
-            headerShadowVisible: false,
-            headerTintColor: '#3d3833',
-          }}
-        />
-        <Stack.Screen
-          name="aanbieder/index"
-          options={{
-            headerShown: true,
-            headerTitle: 'Mijn aanbod',
-            headerBackTitle: 'Terug',
-            headerStyle: { backgroundColor: '#faf9f6' },
-            headerShadowVisible: false,
-            headerTintColor: '#3d3833',
-          }}
-        />
-        <Stack.Screen
-          name="aanbieder/dishes"
-          options={{
-            headerShown: true,
-            headerTitle: 'Mijn gerechten',
-            headerBackTitle: 'Terug',
-            headerStyle: { backgroundColor: '#faf9f6' },
-            headerShadowVisible: false,
-            headerTintColor: '#3d3833',
-          }}
-        />
-        <Stack.Screen
-          name="aanbieder/reservations"
-          options={{
-            headerShown: true,
-            headerTitle: 'Reserveringen',
-            headerBackTitle: 'Terug',
-            headerStyle: { backgroundColor: '#faf9f6' },
-            headerShadowVisible: false,
-            headerTintColor: '#3d3833',
-          }}
-        />
-        <Stack.Screen
-          name="aanbieder/reviews"
-          options={{
-            headerShown: true,
-            headerTitle: 'Beoordelingen',
-            headerBackTitle: 'Terug',
-            headerStyle: { backgroundColor: '#faf9f6' },
-            headerShadowVisible: false,
-            headerTintColor: '#3d3833',
-          }}
-        />
-        <Stack.Screen
-          name="aanbieder/settings"
-          options={{
-            headerShown: true,
-            headerTitle: 'Instellingen',
-            headerBackTitle: 'Terug',
-            headerStyle: { backgroundColor: '#faf9f6' },
-            headerShadowVisible: false,
-            headerTintColor: '#3d3833',
-          }}
-        />
-        <Stack.Screen
-          name="dish/[id]/index"
-          options={{
-            headerShown: true,
-            headerTitle: '',
-            headerBackTitle: 'Terug',
-            headerStyle: { backgroundColor: '#faf9f6' },
-            headerShadowVisible: false,
-            headerTintColor: '#3d3833',
-          }}
-        />
-        <Stack.Screen
-          name="dish/[id]/edit"
-          options={{
-            headerShown: true,
-            headerTitle: 'Gerecht bewerken',
-            headerBackTitle: 'Terug',
-            headerStyle: { backgroundColor: '#faf9f6' },
-            headerShadowVisible: false,
-            headerTintColor: '#3d3833',
-          }}
-        />
+        <Stack.Screen name="dish/create" options={{ ...headerOptions, headerTitle: 'Nieuw gerecht' }} />
+        <Stack.Screen name="dish/[id]/index" options={{ ...headerOptions, headerTitle: '' }} />
+        <Stack.Screen name="dish/[id]/edit" options={{ ...headerOptions, headerTitle: 'Gerecht bewerken' }} />
+        <Stack.Screen name="merchant/[id]/index" options={{ ...headerOptions, headerTitle: '' }} />
+        <Stack.Screen name="merchant/[id]/reviews" options={{ ...headerOptions, headerTitle: 'Beoordelingen' }} />
+        <Stack.Screen name="chat/[conversationId]" options={{ ...headerOptions, headerTitle: '' }} />
+        <Stack.Screen name="review/[reservationId]" options={{ ...headerOptions, headerTitle: 'Beoordeling' }} />
+        <Stack.Screen name="aanbieder/index" options={{ ...headerOptions, headerTitle: 'Mijn aanbod' }} />
+        <Stack.Screen name="aanbieder/dishes" options={{ ...headerOptions, headerTitle: 'Mijn gerechten' }} />
+        <Stack.Screen name="aanbieder/reservations" options={{ ...headerOptions, headerTitle: 'Reserveringen' }} />
+        <Stack.Screen name="aanbieder/reviews" options={{ ...headerOptions, headerTitle: 'Beoordelingen' }} />
+        <Stack.Screen name="aanbieder/settings" options={{ ...headerOptions, headerTitle: 'Instellingen' }} />
       </Stack>
     </AuthProvider>
   )
