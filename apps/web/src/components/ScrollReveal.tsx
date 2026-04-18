@@ -26,14 +26,20 @@ export function ScrollReveal() {
       }
     }
 
-    // Observe on initial render and after DOM updates
+    // Observe on initial render
     observe()
 
-    // Watch for new elements added to the DOM (e.g. after navigation)
+    // Re-observe after Suspense/streaming resolves new content.
+    // Use a short-lived MutationObserver instead of a permanent one.
     const mo = new MutationObserver(() => observe())
     mo.observe(document.body, { childList: true, subtree: true })
 
+    // Disconnect the MutationObserver after 3 seconds — by then all
+    // streamed content has resolved. The IntersectionObserver keeps running.
+    const timer = setTimeout(() => mo.disconnect(), 3000)
+
     return () => {
+      clearTimeout(timer)
       io.disconnect()
       mo.disconnect()
     }

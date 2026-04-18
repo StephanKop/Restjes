@@ -18,10 +18,17 @@ export async function GET(request: NextRequest) {
   const res = await fetch(url.toString())
   const data = await res.json()
 
-  return NextResponse.json({
-    predictions: (data.predictions ?? []).map((p: { description: string; place_id: string }) => ({
-      description: p.description,
-      place_id: p.place_id,
-    })),
-  })
+  return NextResponse.json(
+    {
+      predictions: (data.predictions ?? []).map((p: { description: string; place_id: string }) => ({
+        description: p.description,
+        place_id: p.place_id,
+      })),
+    },
+    {
+      headers: {
+        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+      },
+    },
+  )
 }

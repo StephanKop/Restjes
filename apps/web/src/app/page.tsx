@@ -1,3 +1,5 @@
+export const revalidate = 3600 // ISR: revalidate every hour
+
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { MainNav } from '@/components/MainNav'
@@ -58,6 +60,7 @@ export default async function HomePage() {
           loop
           muted
           playsInline
+          preload="metadata"
           className="absolute inset-0 h-full w-full object-cover"
           aria-hidden="true"
         >

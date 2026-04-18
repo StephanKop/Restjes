@@ -67,10 +67,7 @@ select,
   transform: translateY(20px);
   transition:
     opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-    filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  filter: blur(4px);
-  will-change: opacity, transform, filter;
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 [data-reveal="left"] {
   transform: translateX(-30px);
@@ -84,7 +81,6 @@ select,
 [data-reveal].revealed {
   opacity: 1;
   transform: none;
-  filter: blur(0);
 }
 
 /* Stagger children */
@@ -103,7 +99,6 @@ select,
   [data-reveal] {
     opacity: 1;
     transform: none;
-    filter: none;
     transition: none;
   }
 }
