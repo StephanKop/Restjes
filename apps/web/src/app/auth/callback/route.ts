@@ -27,7 +27,7 @@ export async function GET(request: Request) {
             // Set on the cookie store (for subsequent server reads in this request)
             cookieStore.set(name, value, options)
             // Set on the response (so the browser receives the Set-Cookie headers)
-            response.cookies.set(name, value, options as any)
+            response.cookies.set(name, value, options as Record<string, unknown>)
           }
         },
       },

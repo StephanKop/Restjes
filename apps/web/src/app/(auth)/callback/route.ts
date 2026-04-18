@@ -24,7 +24,7 @@ export async function GET(request: Request) {
         setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
           for (const { name, value, options } of cookiesToSet) {
             cookieStore.set(name, value, options)
-            response.cookies.set(name, value, options as any)
+            response.cookies.set(name, value, options as Record<string, unknown>)
           }
         },
       },
