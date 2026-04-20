@@ -143,7 +143,7 @@ export default function ProfileScreen() {
       return (
         <View className="flex-row items-center mb-3">
           <TextInput
-            className="flex-1 bg-warm-100 border border-warm-200 rounded-xl px-4 py-2.5 text-base text-warm-800"
+            className="flex-1 bg-warm-100 border border-warm-200 rounded-xl px-4 py-2.5 text-[16px] text-warm-800"
             placeholder={placeholder}
             placeholderTextColor="#b0a89e"
             value={fieldInput}
@@ -197,10 +197,10 @@ export default function ProfileScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-offwhite" edges={['bottom']}>
+    <SafeAreaView className="flex-1 bg-offwhite" edges={['top', 'bottom']}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="px-5 pt-4 pb-8">
-          <Text className="text-2xl font-bold text-warm-800 mb-6">Profiel</Text>
+        <View className="px-5 pt-2 pb-8">
+          <Text className="text-2xl font-extrabold text-warm-800 mb-6">Profiel</Text>
 
           <View className="bg-white rounded-2xl p-5 mb-4">
             {/* Avatar + name */}
@@ -242,6 +242,22 @@ export default function ProfileScreen() {
             {renderEditableRow('person-outline', 'Naam', 'display_name', profile?.display_name ?? null, 'Stel je naam in')}
             {renderEditableRow('location-outline', 'Woonplaats', 'city', profile?.city ?? null, 'Stel je woonplaats in')}
             {renderEditableRow('call-outline', 'Telefoon', 'phone', profile?.phone ?? null, 'Stel je telefoonnummer in', 'phone-pad')}
+          </View>
+
+          {/* Impact */}
+          <View className="bg-white rounded-2xl overflow-hidden mb-4">
+            <Pressable
+              onPress={() => router.push('/impact' as any)}
+              className="flex-row items-center px-5 py-4 active:bg-warm-100"
+            >
+              <View className="w-8 h-8 rounded-lg bg-brand-100 items-center justify-center mr-3">
+                <Ionicons name="leaf-outline" size={18} color="#22c55e" />
+              </View>
+              <Text className="text-warm-800 text-base font-bold flex-1">
+                Mijn impact
+              </Text>
+              <Ionicons name="chevron-forward" size={18} color="#b0a89e" />
+            </Pressable>
           </View>
 
           {/* Merchant section */}

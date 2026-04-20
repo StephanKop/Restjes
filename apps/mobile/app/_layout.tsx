@@ -51,6 +51,7 @@ export default function RootLayout() {
         <Stack.Screen name="merchant/[id]/reviews" options={{ ...headerOptions, headerTitle: 'Beoordelingen' }} />
         <Stack.Screen name="chat/[conversationId]" options={{ ...headerOptions, headerTitle: '' }} />
         <Stack.Screen name="review/[reservationId]" options={{ ...headerOptions, headerTitle: 'Beoordeling' }} />
+        <Stack.Screen name="impact" options={{ headerShown: false }} />
         <Stack.Screen name="aanbieder/index" options={{ ...headerOptions, headerTitle: 'Mijn aanbod' }} />
         <Stack.Screen name="aanbieder/dishes" options={{ ...headerOptions, headerTitle: 'Mijn gerechten' }} />
         <Stack.Screen name="aanbieder/reservations" options={{ ...headerOptions, headerTitle: 'Reserveringen' }} />

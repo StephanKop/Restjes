@@ -9,6 +9,7 @@ import {
   ScrollView,
   ActivityIndicator,
   StyleSheet,
+  Image,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Link, router } from 'expo-router'
@@ -171,6 +172,13 @@ export default function SignupScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
+          <View className="items-center mb-6">
+            <Image
+              source={require('../../assets/images/logo.png')}
+              style={{ width: 96, height: 96 }}
+              resizeMode="contain"
+            />
+          </View>
           <View className="mb-8">
             <Text className="text-3xl font-bold text-white mb-2">
               Account aanmaken
@@ -215,7 +223,7 @@ export default function SignupScreen() {
 
           <View className="gap-3 mb-4">
             <TextInput
-              className="bg-white/15 border border-white/20 rounded-xl px-4 py-3 text-white text-base"
+              className="bg-white/15 border border-white/20 rounded-xl px-4 py-3 text-white text-[16px]"
               placeholder="Naam"
               placeholderTextColor="rgba(255,255,255,0.5)"
               value={name}
@@ -223,14 +231,14 @@ export default function SignupScreen() {
               autoComplete="name"
             />
             <TextInput
-              className="bg-white/15 border border-white/20 rounded-xl px-4 py-3 text-white text-base"
+              className="bg-white/15 border border-white/20 rounded-xl px-4 py-3 text-white text-[16px]"
               placeholder="Woonplaats"
               placeholderTextColor="rgba(255,255,255,0.5)"
               value={city}
               onChangeText={setCity}
             />
             <TextInput
-              className="bg-white/15 border border-white/20 rounded-xl px-4 py-3 text-white text-base"
+              className="bg-white/15 border border-white/20 rounded-xl px-4 py-3 text-white text-[16px]"
               placeholder="E-mailadres"
               placeholderTextColor="rgba(255,255,255,0.5)"
               value={email}
@@ -240,7 +248,7 @@ export default function SignupScreen() {
               autoComplete="email"
             />
             <TextInput
-              className="bg-white/15 border border-white/20 rounded-xl px-4 py-3 text-white text-base"
+              className="bg-white/15 border border-white/20 rounded-xl px-4 py-3 text-white text-[16px]"
               placeholder="Wachtwoord"
               placeholderTextColor="rgba(255,255,255,0.5)"
               value={password}

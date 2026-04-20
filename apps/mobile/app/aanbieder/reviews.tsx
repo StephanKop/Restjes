@@ -219,7 +219,7 @@ export default function MerchantReviewsScreen() {
         {isReplying && (
           <View className="mt-3">
             <TextInput
-              className="bg-warm-50 border border-warm-200 rounded-xl px-4 py-3 text-sm text-warm-800 min-h-[80px]"
+              className="bg-warm-50 border border-warm-200 rounded-xl px-4 py-3 text-[14px] text-warm-800 min-h-[80px]"
               placeholder="Reageer op deze beoordeling..."
               placeholderTextColor="#b0a89e"
               value={replyText}

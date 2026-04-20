@@ -20,43 +20,46 @@ export async function registerForPushNotifications(userId: string) {
     return
   }
 
-  const { status: existingStatus } = await Notifications.getPermissionsAsync()
-  let finalStatus = existingStatus
+  try {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync()
+    let finalStatus = existingStatus
 
-  if (existingStatus !== 'granted') {
-    const { status } = await Notifications.requestPermissionsAsync()
-    finalStatus = status
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync()
+      finalStatus = status
+    }
+
+    if (finalStatus !== 'granted') {
+      console.log('Push notification permission not granted')
+      return
+    }
+
+    const projectId = Constants.expoConfig?.extra?.eas?.projectId
+    const tokenData = await Notifications.getExpoPushTokenAsync(
+      projectId ? { projectId } : undefined
+    )
+    const token = tokenData.data
+
+    const platform = Platform.OS as 'ios' | 'android'
+    await supabase.from('push_tokens').upsert(
+      { profile_id: userId, token, platform },
+      { onConflict: 'profile_id,token' }
+    )
+
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'Standaard',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+      })
+    }
+
+    return token
+  } catch (err) {
+    // Builds without the aps-environment entitlement (e.g. personal dev team)
+    // cannot register with APNs. Log and continue — the rest of the app works fine.
+    console.log('Push registration skipped:', err instanceof Error ? err.message : err)
   }
-
-  if (finalStatus !== 'granted') {
-    console.log('Push notification permission not granted')
-    return
-  }
-
-  // Get the Expo push token
-  const projectId = Constants.expoConfig?.extra?.eas?.projectId
-  const tokenData = await Notifications.getExpoPushTokenAsync(
-    projectId ? { projectId } : undefined
-  )
-  const token = tokenData.data
-
-  // Upsert the token to the database
-  const platform = Platform.OS as 'ios' | 'android'
-  await supabase.from('push_tokens').upsert(
-    { profile_id: userId, token, platform },
-    { onConflict: 'profile_id,token' }
-  )
-
-  // Set up notification channel for Android
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'Standaard',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-    })
-  }
-
-  return token
 }
 
 export async function unregisterPushNotifications(userId: string) {

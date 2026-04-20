@@ -237,7 +237,7 @@ export default function MerchantSettingsScreen() {
           {/* Business name */}
           <Text className="text-sm font-bold text-warm-600 mb-1.5">Bedrijfsnaam *</Text>
           <TextInput
-            className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 mb-4"
+            className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 mb-4"
             placeholder="Naam van je bedrijf of keuken"
             placeholderTextColor="#b0a89e"
             value={businessName}
@@ -247,7 +247,7 @@ export default function MerchantSettingsScreen() {
           {/* Description */}
           <Text className="text-sm font-bold text-warm-600 mb-1.5">Beschrijving</Text>
           <TextInput
-            className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 mb-4"
+            className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 mb-4"
             placeholder="Vertel iets over je aanbod..."
             placeholderTextColor="#b0a89e"
             value={description}
@@ -260,7 +260,7 @@ export default function MerchantSettingsScreen() {
           {/* Address */}
           <Text className="text-sm font-bold text-warm-600 mb-1.5">Adres</Text>
           <TextInput
-            className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 mb-3"
+            className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 mb-3"
             placeholder="Straatnaam en huisnummer"
             placeholderTextColor="#b0a89e"
             value={addressLine1}
@@ -268,14 +268,14 @@ export default function MerchantSettingsScreen() {
           />
           <View className="flex-row gap-3 mb-4">
             <TextInput
-              className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800"
+              className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800"
               placeholder="Postcode"
               placeholderTextColor="#b0a89e"
               value={postalCode}
               onChangeText={setPostalCode}
             />
             <TextInput
-              className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800"
+              className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800"
               placeholder="Plaats"
               placeholderTextColor="#b0a89e"
               value={city}
@@ -286,7 +286,7 @@ export default function MerchantSettingsScreen() {
           {/* Phone */}
           <Text className="text-sm font-bold text-warm-600 mb-1.5">Telefoonnummer</Text>
           <TextInput
-            className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 mb-4"
+            className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 mb-4"
             placeholder="06-12345678"
             placeholderTextColor="#b0a89e"
             value={phone}
@@ -297,7 +297,7 @@ export default function MerchantSettingsScreen() {
           {/* Website */}
           <Text className="text-sm font-bold text-warm-600 mb-1.5">Website</Text>
           <TextInput
-            className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 mb-6"
+            className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 mb-6"
             placeholder="https://www.voorbeeld.nl"
             placeholderTextColor="#b0a89e"
             value={website}

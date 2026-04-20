@@ -40,6 +40,17 @@ interface Dish {
   dish_allergies: { allergen: string }[]
 }
 
+interface MerchantResult {
+  id: string
+  business_name: string
+  city: string | null
+  logo_url: string | null
+  avg_rating: number | null
+  review_count: number
+  is_verified: boolean
+}
+
+
 type DishFilter = 'vegetarisch' | 'veganistisch' | 'vers' | 'ingevroren'
 
 const ALL_ALLERGENS = [
@@ -52,6 +63,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 export default function DiscoverScreen() {
   const { user } = useAuth()
   const [dishes, setDishes] = useState<Dish[]>([])
+  const [merchants, setMerchants] = useState<MerchantResult[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [search, setSearch] = useState('')
@@ -97,7 +109,7 @@ export default function DiscoverScreen() {
   }
 
   const activeFilterCount =
-    activeFilters.length + excludedAllergens.length + (userCity ? 0 : 0)
+    activeFilters.length + excludedAllergens.length + (userCity ? 1 : 0)
 
   // Fetch user's city from profile
   useEffect(() => {
@@ -167,16 +179,39 @@ export default function DiscoverScreen() {
     }
   }, [search, activeFilters, excludedAllergens, userCity, cityLoaded])
 
+  const fetchMerchants = useCallback(async () => {
+    const q = search.trim()
+    if (!q) {
+      setMerchants([])
+      return
+    }
+    let query = supabase
+      .from('merchants')
+      .select('id, business_name, city, logo_url, avg_rating, review_count, is_verified')
+      .ilike('business_name', `%${q}%`)
+      .order('business_name', { ascending: true })
+      .limit(5)
+
+    if (userCity) {
+      query = query.eq('city', userCity)
+    }
+
+    const { data, error } = await query
+    if (!error && data) {
+      setMerchants(data as MerchantResult[])
+    }
+  }, [search, userCity])
+
   useEffect(() => {
     setLoading(true)
-    fetchDishes().finally(() => setLoading(false))
-  }, [fetchDishes])
+    Promise.all([fetchDishes(), fetchMerchants()]).finally(() => setLoading(false))
+  }, [fetchDishes, fetchMerchants])
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
-    await fetchDishes()
+    await Promise.all([fetchDishes(), fetchMerchants()])
     setRefreshing(false)
-  }, [fetchDishes])
+  }, [fetchDishes, fetchMerchants])
 
   const toggleFilter = (filter: DishFilter) => {
     setActiveFilters((prev) => {
@@ -203,6 +238,7 @@ export default function DiscoverScreen() {
   const clearAllFilters = () => {
     setActiveFilters([])
     setExcludedAllergens([])
+    setUserCity(null)
   }
 
   const renderDishCard = ({ item }: { item: Dish }) => (
@@ -275,39 +311,62 @@ export default function DiscoverScreen() {
     </Pressable>
   )
 
+  const renderMerchantCard = ({ item }: { item: MerchantResult }) => (
+    <Pressable
+      className="bg-white rounded-2xl mb-3 p-4 flex-row items-center shadow-sm"
+      onPress={() => router.push(`/merchant/${item.id}` as any)}
+    >
+      {item.logo_url ? (
+        <Image
+          source={{ uri: item.logo_url }}
+          className="w-14 h-14 rounded-full"
+          resizeMode="cover"
+        />
+      ) : (
+        <View className="w-14 h-14 rounded-full bg-brand-100 items-center justify-center">
+          <Ionicons name="storefront-outline" size={26} color="#22c55e" />
+        </View>
+      )}
+      <View className="flex-1 ml-3">
+        <View className="flex-row items-center">
+          <Text className="text-base font-bold text-warm-800" numberOfLines={1}>
+            {item.business_name}
+          </Text>
+          {item.is_verified && (
+            <Ionicons name="checkmark-circle" size={16} color="#22c55e" style={{ marginLeft: 4 }} />
+          )}
+        </View>
+        {item.city && (
+          <View className="flex-row items-center mt-0.5">
+            <Ionicons name="location-outline" size={13} color="#8a8680" />
+            <Text className="text-sm text-warm-500 ml-1">{item.city}</Text>
+          </View>
+        )}
+        {item.review_count > 0 && item.avg_rating != null && (
+          <View className="flex-row items-center mt-0.5">
+            <Ionicons name="star" size={13} color="#f59e0b" />
+            <Text className="text-sm text-warm-500 ml-1">
+              {Number(item.avg_rating).toFixed(1)} · {item.review_count} beoordelingen
+            </Text>
+          </View>
+        )}
+      </View>
+      <Ionicons name="chevron-forward" size={20} color="#b0a89e" />
+    </Pressable>
+  )
+
   return (
-    <SafeAreaView className="flex-1 bg-offwhite" edges={['bottom']}>
-      <View className="flex-1 px-5 pt-4">
-        <Text className="text-2xl font-bold text-warm-800 mb-1">
-          Ontdekken
-        </Text>
-        <Pressable
-          className="flex-row items-center mb-4"
-          onPress={() => setUserCity(userCity ? null : (userCity ?? null))}
-        >
-          <Ionicons name="location-outline" size={16} color="#8a8680" />
-          {userCity ? (
-            <Text className="text-base text-warm-500 ml-1">{userCity}</Text>
-          ) : (
-            <Text className="text-base text-warm-500 ml-1">Alle plaatsen</Text>
-          )}
-          {userCity && (
-            <Pressable
-              onPress={() => setUserCity(null)}
-              className="ml-2 bg-warm-100 rounded-lg px-2 py-0.5"
-            >
-              <Text className="text-xs text-warm-600">Alle plaatsen</Text>
-            </Pressable>
-          )}
-        </Pressable>
+    <SafeAreaView className="flex-1 bg-offwhite" edges={['top', 'bottom']}>
+      <View className="flex-1 px-5 pt-2">
+        <Text className="text-2xl font-extrabold text-warm-800 mb-3">Ontdekken</Text>
 
         {/* Search + Filter button */}
         <View className="flex-row items-center gap-2 mb-4">
           <View className="flex-1 flex-row items-center bg-white border border-warm-200 rounded-xl px-4 py-3">
             <Ionicons name="search-outline" size={20} color="#b0a89e" />
             <TextInput
-              className="flex-1 ml-2 text-base text-warm-800"
-              placeholder="Zoek gerechten..."
+              className="flex-1 ml-2 text-[16px] text-warm-800"
+              placeholder="Zoek gerechten of aanbieders..."
               placeholderTextColor="#b0a89e"
               value={search}
               onChangeText={setSearch}
@@ -345,7 +404,7 @@ export default function DiscoverScreen() {
         </View>
 
         {/* Active filter summary chips */}
-        {activeFilterCount > 0 && (
+        {(activeFilters.length > 0 || excludedAllergens.length > 0) && (
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -369,16 +428,10 @@ export default function DiscoverScreen() {
                 </Text>
               </View>
             )}
-            <Pressable
-              className="rounded-lg px-2.5 py-1.5"
-              onPress={clearAllFilters}
-            >
-              <Text className="text-xs font-bold text-warm-500">Wissen</Text>
-            </Pressable>
           </ScrollView>
         )}
 
-        {/* Dish list */}
+        {/* Results list */}
         {loading ? (
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color="#22c55e" />
@@ -397,13 +450,38 @@ export default function DiscoverScreen() {
                 tintColor="#22c55e"
               />
             }
+            ListHeaderComponent={
+              merchants.length > 0 ? (
+                <View className="mb-2">
+                  <Text className="text-xs font-bold uppercase tracking-wide text-warm-500 mb-2">
+                    Aanbieders
+                  </Text>
+                  {merchants.map((m) => (
+                    <View key={m.id}>{renderMerchantCard({ item: m })}</View>
+                  ))}
+                  {dishes.length > 0 && (
+                    <Text className="text-xs font-bold uppercase tracking-wide text-warm-500 mt-3 mb-2">
+                      Gerechten
+                    </Text>
+                  )}
+                </View>
+              ) : null
+            }
             ListEmptyComponent={
-              <View className="flex-1 items-center justify-center py-20">
-                <Ionicons name="restaurant-outline" size={48} color="#d1cbc4" />
-                <Text className="text-warm-400 text-base text-center mt-4">
-                  Geen gerechten beschikbaar
+              merchants.length > 0 ? (
+                <Text className="text-sm text-warm-400 text-center py-6">
+                  Geen gerechten gevonden
                 </Text>
-              </View>
+              ) : (
+                <View className="flex-1 items-center justify-center py-20">
+                  <Ionicons name="restaurant-outline" size={48} color="#d1cbc4" />
+                  <Text className="text-warm-400 text-base text-center mt-4">
+                    {search.trim()
+                      ? 'Geen resultaten gevonden'
+                      : 'Geen gerechten beschikbaar'}
+                  </Text>
+                </View>
+              )
             }
           />
         )}
@@ -428,7 +506,7 @@ export default function DiscoverScreen() {
               transform: [{ translateX: slideAnim }],
             }}
           >
-            <SafeAreaView className="flex-1" edges={['bottom']}>
+            <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
               {/* Header */}
               <View className="flex-row items-center justify-between px-5 pt-2 pb-3 border-b border-warm-200">
                 <Pressable onPress={closeFilter} className="flex-row items-center">
@@ -447,6 +525,69 @@ export default function DiscoverScreen() {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 }}
               >
+                {/* Location section */}
+                <Text className="text-sm font-bold text-warm-500 uppercase tracking-wide mb-3">
+                  Locatie
+                </Text>
+                <View className="gap-2 mb-6">
+                  <Pressable
+                    className={`flex-row items-center rounded-xl px-4 py-3.5 border ${
+                      !userCity ? 'bg-brand-100 border-brand-300' : 'bg-white border-warm-200'
+                    }`}
+                    onPress={() => setUserCity(null)}
+                  >
+                    <Ionicons
+                      name="globe-outline"
+                      size={20}
+                      color={!userCity ? '#15803d' : '#b0a89e'}
+                    />
+                    <Text
+                      className={`text-base ml-3 flex-1 ${
+                        !userCity ? 'text-brand-700 font-bold' : 'text-warm-700'
+                      }`}
+                    >
+                      Alle plaatsen
+                    </Text>
+                    {!userCity && (
+                      <Ionicons name="checkmark-circle" size={22} color="#22c55e" />
+                    )}
+                  </Pressable>
+                  {cityLoaded && (
+                    <Pressable
+                      className={`flex-row items-center rounded-xl px-4 py-3.5 border ${
+                        userCity ? 'bg-brand-100 border-brand-300' : 'bg-white border-warm-200'
+                      }`}
+                      onPress={() => {
+                        if (!user) return
+                        supabase
+                          .from('profiles')
+                          .select('city')
+                          .eq('id', user.id)
+                          .single()
+                          .then(({ data }) => {
+                            if (data?.city) setUserCity(data.city)
+                          })
+                      }}
+                    >
+                      <Ionicons
+                        name="location-outline"
+                        size={20}
+                        color={userCity ? '#15803d' : '#b0a89e'}
+                      />
+                      <Text
+                        className={`text-base ml-3 flex-1 ${
+                          userCity ? 'text-brand-700 font-bold' : 'text-warm-700'
+                        }`}
+                      >
+                        {userCity ?? 'Mijn stad'}
+                      </Text>
+                      {userCity && (
+                        <Ionicons name="checkmark-circle" size={22} color="#22c55e" />
+                      )}
+                    </Pressable>
+                  )}
+                </View>
+
                 {/* Diet section */}
                 <Text className="text-sm font-bold text-warm-500 uppercase tracking-wide mb-3">
                   Dieet

@@ -21,6 +21,29 @@ const statusConfig: Record<DishStatus, { label: string; className: string }> = {
   expired: { label: 'Verlopen', className: 'bg-red-100 text-red-800' },
 }
 
+function getDishBadge(
+  status: DishStatus,
+  pickupEnd: string | null,
+  expiresAt: string | null,
+): { label: string; className: string } {
+  // Only override for active statuses
+  if (status === 'collected' || status === 'expired') {
+    return statusConfig[status]
+  }
+
+  const now = new Date()
+
+  if (expiresAt && new Date(expiresAt) < now) {
+    return { label: 'Over datum', className: 'bg-red-100 text-red-800' }
+  }
+
+  if (pickupEnd && new Date(pickupEnd) < now) {
+    return { label: 'Ophaaltijd verstreken', className: 'bg-orange-100 text-orange-800' }
+  }
+
+  return statusConfig[status]
+}
+
 function formatPickupTime(start: string | null, end: string | null): string {
   if (!start && !end) return 'Geen ophaaltijd'
   const fmt = (iso: string) => {
@@ -59,7 +82,7 @@ export default async function DishesPage() {
 
   const { data: dishes } = await supabase
     .from('dishes')
-    .select('id, title, description, image_url, quantity_available, status, pickup_start, pickup_end, created_at')
+    .select('id, title, description, image_url, quantity_available, status, pickup_start, pickup_end, expires_at, created_at')
     .eq('merchant_id', merchant.id)
     .order('created_at', { ascending: false })
 
@@ -89,7 +112,7 @@ export default async function DishesPage() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal-stagger>
           {dishes.map((dish) => {
             const status = dish.status as DishStatus
-            const badge = statusConfig[status] ?? statusConfig.available
+            const badge = getDishBadge(status, dish.pickup_end, dish.expires_at)
 
             return (
               <div

@@ -189,9 +189,9 @@ export default function MessagesScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-offwhite" edges={['bottom']}>
-      <View className="flex-1 px-5 pt-4">
-        <Text className="text-2xl font-bold text-warm-800 mb-1">
+    <SafeAreaView className="flex-1 bg-offwhite" edges={['top', 'bottom']}>
+      <View className="flex-1 px-5 pt-2">
+        <Text className="text-2xl font-extrabold text-warm-800 mb-1">
           Berichten
         </Text>
         <Text className="text-base text-warm-500 mb-4">

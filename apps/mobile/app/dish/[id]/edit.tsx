@@ -262,7 +262,7 @@ export default function EditDishScreen() {
             {/* Title */}
             <Text className="text-sm font-bold text-warm-600 mb-1.5">Titel *</Text>
             <TextInput
-              className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 mb-4"
+              className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 mb-4"
               placeholder="Bijv. Pasta bolognese"
               placeholderTextColor="#b0a89e"
               value={title}
@@ -272,7 +272,7 @@ export default function EditDishScreen() {
             {/* Description */}
             <Text className="text-sm font-bold text-warm-600 mb-1.5">Beschrijving</Text>
             <TextInput
-              className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 mb-4"
+              className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 mb-4"
               placeholder="Omschrijf je gerecht..."
               placeholderTextColor="#b0a89e"
               value={description}
@@ -292,7 +292,7 @@ export default function EditDishScreen() {
                 <Ionicons name="remove" size={20} color="#3d3833" />
               </Pressable>
               <TextInput
-                className="bg-white border border-warm-200 rounded-xl px-4 py-2.5 text-base text-warm-800 text-center mx-3 w-16"
+                className="bg-white border border-warm-200 rounded-xl px-4 py-2.5 text-[16px] text-warm-800 text-center mx-3 w-16"
                 value={quantity}
                 onChangeText={setQuantity}
                 keyboardType="number-pad"
@@ -309,14 +309,14 @@ export default function EditDishScreen() {
             <Text className="text-sm font-bold text-warm-600 mb-1.5">Ophaaltijd</Text>
             <View className="flex-row gap-3 mb-4">
               <TextInput
-                className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800"
+                className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800"
                 placeholder="Van (bijv. 18:00)"
                 placeholderTextColor="#b0a89e"
                 value={pickupStart}
                 onChangeText={setPickupStart}
               />
               <TextInput
-                className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800"
+                className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800"
                 placeholder="Tot (bijv. 19:00)"
                 placeholderTextColor="#b0a89e"
                 value={pickupEnd}
@@ -366,7 +366,7 @@ export default function EditDishScreen() {
             <Text className="text-sm font-bold text-warm-600 mb-1.5">Ingrediënten</Text>
             <View className="flex-row items-center mb-2">
               <TextInput
-                className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800"
+                className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800"
                 placeholder="Voeg ingrediënt toe..."
                 placeholderTextColor="#b0a89e"
                 value={ingredientInput}

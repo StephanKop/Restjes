@@ -46,3 +46,16 @@ coverage/
 
 # Vercel
 .vercel
+
+# Playwright CLI scratch output
+.playwright-cli/
+
+# TypeScript build cache
+*.tsbuildinfo
+
+# Local backups
+*.bak
+
+# Stray expo-prebuild at repo root (real native projects live under apps/mobile/)
+/ios/
+/android/

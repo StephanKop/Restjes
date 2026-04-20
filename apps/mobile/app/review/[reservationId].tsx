@@ -217,7 +217,7 @@ export default function ReviewScreen() {
               Vertel meer (optioneel)
             </Text>
             <TextInput
-              className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 min-h-[120px]"
+              className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 min-h-[120px]"
               placeholder={PLACEHOLDERS[rating] ?? 'Deel je ervaring...'}
               placeholderTextColor="#b0a89e"
               value={comment}

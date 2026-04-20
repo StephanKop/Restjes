@@ -58,6 +58,13 @@ export function UserMenu({ initial }: UserMenuProps) {
             >
               Bekijk profiel
             </Link>
+            <Link
+              href="/impact"
+              onClick={() => setOpen(false)}
+              className="block px-4 py-2.5 text-sm font-medium text-warm-700 transition-colors hover:bg-warm-50 hover:text-warm-900 active:bg-warm-100 focus-visible:outline-none focus-visible:bg-warm-50 focus-visible:text-warm-900"
+            >
+              Mijn impact
+            </Link>
             <button
               type="button"
               onClick={handleLogout}

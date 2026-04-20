@@ -8,6 +8,7 @@ import {
   Platform,
   ActivityIndicator,
   StyleSheet,
+  Image,
 } from 'react-native'
 import { Link, router } from 'expo-router'
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av'
@@ -131,11 +132,13 @@ export default function LoginScreen() {
       >
         <View className="flex-1 justify-center px-6">
           {/* Branding */}
-          <View className="mb-8">
-            <Text className="text-5xl font-extrabold text-white mb-2">
-              Kliekjesclub
-            </Text>
-            <Text className="text-lg text-white/80">
+          <View className="items-center mb-8">
+            <Image
+              source={require('../../assets/images/logo.png')}
+              style={{ width: 160, height: 160 }}
+              resizeMode="contain"
+            />
+            <Text className="text-lg text-white/80 mt-2">
               Red eten, bespaar geld
             </Text>
           </View>
@@ -175,7 +178,7 @@ export default function LoginScreen() {
           {/* Email/password inputs */}
           <View className="gap-3 mb-4">
             <TextInput
-              className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-base"
+              className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-[16px]"
               placeholder="E-mailadres"
               placeholderTextColor="#b0a89e"
               value={email}
@@ -185,7 +188,7 @@ export default function LoginScreen() {
               autoComplete="email"
             />
             <TextInput
-              className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-base"
+              className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-[16px]"
               placeholder="Wachtwoord"
               placeholderTextColor="#b0a89e"
               value={password}

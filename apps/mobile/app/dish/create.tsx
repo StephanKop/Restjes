@@ -14,6 +14,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
+import DateTimePicker, {
+  DateTimePickerAndroid,
+  type DateTimePickerEvent,
+} from '@react-native-community/datetimepicker'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
 import { allergenLabel } from '../../lib/format'
@@ -22,6 +26,65 @@ import {
   takePhoto as takePhotoFromLib,
   type ImagePickerAsset,
 } from '../../lib/image-picker'
+
+function parseTime(hhmm: string): Date {
+  const d = new Date()
+  const [h, m] = hhmm.split(':').map(Number)
+  if (!Number.isNaN(h) && !Number.isNaN(m)) d.setHours(h, m, 0, 0)
+  return d
+}
+
+function formatTime(d: Date): string {
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
+function TimePickerField({
+  value,
+  onChange,
+  placeholder,
+}: {
+  value: string
+  onChange: (next: string) => void
+  placeholder: string
+}) {
+  const date = value ? parseTime(value) : new Date()
+
+  if (Platform.OS === 'ios') {
+    return (
+      <View className="bg-white border border-warm-200 rounded-xl px-3 py-2 mb-4 flex-row items-center justify-between">
+        <Text className="text-[16px] text-warm-500">{placeholder}</Text>
+        <DateTimePicker
+          value={date}
+          mode="time"
+          display="compact"
+          onChange={(_, d) => d && onChange(formatTime(d))}
+        />
+      </View>
+    )
+  }
+
+  const openAndroidPicker = () => {
+    DateTimePickerAndroid.open({
+      value: date,
+      mode: 'time',
+      is24Hour: true,
+      onChange: (_e: DateTimePickerEvent, d?: Date) => {
+        if (d) onChange(formatTime(d))
+      },
+    })
+  }
+
+  return (
+    <Pressable
+      className="bg-white border border-warm-200 rounded-xl px-4 py-3 mb-4"
+      onPress={openAndroidPicker}
+    >
+      <Text className={`text-[16px] ${value ? 'text-warm-800' : 'text-warm-400'}`}>
+        {value || placeholder}
+      </Text>
+    </Pressable>
+  )
+}
 
 const ALL_ALLERGENS = [
   'gluten', 'crustaceans', 'eggs', 'fish', 'peanuts', 'soybeans',
@@ -358,7 +421,7 @@ export default function CreateDishScreen() {
       <View className="px-5 pt-5">
         <Text className="text-sm font-bold text-warm-600 mb-1.5">Titel *</Text>
         <TextInput
-          className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 mb-4"
+          className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 mb-4"
           placeholder="Bijv. Pasta bolognese"
           placeholderTextColor="#b0a89e"
           value={title}
@@ -367,7 +430,7 @@ export default function CreateDishScreen() {
 
         <Text className="text-sm font-bold text-warm-600 mb-1.5">Beschrijving</Text>
         <TextInput
-          className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800"
+          className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800"
           placeholder="Omschrijf je gerecht..."
           placeholderTextColor="#b0a89e"
           value={description}
@@ -392,7 +455,7 @@ export default function CreateDishScreen() {
           <Ionicons name="remove" size={20} color="#3d3833" />
         </Pressable>
         <TextInput
-          className="bg-white border border-warm-200 rounded-xl px-4 py-2.5 text-base text-warm-800 text-center mx-3 w-16"
+          className="bg-white border border-warm-200 rounded-xl px-4 py-2.5 text-[16px] text-warm-800 text-center mx-3 w-16"
           value={quantity}
           onChangeText={setQuantity}
           keyboardType="number-pad"
@@ -406,15 +469,12 @@ export default function CreateDishScreen() {
       </View>
 
       <Text className="text-sm font-bold text-warm-600 mb-1.5">Ophalen vanaf *</Text>
-      <TextInput
-        className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 mb-4"
-        placeholder="Bijv. 18:00"
-        placeholderTextColor="#b0a89e"
+      <TimePickerField
         value={pickupStart}
-        onChangeText={(t) => {
+        placeholder="Kies een tijd"
+        onChange={(t) => {
           setPickupStart(t)
-          // Auto-populate pickup end if empty
-          if (!pickupEnd && t.match(/^\d{2}:\d{2}$/)) {
+          if (!pickupEnd && /^\d{2}:\d{2}$/.test(t)) {
             const [h, m] = t.split(':').map(Number)
             const endH = (h + 1) % 24
             setPickupEnd(`${String(endH).padStart(2, '0')}:${String(m).padStart(2, '0')}`)
@@ -423,12 +483,10 @@ export default function CreateDishScreen() {
       />
 
       <Text className="text-sm font-bold text-warm-600 mb-1.5">Ophalen tot</Text>
-      <TextInput
-        className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800 mb-5"
-        placeholder="Bijv. 19:00"
-        placeholderTextColor="#b0a89e"
+      <TimePickerField
         value={pickupEnd}
-        onChangeText={setPickupEnd}
+        placeholder="Kies een tijd"
+        onChange={setPickupEnd}
       />
 
       <Text className="text-sm font-bold text-warm-600 mb-2">Vers of ingevroren</Text>
@@ -460,12 +518,10 @@ export default function CreateDishScreen() {
       {!isFrozen && (
         <View className="mb-2">
           <Text className="text-sm font-bold text-warm-600 mb-1.5">Houdbaar tot *</Text>
-          <TextInput
-            className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800"
-            placeholder="Bijv. 22:00"
-            placeholderTextColor="#b0a89e"
+          <TimePickerField
             value={expiresAt}
-            onChangeText={setExpiresAt}
+            placeholder="Kies een tijd"
+            onChange={setExpiresAt}
           />
           <Text className="text-xs text-warm-400 mt-1">
             Geef aan tot wanneer het gerecht vers en veilig te eten is.
@@ -528,7 +584,7 @@ export default function CreateDishScreen() {
       <Text className="text-sm font-bold text-warm-600 mb-1.5">Ingrediënten</Text>
       <View className="flex-row items-center mb-2">
         <TextInput
-          className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-base text-warm-800"
+          className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800"
           placeholder="Voeg ingrediënt toe..."
           placeholderTextColor="#b0a89e"
           value={ingredientInput}

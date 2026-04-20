@@ -234,7 +234,7 @@ export default function ChatScreen() {
       {/* Input bar */}
       <View className="bg-white border-t border-warm-200 px-4 pt-3 pb-8 flex-row items-end">
         <TextInput
-          className="flex-1 bg-warm-100 rounded-xl px-4 py-3 text-base text-warm-800 max-h-24"
+          className="flex-1 bg-warm-100 rounded-xl px-4 py-3 text-[16px] text-warm-800 max-h-24"
           placeholder="Schrijf een bericht..."
           placeholderTextColor="#b0a89e"
           value={input}
