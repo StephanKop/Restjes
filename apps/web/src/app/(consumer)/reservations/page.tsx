@@ -54,53 +54,47 @@ export default async function ConsumerReservationsPage({
   }
 
   const supabase = await createServerComponentClient()
-  const { data: reservations } = await supabase
-    .from('reservations')
-    .select(
-      `
-      id,
-      quantity,
-      status,
-      pickup_time,
-      notes,
-      created_at,
-      dish:dishes!inner (
+
+  // Fetch reservations and the user's reviews in parallel — both are scoped
+  // by consumer_id so reviews don't need to wait for reservations.
+  const [reservationsRes, reviewsRes] = await Promise.all([
+    supabase
+      .from('reservations')
+      .select(
+        `
         id,
-        title,
-        image_url,
-        merchant_id
-      ),
-      merchant:merchants!inner (
-        id,
-        business_name,
-        city
+        quantity,
+        status,
+        pickup_time,
+        notes,
+        created_at,
+        dish:dishes!inner (
+          id,
+          title,
+          image_url,
+          merchant_id
+        ),
+        merchant:merchants!inner (
+          id,
+          business_name,
+          city
+        )
+      `,
       )
-    `,
-    )
-    .eq('consumer_id', user.id)
-    .order('created_at', { ascending: false })
-
-  const allReservations = reservations ?? []
-
-  // Fetch existing reviews for collected reservations
-  const collectedIds = allReservations
-    .filter((r) => r.status === 'collected')
-    .map((r) => r.id)
-
-  const reviewMap: Record<string, number> = {}
-  if (collectedIds.length > 0) {
-    const { data: existingReviews } = await supabase
+      .eq('consumer_id', user.id)
+      .order('created_at', { ascending: false }),
+    supabase
       .from('reviews')
       .select('reservation_id, rating')
-      .eq('consumer_id', user.id)
-      .in('reservation_id', collectedIds)
+      .eq('consumer_id', user.id),
+  ])
 
-    if (existingReviews) {
-      for (const review of existingReviews) {
-        if (review.reservation_id) {
-          reviewMap[review.reservation_id] = review.rating
-        }
-      }
+  const allReservations = reservationsRes.data ?? []
+
+  const reviewMap: Record<string, number> = {}
+  for (const review of reviewsRes.data ?? []) {
+    if (review.reservation_id) {
+      reviewMap[review.reservation_id] = review.rating
     }
   }
 

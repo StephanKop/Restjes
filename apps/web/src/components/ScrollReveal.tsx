@@ -1,10 +1,13 @@
 'use client'
 
 import { useEffect } from 'react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 
 export function ScrollReveal() {
   const pathname = usePathname()
+  // usePathname alone ignores query strings — include the search params so
+  // tab-style navigation (same pathname, different ?tab=) also re-observes.
+  const search = useSearchParams().toString()
 
   useEffect(() => {
     const io = new IntersectionObserver(
@@ -26,24 +29,31 @@ export function ScrollReveal() {
       }
     }
 
-    // Observe on initial render
+    // Observe on initial render.
     observe()
 
-    // Re-observe after Suspense/streaming resolves new content.
-    // Use a short-lived MutationObserver instead of a permanent one.
+    // Re-observe anything streamed in after initial paint. Keep this running
+    // for the full lifetime of the route — disconnecting it early meant late
+    // route transitions on the same pathname left new cards stuck at opacity 0.
     const mo = new MutationObserver(() => observe())
     mo.observe(document.body, { childList: true, subtree: true })
 
-    // Disconnect the MutationObserver after 3 seconds — by then all
-    // streamed content has resolved. The IntersectionObserver keeps running.
-    const timer = setTimeout(() => mo.disconnect(), 3000)
+    // Failsafe: if anything is still un-revealed 1500ms after mount (e.g. the
+    // IntersectionObserver missed it because the element entered and exited
+    // viewport during a streamed render), force-reveal it. Content must never
+    // remain invisible.
+    const failsafe = setTimeout(() => {
+      document
+        .querySelectorAll('[data-reveal]:not(.revealed)')
+        .forEach((el) => el.classList.add('revealed'))
+    }, 1500)
 
     return () => {
-      clearTimeout(timer)
+      clearTimeout(failsafe)
       io.disconnect()
       mo.disconnect()
     }
-  }, [pathname])
+  }, [pathname, search])
 
   return null
 }

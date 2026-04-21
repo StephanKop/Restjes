@@ -7,6 +7,7 @@ import { NotificationBell } from '@/components/NotificationBell'
 import { RealtimeUnreadBadge } from '@/components/RealtimeUnreadBadge'
 import { MobileMenu } from '@/components/MobileMenu'
 import { StickyHeader } from '@/components/StickyHeader'
+import { MainNavLinks } from '@/components/MainNavLinks'
 
 async function UnreadBadge() {
   const user = await getUser()
@@ -100,34 +101,8 @@ export function MainNav({ transparent = false }: { transparent?: boolean }) {
             priority
           />
         </Link>
-        <nav className="flex items-center gap-4 sm:gap-6">
-          <Link
-            href="/browse"
-            className="hidden rounded-lg px-2 py-1 font-semibold text-inherit transition-all duration-150 hover:text-brand-300 group-data-[scrolled]/header:hover:text-brand-600 active:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 sm:inline-flex"
-          >
-            Ontdekken
-          </Link>
-          <Link
-            href="/aanbieder/dishes"
-            className="hidden rounded-lg px-2 py-1 font-semibold text-inherit transition-all duration-150 hover:text-brand-300 group-data-[scrolled]/header:hover:text-brand-600 active:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 sm:inline-flex"
-          >
-            Mijn aanbod
-          </Link>
-          <Link
-            href="/reservations"
-            className="hidden rounded-lg px-2 py-1 font-semibold text-inherit transition-all duration-150 hover:text-brand-300 group-data-[scrolled]/header:hover:text-brand-600 active:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 sm:inline-flex"
-          >
-            Reserveringen
-          </Link>
-          <Link
-            href="/messages"
-            className="relative hidden rounded-lg px-2 py-1 font-semibold text-inherit transition-all duration-150 hover:text-brand-300 group-data-[scrolled]/header:hover:text-brand-600 active:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 sm:inline-flex"
-          >
-            Berichten
-            <Suspense>
-              <UnreadBadge />
-            </Suspense>
-          </Link>
+        <nav className="flex items-center gap-3 sm:gap-4">
+          <MainNavLinks unreadBadge={<UnreadBadge />} />
           {/* Notification bell — icon renders instantly, data streams in */}
           <Suspense fallback={
             <div className="relative flex h-9 w-9 items-center justify-center rounded-full text-inherit opacity-50">
