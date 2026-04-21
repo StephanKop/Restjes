@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
+import { getCachedBrowseDishes, getCachedBrowseMerchants } from '@/lib/cached-queries'
 import { BrowseFilters } from '@/components/BrowseFilters'
 import { BrowseResults } from '@/components/BrowseResults'
 import type { DishCardData } from '@/components/DishCard'
@@ -61,88 +62,32 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
     }
   }
 
-  // If no city filter in URL, use the user's profile city. "alle" means show all.
-  // Skip city filter when geolocation is active.
-  let filterCity = city === 'alle' || hasLocation ? undefined : city
-  if (filterCity === undefined && city !== 'alle' && !hasLocation) {
-    const user = await getUser()
-    if (user) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('city')
-        .eq('id', user.id)
-        .single()
-      filterCity = profile?.city ?? undefined
-    }
-  }
+  // City filter: explicit URL param wins; "alle" or geolocation = no city filter.
+  // We deliberately DO NOT look up the user's profile.city here — that query was
+  // ~1400ms on cold Supabase and blocked the whole page. Users pick their city
+  // from the sidebar filter (which sets ?city=), and we persist it via URL.
+  const filterCity = city === 'alle' || hasLocation ? undefined : city
 
-  let query = supabase
-    .from('dishes')
-    .select(
-      `
-      id,
-      title,
-      description,
-      image_url,
-      quantity_available,
-      pickup_start,
-      pickup_end,
-      bring_own_container,
-      is_vegetarian,
-      is_vegan,
-      merchant:merchants!inner (
-        business_name,
-        city,
-        latitude,
-        longitude
-      ),
-      dish_allergies (
-        allergen
-      )
-    `,
-    )
-    .eq('status', 'available')
-    .gt('quantity_available', 0)
-    .or(`pickup_end.gt.${new Date().toISOString()},pickup_end.is.null`)
-    .order('pickup_start', { ascending: true })
-
-  if (nearbyDishIds !== null && nearbyDishIds.length > 0) {
-    query = query.in('id', nearbyDishIds)
-  }
-
-  if (filterCity) {
-    query = query.eq('merchant.city', filterCity)
-  }
-
-  if (q) {
-    query = query.textSearch('search_vector', q, { type: 'websearch' })
-  }
-
-  if (vegetarian) {
-    query = query.eq('is_vegetarian', true)
-  }
-
-  if (vegan) {
-    query = query.eq('is_vegan', true)
-  }
-
-  if (frozen) {
-    query = query.eq('is_frozen', true)
-  }
-
-  if (fresh) {
-    query = query.eq('is_frozen', false)
-  }
-
-  // If location filter is active but no dishes are in range, skip the query
   const noNearbyResults = nearbyDishIds !== null && nearbyDishIds.length === 0
-  const { data: dishes, error } = noNearbyResults
-    ? { data: [] as typeof query extends PromiseLike<{ data: infer D }> ? D : never, error: null }
-    : await query
+  const minuteBucket = Math.floor(Date.now() / 60_000)
 
-  if (error) {
-    console.error('Error fetching dishes:', error)
-  }
+  const [dishes, merchantMatches] = await Promise.all([
+    noNearbyResults
+      ? Promise.resolve([])
+      : getCachedBrowseDishes({
+          city: filterCity,
+          q,
+          vegetarian,
+          vegan,
+          frozen,
+          fresh,
+          nearbyDishIds,
+          minuteBucket,
+        }),
+    q && q.trim()
+      ? getCachedBrowseMerchants(q.trim(), filterCity)
+      : Promise.resolve([]),
+  ])
 
   // Filter out dishes that contain excluded allergens (done in JS since
   // Supabase doesn't support NOT EXISTS on related tables easily via PostgREST)
@@ -235,6 +180,64 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
               <BrowseFilters userCity={filterCity} />
             </div>
           </details>
+
+          {merchantMatches.length > 0 && (
+            <section className="mb-8">
+              <h2 className="mb-3 text-xs font-bold uppercase tracking-wide text-warm-500">
+                Aanbieders
+              </h2>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {merchantMatches.map((m) => (
+                  <Link
+                    key={m.id}
+                    href={`/merchant/${m.id}`}
+                    className="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-card transition-shadow hover:shadow-lg"
+                  >
+                    <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-brand-100">
+                      {m.logo_url ? (
+                        <Image
+                          src={m.logo_url}
+                          alt={m.business_name}
+                          fill
+                          className="object-cover"
+                          sizes="48px"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-brand-500">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+                            <path d="M2.25 9 12 2.25 21.75 9v12.75a.75.75 0 0 1-.75.75h-5.25a.75.75 0 0 1-.75-.75V15h-4.5v6.75a.75.75 0 0 1-.75.75H3a.75.75 0 0 1-.75-.75V9Z" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1">
+                        <p className="truncate text-sm font-bold text-warm-900">
+                          {m.business_name}
+                        </p>
+                        {m.is_verified && (
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 flex-shrink-0 text-brand-500">
+                            <path fillRule="evenodd" d="M8.603 3.799A4.49 4.49 0 0 1 12 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 0 1 3.498 1.307 4.491 4.491 0 0 1 1.307 3.497A4.49 4.49 0 0 1 21.75 12a4.49 4.49 0 0 1-1.549 3.397 4.491 4.491 0 0 1-1.307 3.497 4.491 4.491 0 0 1-3.497 1.307A4.49 4.49 0 0 1 12 21.75a4.49 4.49 0 0 1-3.397-1.549 4.49 4.49 0 0 1-3.498-1.306 4.491 4.491 0 0 1-1.307-3.498A4.49 4.49 0 0 1 2.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 0 1 1.307-3.497 4.49 4.49 0 0 1 3.497-1.307Zm7.007 6.387a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </div>
+                      <div className="mt-0.5 flex items-center gap-3 text-xs text-warm-500">
+                        {m.city && <span>{m.city}</span>}
+                        {m.review_count > 0 && m.avg_rating != null && (
+                          <span className="inline-flex items-center gap-0.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#f59e0b" className="h-3.5 w-3.5">
+                              <path fillRule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z" clipRule="evenodd" />
+                            </svg>
+                            {Number(m.avg_rating).toFixed(1)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
 
           <BrowseResults dishes={cards} />
         </div>

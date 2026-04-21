@@ -109,19 +109,8 @@ export function ReviewPromptBanner() {
           : '-translate-y-2 opacity-0'
       }`}
     >
-      <div className="relative p-4 sm:p-5">
-        {/* Dismiss button */}
-        <button
-          onClick={handleDismiss}
-          className="absolute right-3 top-3 rounded-lg p-1.5 text-warm-400 transition-colors hover:bg-warm-50 hover:text-warm-600"
-          aria-label="Sluiten"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
-            <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
-          </svg>
-        </button>
-
-        <div className="flex items-center gap-4 pr-8 sm:pr-0">
+      <div className="p-4 sm:p-5">
+        <div className="flex items-center gap-4">
           {/* Dish image */}
           <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-warm-100">
             {reservation.dish.image_url ? (
@@ -156,6 +145,17 @@ export function ReviewPromptBanner() {
           >
             Beoordelen
           </Link>
+
+          {/* Dismiss button */}
+          <button
+            onClick={handleDismiss}
+            className="flex-shrink-0 rounded-lg p-1.5 text-warm-400 transition-colors hover:bg-warm-50 hover:text-warm-600"
+            aria-label="Sluiten"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
+              <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+            </svg>
+          </button>
         </div>
 
         {/* Mobile CTA */}
