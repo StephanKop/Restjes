@@ -28,7 +28,7 @@ export function AanbiederSubNav() {
               href={item.href}
               className={`whitespace-nowrap rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
                 active
-                  ? 'bg-brand-500 text-white shadow-button'
+                  ? 'text-brand-500'
                   : 'text-warm-600 hover:bg-brand-50 hover:text-brand-600'
               }`}
             >

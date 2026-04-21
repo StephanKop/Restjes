@@ -11,11 +11,11 @@ function isActive(pathname: string, href: string): boolean {
 
 function linkClass(active: boolean): string {
   // Inactive: inherit the nav's current color (white on hero, dark on scrolled).
-  // Active: solid brand-500 pill with white text — stands out on both states.
+  // Active: brand-500 text color — no pill, just highlights which page you're on.
   const base =
-    'hidden rounded-lg px-3 py-1.5 font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 sm:inline-flex'
+    'hidden rounded-lg px-2 py-1 font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 sm:inline-flex'
   if (active) {
-    return `${base} bg-brand-500 text-white shadow-button hover:bg-brand-600`
+    return `${base} text-brand-500`
   }
   return `${base} text-inherit hover:text-brand-300 group-data-[scrolled]/header:hover:text-brand-600 active:text-brand-700`
 }
