@@ -1,9 +1,20 @@
 'use client'
 
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
+// Wrapper adds a Suspense boundary required by Next.js because
+// useSearchParams() inside the inner component triggers CSR bailout
+// during static prerender (e.g. on the 404 page).
 export function ScrollReveal() {
+  return (
+    <Suspense fallback={null}>
+      <ScrollRevealInner />
+    </Suspense>
+  )
+}
+
+function ScrollRevealInner() {
   const pathname = usePathname()
   // usePathname alone ignores query strings — include the search params so
   // tab-style navigation (same pathname, different ?tab=) also re-observes.
