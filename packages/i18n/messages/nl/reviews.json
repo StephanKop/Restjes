@@ -4,5 +4,42 @@
     "subtext": "Opgehaald bij {merchantName} — laat een beoordeling achter!",
     "cta": "Beoordelen",
     "dismiss": "Sluiten"
+  },
+  "form": {
+    "headerTitle": "Beoordeling",
+    "notFound": "Reservering niet gevonden.",
+    "forLabel": "Beoordeling voor",
+    "ratingPrompt": "Hoe was het?",
+    "commentLabel": "Vertel meer (optioneel)",
+    "commentFallbackPlaceholder": "Deel je ervaring...",
+    "submit": "Beoordeling plaatsen",
+    "ratingLabels": {
+      "1": "Slecht",
+      "2": "Matig",
+      "3": "Oké",
+      "4": "Goed",
+      "5": "Uitstekend"
+    },
+    "placeholders": {
+      "1": "Wat ging er mis? Je feedback helpt de aanbieder verbeteren.",
+      "2": "Wat kan er beter? Deel je ervaring zodat de aanbieder kan verbeteren.",
+      "3": "Vertel meer over je ervaring. Was er iets dat opviel?",
+      "4": "Leuk dat je het goed vond! Wat vond je het beste?",
+      "5": "Geweldig! Vertel anderen waarom je zo tevreden bent."
+    },
+    "errors": {
+      "needRatingTitle": "Beoordeling nodig",
+      "needRatingBody": "Selecteer een beoordeling van 1 tot 5 sterren.",
+      "alreadyRatedTitle": "Al beoordeeld",
+      "alreadyRatedBody": "Je hebt al een beoordeling geplaatst voor deze reservering.",
+      "genericTitle": "Fout",
+      "genericBody": "Er ging iets mis. Probeer het opnieuw."
+    },
+    "success": {
+      "title": "Bedankt voor je beoordeling!",
+      "body": "Je helpt {merchantName} en andere gebruikers met je feedback.",
+      "backToReservations": "Terug naar reserveringen",
+      "close": "Sluiten"
+    }
   }
 }

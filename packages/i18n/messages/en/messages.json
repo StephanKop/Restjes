@@ -3,5 +3,9 @@
   "subtitle": "Your conversations",
   "empty": "You don't have any messages yet",
   "you": "You",
-  "unknown": "Unknown"
+  "unknown": "Unknown",
+  "chat": {
+    "empty": "Send the first message",
+    "inputPlaceholder": "Write a message…"
+  }
 }

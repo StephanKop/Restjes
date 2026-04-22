@@ -4,5 +4,42 @@
     "subtext": "Picked up from {merchantName} — leave a review!",
     "cta": "Review",
     "dismiss": "Close"
+  },
+  "form": {
+    "headerTitle": "Review",
+    "notFound": "Reservation not found.",
+    "forLabel": "Reviewing",
+    "ratingPrompt": "How was it?",
+    "commentLabel": "Tell us more (optional)",
+    "commentFallbackPlaceholder": "Share your experience…",
+    "submit": "Submit review",
+    "ratingLabels": {
+      "1": "Poor",
+      "2": "Fair",
+      "3": "Okay",
+      "4": "Good",
+      "5": "Excellent"
+    },
+    "placeholders": {
+      "1": "What went wrong? Your feedback helps the merchant improve.",
+      "2": "What could be better? Share your experience so the merchant can improve.",
+      "3": "Tell us more about your experience. Anything that stood out?",
+      "4": "Glad you liked it! What did you enjoy most?",
+      "5": "Awesome! Tell others why you're so happy with it."
+    },
+    "errors": {
+      "needRatingTitle": "Rating required",
+      "needRatingBody": "Select a rating from 1 to 5 stars.",
+      "alreadyRatedTitle": "Already reviewed",
+      "alreadyRatedBody": "You already submitted a review for this reservation.",
+      "genericTitle": "Error",
+      "genericBody": "Something went wrong. Please try again."
+    },
+    "success": {
+      "title": "Thanks for your review!",
+      "body": "You're helping {merchantName} and other users with your feedback.",
+      "backToReservations": "Back to reservations",
+      "close": "Close"
+    }
   }
 }

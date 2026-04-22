@@ -6,8 +6,10 @@
   },
   "image": {
     "placeholder": "Add a photo *",
+    "placeholderEdit": "Add a photo",
     "changeShort": "Change",
     "dialogTitle": "Add photo",
+    "dialogTitleEdit": "Change photo",
     "dialogMessage": "Choose an option",
     "camera": "Camera",
     "library": "Photo library",
@@ -34,7 +36,10 @@
     "optionsLabel": "Options",
     "vegetarian": "Vegetarian",
     "vegan": "Vegan",
-    "bringOwnContainer": "Bring own container"
+    "bringOwnContainer": "Bring own container",
+    "pickupWindow": "Pickup time",
+    "pickupFromPlaceholder": "From (e.g. 18:00)",
+    "pickupUntilPlaceholder": "Until (e.g. 19:00)"
   },
   "autoExpire": {
     "label": "I agree that this dish will automatically be marked as 'expired' after the best-by date or end of pickup window.",
@@ -65,5 +70,10 @@
     "successTitle": "Done!",
     "successBody": "Your dish has been created.",
     "defaultKitchenName": "My kitchen"
+  },
+  "edit": {
+    "saveButton": "Save",
+    "savedTitle": "Saved",
+    "savedBody": "Your dish has been updated."
   }
 }

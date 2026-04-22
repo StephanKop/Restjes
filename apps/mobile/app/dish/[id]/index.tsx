@@ -13,6 +13,8 @@ import { Ionicons } from '@expo/vector-icons'
 import { supabase } from '../../../lib/supabase'
 import { useAuth } from '../../../lib/auth-context'
 import { formatPickupTime, allergenLabel } from '../../../lib/format'
+import { useTranslation } from '../../../lib/i18n'
+import { localeMeta, type Locale } from '@kliekjesclub/i18n'
 
 interface DishDetail {
   id: string
@@ -51,6 +53,7 @@ interface Allergen {
 }
 
 export default function DishDetailScreen() {
+  const { t, locale } = useTranslation()
   const { id } = useLocalSearchParams<{ id: string }>()
   const navigation = useNavigation()
   const { user } = useAuth()
@@ -125,7 +128,7 @@ export default function DishDetailScreen() {
     setReserving(false)
 
     if (error) {
-      Alert.alert('Fout', 'Er is iets misgegaan bij het reserveren. Probeer het opnieuw.')
+      Alert.alert(t('dish.mobile.reserve.errorTitle'), t('dish.mobile.reserve.errorMessage'))
     } else {
       // Decrement dish quantity via RPC (bypasses RLS)
       await supabase.rpc('decrement_dish_quantity', {
@@ -134,11 +137,11 @@ export default function DishDetailScreen() {
       })
 
       Alert.alert(
-        'Gelukt!',
-        `Je hebt ${quantity} portie${quantity > 1 ? 's' : ''} van "${dish.title}" gereserveerd. Bekijk je reserveringen voor meer details.`,
+        t('dish.mobile.reserve.successTitle'),
+        t(quantity === 1 ? 'dish.mobile.reserve.successSingular' : 'dish.mobile.reserve.successPlural', { count: quantity, dishTitle: dish.title }),
         [
-          { text: 'Naar reserveringen', onPress: () => router.push('/(tabs)/reservations') },
-          { text: 'OK' },
+          { text: t('dish.mobile.reserve.toReservations'), onPress: () => router.push('/(tabs)/reservations') },
+          { text: t('dish.mobile.reserve.ok') },
         ]
       )
     }
@@ -156,7 +159,7 @@ export default function DishDetailScreen() {
       .maybeSingle()
 
     if (ownMerchant) {
-      Alert.alert('Eigen gerecht', 'Je kunt niet met jezelf chatten.')
+      Alert.alert(t('dish.mobile.chat.ownDishTitle'), t('dish.mobile.chat.ownDishMessage'))
       return
     }
 
@@ -186,7 +189,7 @@ export default function DishDetailScreen() {
       .single()
 
     if (error || !created) {
-      Alert.alert('Fout', 'Kon het gesprek niet starten. Probeer het opnieuw.')
+      Alert.alert(t('dish.mobile.chat.startFailedTitle'), t('dish.mobile.chat.startFailedMessage'))
       return
     }
 
@@ -207,7 +210,7 @@ export default function DishDetailScreen() {
     return (
       <View className="flex-1 bg-offwhite items-center justify-center px-5">
         <Text className="text-warm-400 text-base text-center">
-          Gerecht niet gevonden.
+          {t('dish.mobile.notFound')}
         </Text>
       </View>
     )
@@ -245,7 +248,7 @@ export default function DishDetailScreen() {
                 <Ionicons name="time-outline" size={20} color="#22c55e" />
               </View>
               <View className="flex-1">
-                <Text className="text-xs text-warm-500 uppercase">Ophalen</Text>
+                <Text className="text-xs text-warm-500 uppercase">{t('dish.mobile.labels.pickup')}</Text>
                 <Text className="text-sm font-bold text-warm-800">
                   {formatPickupTime(dish.pickup_start, dish.pickup_end)}
                 </Text>
@@ -257,9 +260,9 @@ export default function DishDetailScreen() {
                 <Ionicons name="layers-outline" size={20} color="#22c55e" />
               </View>
               <View className="flex-1">
-                <Text className="text-xs text-warm-500 uppercase">Beschikbaar</Text>
+                <Text className="text-xs text-warm-500 uppercase">{t('dish.mobile.labels.available')}</Text>
                 <Text className="text-sm font-bold text-warm-800">
-                  {dish.quantity_available} portie{dish.quantity_available !== 1 ? 's' : ''}
+                  {t(dish.quantity_available === 1 ? 'dish.detail.info.portionsSingular' : 'dish.detail.info.portionsPlural', { count: dish.quantity_available })}
                 </Text>
               </View>
             </View>
@@ -269,9 +272,9 @@ export default function DishDetailScreen() {
                 <Ionicons name={dish.is_frozen ? 'snow-outline' : 'sunny-outline'} size={20} color={dish.is_frozen ? '#1d4ed8' : '#ea580c'} />
               </View>
               <View className="flex-1">
-                <Text className="text-xs text-warm-500 uppercase">Type</Text>
+                <Text className="text-xs text-warm-500 uppercase">{t('dish.mobile.labels.type')}</Text>
                 <Text className="text-sm font-bold text-warm-800">
-                  {dish.is_frozen ? 'Ingevroren' : 'Vers'}
+                  {dish.is_frozen ? t('dish.detail.badges.frozen') : t('dish.detail.badges.fresh')}
                 </Text>
               </View>
             </View>
@@ -282,9 +285,9 @@ export default function DishDetailScreen() {
                   <Ionicons name="time-outline" size={20} color="#dc2626" />
                 </View>
                 <View className="flex-1">
-                  <Text className="text-xs text-warm-500 uppercase">Houdbaar tot</Text>
+                  <Text className="text-xs text-warm-500 uppercase">{t('dish.mobile.labels.bestBy')}</Text>
                   <Text className="text-sm font-bold text-warm-800">
-                    {new Date(dish.expires_at).toLocaleString('nl-NL', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}
+                    {new Date(dish.expires_at).toLocaleString(localeMeta[locale as Locale]?.htmlLang ?? 'nl-NL', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}
                   </Text>
                 </View>
               </View>
@@ -296,9 +299,9 @@ export default function DishDetailScreen() {
                   <Ionicons name="cube-outline" size={20} color="#d97706" />
                 </View>
                 <View className="flex-1">
-                  <Text className="text-xs text-warm-500 uppercase">Verpakking</Text>
+                  <Text className="text-xs text-warm-500 uppercase">{t('dish.mobile.labels.packaging')}</Text>
                   <Text className="text-sm font-bold text-warm-800">
-                    Neem je eigen bakje mee
+                    {t('dish.mobile.labels.bringOwnContainer')}
                   </Text>
                 </View>
               </View>
@@ -310,13 +313,13 @@ export default function DishDetailScreen() {
                 {dish.is_vegan && (
                   <View className="bg-brand-100 rounded-xl px-4 py-2.5 flex-row items-center">
                     <Ionicons name="leaf-outline" size={16} color="#15803d" />
-                    <Text className="text-sm font-bold text-brand-700 ml-1.5">Veganistisch</Text>
+                    <Text className="text-sm font-bold text-brand-700 ml-1.5">{t('dish.badges.vegan')}</Text>
                   </View>
                 )}
                 {dish.is_vegetarian && (
                   <View className="bg-brand-100 rounded-xl px-4 py-2.5 flex-row items-center">
                     <Ionicons name="leaf-outline" size={16} color="#15803d" />
-                    <Text className="text-sm font-bold text-brand-700 ml-1.5">Vegetarisch</Text>
+                    <Text className="text-sm font-bold text-brand-700 ml-1.5">{t('dish.badges.vegetarian')}</Text>
                   </View>
                 )}
               </View>
@@ -326,7 +329,7 @@ export default function DishDetailScreen() {
           {/* Ingredients */}
           {ingredients.length > 0 && (
             <View className="mt-6">
-              <Text className="text-lg font-bold text-warm-800 mb-3">Ingrediënten</Text>
+              <Text className="text-lg font-bold text-warm-800 mb-3">{t('dish.mobile.sections.ingredients')}</Text>
               <View className="flex-row flex-wrap gap-2">
                 {ingredients.map((ing) => (
                   <View key={ing.id} className="bg-white border border-warm-200 rounded-xl px-3.5 py-2">
@@ -340,7 +343,7 @@ export default function DishDetailScreen() {
           {/* Allergens */}
           {allergens.length > 0 && (
             <View className="mt-6">
-              <Text className="text-lg font-bold text-warm-800 mb-3">Allergenen</Text>
+              <Text className="text-lg font-bold text-warm-800 mb-3">{t('dish.mobile.sections.allergens')}</Text>
               <View className="flex-row flex-wrap gap-2">
                 {allergens.map((a) => (
                   <View key={a.id} className="bg-red-50 border border-red-200 rounded-xl px-3.5 py-2">
@@ -386,7 +389,7 @@ export default function DishDetailScreen() {
                 <View className="flex-row items-center mt-0.5">
                   <Ionicons name="star" size={12} color="#f59e0b" />
                   <Text className="text-xs text-warm-500 ml-1">
-                    {dish.merchant.avg_rating} ({dish.merchant.review_count} beoordelingen)
+                    {t('dish.mobile.merchantRating', { rating: dish.merchant.avg_rating, count: dish.merchant.review_count })}
                   </Text>
                 </View>
               )}
@@ -403,7 +406,7 @@ export default function DishDetailScreen() {
             className="bg-brand-500 rounded-xl py-4 items-center"
             onPress={() => router.push(`/dish/${dish.id}/edit`)}
           >
-            <Text className="text-white font-bold text-base">Gerecht bewerken</Text>
+            <Text className="text-white font-bold text-base">{t('dish.mobile.cta.editDish')}</Text>
           </Pressable>
         ) : isAvailable ? (
           <View className="flex-row items-center justify-between">
@@ -436,13 +439,13 @@ export default function DishDetailScreen() {
               disabled={reserving}
             >
               <Text className="text-white font-bold text-center text-base">
-                {reserving ? 'Bezig...' : 'Reserveren'}
+                {reserving ? t('dish.mobile.cta.reserving') : t('dish.mobile.cta.reserve')}
               </Text>
             </Pressable>
           </View>
         ) : (
           <View className="rounded-xl bg-warm-100 py-4 items-center">
-            <Text className="text-warm-500 font-bold text-base">Niet meer beschikbaar</Text>
+            <Text className="text-warm-500 font-bold text-base">{t('dish.mobile.cta.unavailable')}</Text>
           </View>
         )}
       </View>

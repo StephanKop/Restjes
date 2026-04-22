@@ -6,8 +6,10 @@
   },
   "image": {
     "placeholder": "Voeg een foto toe *",
+    "placeholderEdit": "Voeg een foto toe",
     "changeShort": "Wijzigen",
     "dialogTitle": "Foto toevoegen",
+    "dialogTitleEdit": "Foto wijzigen",
     "dialogMessage": "Kies een optie",
     "camera": "Camera",
     "library": "Fotobibliotheek",
@@ -34,7 +36,10 @@
     "optionsLabel": "Opties",
     "vegetarian": "Vegetarisch",
     "vegan": "Veganistisch",
-    "bringOwnContainer": "Eigen bakje meenemen"
+    "bringOwnContainer": "Eigen bakje meenemen",
+    "pickupWindow": "Ophaaltijd",
+    "pickupFromPlaceholder": "Van (bijv. 18:00)",
+    "pickupUntilPlaceholder": "Tot (bijv. 19:00)"
   },
   "autoExpire": {
     "label": "Ik ga ermee akkoord dat dit gerecht automatisch op 'verlopen' wordt gezet na de houdbaarheidsdatum of het einde van de ophaaltijd.",
@@ -65,5 +70,10 @@
     "successTitle": "Gelukt!",
     "successBody": "Je gerecht is aangemaakt.",
     "defaultKitchenName": "Mijn keuken"
+  },
+  "edit": {
+    "saveButton": "Opslaan",
+    "savedTitle": "Opgeslagen",
+    "savedBody": "Je gerecht is bijgewerkt."
   }
 }

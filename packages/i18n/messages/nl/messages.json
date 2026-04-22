@@ -3,5 +3,9 @@
   "subtitle": "Je gesprekken",
   "empty": "Je hebt nog geen berichten",
   "you": "Jij",
-  "unknown": "Onbekend"
+  "unknown": "Onbekend",
+  "chat": {
+    "empty": "Stuur het eerste bericht",
+    "inputPlaceholder": "Schrijf een bericht..."
+  }
 }

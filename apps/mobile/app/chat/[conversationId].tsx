@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
 import { formatRelativeDate } from '../../lib/format'
+import { useTranslation } from '../../lib/i18n'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 
 interface Message {
@@ -39,6 +40,7 @@ interface ConversationInfo {
 }
 
 export default function ChatScreen() {
+  const { t } = useTranslation()
   const { conversationId } = useLocalSearchParams<{ conversationId: string }>()
   const navigation = useNavigation()
   const { user } = useAuth()
@@ -225,7 +227,7 @@ export default function ChatScreen() {
           <View className="items-center justify-center py-20">
             <Ionicons name="chatbubble-outline" size={48} color="#d1cbc4" />
             <Text className="text-warm-400 text-base text-center mt-4">
-              Stuur het eerste bericht
+              {t('messages.chat.empty')}
             </Text>
           </View>
         }
@@ -235,7 +237,7 @@ export default function ChatScreen() {
       <View className="bg-white border-t border-warm-200 px-4 pt-3 pb-8 flex-row items-end">
         <TextInput
           className="flex-1 bg-warm-100 rounded-xl px-4 py-3 text-[16px] text-warm-800 max-h-24"
-          placeholder="Schrijf een bericht..."
+          placeholder={t('messages.chat.inputPlaceholder')}
           placeholderTextColor="#b0a89e"
           value={input}
           onChangeText={setInput}

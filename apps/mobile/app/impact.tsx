@@ -11,23 +11,18 @@ import { router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth-context'
+import { useTranslation } from '../lib/i18n'
+import { localeMeta, type Locale } from '@kliekjesclub/i18n'
 
 const CO2_PER_MEAL_KG = 1.25
 const WATER_PER_MEAL_L = 1000
 
-const MONTH_LABELS = [
-  'jan', 'feb', 'mrt', 'apr', 'mei', 'jun',
-  'jul', 'aug', 'sep', 'okt', 'nov', 'dec',
-]
+const MONTH_KEYS = [
+  'jan', 'feb', 'mar', 'apr', 'may', 'jun',
+  'jul', 'aug', 'sep', 'oct', 'nov', 'dec',
+] as const
 
-function formatNumber(n: number, digits = 0): string {
-  return n.toLocaleString('nl-NL', {
-    minimumFractionDigits: digits,
-    maximumFractionDigits: digits,
-  })
-}
-
-type MonthBucket = { label: string; key: string; count: number }
+type MonthBucket = { labelKey: (typeof MONTH_KEYS)[number]; key: string; count: number }
 
 function buildMonthBuckets(
   rows: { created_at: string; quantity: number }[],
@@ -38,7 +33,7 @@ function buildMonthBuckets(
   for (let i = monthsBack - 1; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
-    buckets.push({ label: MONTH_LABELS[d.getMonth()], key, count: 0 })
+    buckets.push({ labelKey: MONTH_KEYS[d.getMonth()], key, count: 0 })
   }
   for (const row of rows) {
     const d = new Date(row.created_at)
@@ -50,7 +45,14 @@ function buildMonthBuckets(
 }
 
 export default function ImpactScreen() {
+  const { t, locale } = useTranslation()
   const { user } = useAuth()
+
+  const formatNumber = (n: number, digits = 0): string =>
+    n.toLocaleString(localeMeta[locale as Locale]?.htmlLang ?? 'nl-NL', {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    })
   const [rows, setRows] = useState<{ created_at: string; quantity: number }[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -81,7 +83,7 @@ export default function ImpactScreen() {
         <Pressable onPress={() => router.back()} className="-ml-1 mr-2 p-1">
           <Ionicons name="chevron-back" size={28} color="#3d3833" />
         </Pressable>
-        <Text className="text-2xl font-extrabold text-warm-800">Mijn impact</Text>
+        <Text className="text-2xl font-extrabold text-warm-800">{t('impact.title')}</Text>
       </View>
 
       {loading ? (
@@ -92,16 +94,16 @@ export default function ImpactScreen() {
         <View className="flex-1 items-center justify-center px-8">
           <Ionicons name="leaf-outline" size={56} color="#d1cbc4" />
           <Text className="mt-4 text-center text-lg font-bold text-warm-800">
-            Nog geen maaltijden gered
+            {t('impact.emptyTitle')}
           </Text>
           <Text className="mt-2 text-center text-warm-500">
-            Zodra je een reservering ophaalt bouwt je impact zich op.
+            {t('impact.emptyBody')}
           </Text>
           <Pressable
             onPress={() => router.push('/(tabs)' as any)}
             className="mt-6 rounded-xl bg-brand-500 px-5 py-3"
           >
-            <Text className="font-bold text-white">Bekijk aanbod</Text>
+            <Text className="font-bold text-white">{t('impact.emptyCta')}</Text>
           </Pressable>
         </View>
       ) : (
@@ -111,29 +113,29 @@ export default function ImpactScreen() {
           showsVerticalScrollIndicator={false}
         >
           <Text className="mb-5 text-warm-500">
-            Zie hoeveel voedselverspilling je hebt voorkomen.
+            {t('impact.subtitle')}
           </Text>
 
           {/* Stat cards */}
           <View className="mb-4 rounded-2xl bg-white p-5">
-            <Text className="text-sm font-bold text-warm-500">Maaltijden gered</Text>
+            <Text className="text-sm font-bold text-warm-500">{t('impact.mealsSaved')}</Text>
             <Text className="mt-1 text-4xl font-extrabold text-warm-900">
               {formatNumber(totalMeals)}
             </Text>
             <Text className="mt-1 text-xs text-warm-400">
-              Opgehaalde reserveringen
+              {t('impact.mealsSubtext')}
             </Text>
           </View>
 
           <View className="mb-4 flex-row gap-3">
             <View className="flex-1 rounded-2xl bg-white p-5">
-              <Text className="text-sm font-bold text-warm-500">CO₂ bespaard</Text>
+              <Text className="text-sm font-bold text-warm-500">{t('impact.co2Saved')}</Text>
               <Text className="mt-1 text-2xl font-extrabold text-brand-600">
                 {formatNumber(totalCo2Kg, 1)} kg
               </Text>
             </View>
             <View className="flex-1 rounded-2xl bg-white p-5">
-              <Text className="text-sm font-bold text-warm-500">Water bespaard</Text>
+              <Text className="text-sm font-bold text-warm-500">{t('impact.waterSaved')}</Text>
               <Text className="mt-1 text-2xl font-extrabold text-blue-600">
                 {formatNumber(totalWaterL / 1000, 1)} m³
               </Text>
@@ -143,7 +145,7 @@ export default function ImpactScreen() {
           {/* Monthly bars */}
           <View className="mb-5 rounded-2xl bg-white p-5">
             <Text className="mb-4 text-base font-bold text-warm-800">
-              Maaltijden per maand
+              {t('impact.mealsPerMonth')}
             </Text>
             <View className="flex-row items-end" style={{ height: 160, gap: 10 }}>
               {buckets.map((b) => {
@@ -164,7 +166,7 @@ export default function ImpactScreen() {
                       />
                     </View>
                     <Text className="mt-2 text-xs font-semibold uppercase text-warm-500">
-                      {b.label}
+                      {t(`impact.months.${b.labelKey}`)}
                     </Text>
                   </View>
                 )
@@ -173,8 +175,7 @@ export default function ImpactScreen() {
           </View>
 
           <Text className="text-xs text-warm-400 leading-5">
-            Schattingen op basis van gemiddelde waarden voor gered voedsel: ≈ 1,25 kg
-            CO₂-equivalent en 1.000 liter water per maaltijd.
+            {t('impact.footnote')}
           </Text>
         </ScrollView>
       )}

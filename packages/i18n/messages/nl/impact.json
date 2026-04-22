@@ -1,0 +1,27 @@
+{
+  "title": "Mijn impact",
+  "emptyTitle": "Nog geen maaltijden gered",
+  "emptyBody": "Zodra je een reservering ophaalt bouwt je impact zich op.",
+  "emptyCta": "Bekijk aanbod",
+  "subtitle": "Zie hoeveel voedselverspilling je hebt voorkomen.",
+  "mealsSaved": "Maaltijden gered",
+  "mealsSubtext": "Opgehaalde reserveringen",
+  "co2Saved": "CO₂ bespaard",
+  "waterSaved": "Water bespaard",
+  "mealsPerMonth": "Maaltijden per maand",
+  "footnote": "Schattingen op basis van gemiddelde waarden voor gered voedsel: ≈ 1,25 kg CO₂-equivalent en 1.000 liter water per maaltijd.",
+  "months": {
+    "jan": "jan",
+    "feb": "feb",
+    "mar": "mrt",
+    "apr": "apr",
+    "may": "mei",
+    "jun": "jun",
+    "jul": "jul",
+    "aug": "aug",
+    "sep": "sep",
+    "oct": "okt",
+    "nov": "nov",
+    "dec": "dec"
+  }
+}

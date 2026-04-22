@@ -1,0 +1,27 @@
+{
+  "title": "My impact",
+  "emptyTitle": "No meals saved yet",
+  "emptyBody": "As soon as you pick up a reservation, your impact builds up here.",
+  "emptyCta": "Browse listings",
+  "subtitle": "See how much food waste you've prevented.",
+  "mealsSaved": "Meals saved",
+  "mealsSubtext": "Picked-up reservations",
+  "co2Saved": "CO₂ saved",
+  "waterSaved": "Water saved",
+  "mealsPerMonth": "Meals per month",
+  "footnote": "Estimates based on average values for saved food: ≈ 1.25 kg CO₂ equivalent and 1,000 liters of water per meal.",
+  "months": {
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mar",
+    "apr": "Apr",
+    "may": "May",
+    "jun": "Jun",
+    "jul": "Jul",
+    "aug": "Aug",
+    "sep": "Sep",
+    "oct": "Oct",
+    "nov": "Nov",
+    "dec": "Dec"
+  }
+}

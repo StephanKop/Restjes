@@ -11,6 +11,43 @@
   "card": {
     "availability": "Nog {count} beschikbaar"
   },
+  "mobile": {
+    "notFound": "Gerecht niet gevonden.",
+    "labels": {
+      "pickup": "Ophalen",
+      "available": "Beschikbaar",
+      "type": "Type",
+      "bestBy": "Houdbaar tot",
+      "packaging": "Verpakking",
+      "bringOwnContainer": "Neem je eigen bakje mee"
+    },
+    "sections": {
+      "ingredients": "Ingrediënten",
+      "allergens": "Allergenen"
+    },
+    "merchantRating": "{rating} ({count} beoordelingen)",
+    "cta": {
+      "editDish": "Gerecht bewerken",
+      "reserving": "Bezig...",
+      "reserve": "Reserveren",
+      "unavailable": "Niet meer beschikbaar"
+    },
+    "reserve": {
+      "errorTitle": "Fout",
+      "errorMessage": "Er is iets misgegaan bij het reserveren. Probeer het opnieuw.",
+      "successTitle": "Gelukt!",
+      "successSingular": "Je hebt {count} portie van \"{dishTitle}\" gereserveerd. Bekijk je reserveringen voor meer details.",
+      "successPlural": "Je hebt {count} porties van \"{dishTitle}\" gereserveerd. Bekijk je reserveringen voor meer details.",
+      "toReservations": "Naar reserveringen",
+      "ok": "OK"
+    },
+    "chat": {
+      "ownDishTitle": "Eigen gerecht",
+      "ownDishMessage": "Je kunt niet met jezelf chatten.",
+      "startFailedTitle": "Fout",
+      "startFailedMessage": "Kon het gesprek niet starten. Probeer het opnieuw."
+    }
+  },
   "detail": {
     "breadcrumbDiscover": "Ontdekken",
     "metadataNotFound": "Gerecht niet gevonden - Kliekjesclub",

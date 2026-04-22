@@ -23,3 +23,5 @@ export { default as messagesNlReservations } from '../messages/nl/reservations.j
 export { default as messagesEnReservations } from '../messages/en/reservations.json'
 export { default as messagesNlDishForm } from '../messages/nl/dishForm.json'
 export { default as messagesEnDishForm } from '../messages/en/dishForm.json'
+export { default as messagesNlImpact } from '../messages/nl/impact.json'
+export { default as messagesEnImpact } from '../messages/en/impact.json'

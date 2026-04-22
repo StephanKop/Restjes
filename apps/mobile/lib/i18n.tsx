@@ -25,6 +25,10 @@ import {
   messagesEnReservations,
   messagesNlDishForm,
   messagesEnDishForm,
+  messagesNlReviews,
+  messagesEnReviews,
+  messagesNlImpact,
+  messagesEnImpact,
 } from '@kliekjesclub/i18n'
 
 const LOCALE_STORAGE_KEY = 'kc_locale'
@@ -41,6 +45,8 @@ const translations: Record<Locale, Record<string, unknown>> = {
     messages: messagesNlMessages,
     reservations: messagesNlReservations,
     dishForm: messagesNlDishForm,
+    reviews: messagesNlReviews,
+    impact: messagesNlImpact,
   },
   en: {
     common: messagesEnCommon,
@@ -52,6 +58,8 @@ const translations: Record<Locale, Record<string, unknown>> = {
     messages: messagesEnMessages,
     reservations: messagesEnReservations,
     dishForm: messagesEnDishForm,
+    reviews: messagesEnReviews,
+    impact: messagesEnImpact,
   },
 }
 

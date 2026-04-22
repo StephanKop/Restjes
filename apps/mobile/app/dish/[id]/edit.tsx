@@ -18,6 +18,7 @@ import { supabase } from '../../../lib/supabase'
 import { useAuth } from '../../../lib/auth-context'
 import { allergenLabel } from '../../../lib/format'
 import { pickImage as pickImageFromLib, takePhoto as takePhotoFromLib, type ImagePickerAsset } from '../../../lib/image-picker'
+import { useTranslation } from '../../../lib/i18n'
 
 const ALL_ALLERGENS = [
   'gluten', 'crustaceans', 'eggs', 'fish', 'peanuts', 'soybeans',
@@ -25,6 +26,7 @@ const ALL_ALLERGENS = [
 ] as const
 
 export default function EditDishScreen() {
+  const { t } = useTranslation()
   const { id } = useLocalSearchParams<{ id: string }>()
   const { user } = useAuth()
 
@@ -96,10 +98,10 @@ export default function EditDishScreen() {
   }
 
   const showImageOptions = () => {
-    Alert.alert('Foto wijzigen', 'Kies een optie', [
-      { text: 'Camera', onPress: takePhoto },
-      { text: 'Fotobibliotheek', onPress: pickImage },
-      { text: 'Annuleren', style: 'cancel' },
+    Alert.alert(t('dishForm.image.dialogTitleEdit'), t('dishForm.image.dialogMessage'), [
+      { text: t('dishForm.image.camera'), onPress: takePhoto },
+      { text: t('dishForm.image.library'), onPress: pickImage },
+      { text: t('dishForm.image.cancel'), style: 'cancel' },
     ])
   }
 
@@ -142,7 +144,7 @@ export default function EditDishScreen() {
 
   const handleSubmit = async () => {
     if (!title.trim()) {
-      Alert.alert('Verplicht veld', 'Vul een titel in voor je gerecht.')
+      Alert.alert(t('dishForm.validation.requiredFieldTitle'), t('dishForm.validation.titleRequired'))
       return
     }
     if (!user) return
@@ -194,7 +196,7 @@ export default function EditDishScreen() {
         .eq('id', id)
 
       if (dishError) {
-        Alert.alert('Fout', dishError.message)
+        Alert.alert(t('dishForm.submit.errorTitle'), dishError.message)
         setSubmitting(false)
         return
       }
@@ -215,11 +217,11 @@ export default function EditDishScreen() {
         )
       }
 
-      Alert.alert('Opgeslagen', 'Je gerecht is bijgewerkt.', [
-        { text: 'OK', onPress: () => router.back() },
+      Alert.alert(t('dishForm.edit.savedTitle'), t('dishForm.edit.savedBody'), [
+        { text: t('dishForm.actions.ok'), onPress: () => router.back() },
       ])
     } catch {
-      Alert.alert('Fout', 'Er is iets misgegaan. Probeer het opnieuw.')
+      Alert.alert(t('dishForm.submit.errorTitle'), t('dishForm.submit.errorGeneric'))
     } finally {
       setSubmitting(false)
     }
@@ -253,27 +255,27 @@ export default function EditDishScreen() {
             ) : (
               <View className="w-full h-56 bg-warm-100 items-center justify-center">
                 <Ionicons name="camera-outline" size={48} color="#b0a89e" />
-                <Text className="text-warm-500 text-sm mt-2">Voeg een foto toe</Text>
+                <Text className="text-warm-500 text-sm mt-2">{t('dishForm.image.placeholderEdit')}</Text>
               </View>
             )}
           </Pressable>
 
           <View className="px-5 pt-5 pb-8">
             {/* Title */}
-            <Text className="text-sm font-bold text-warm-600 mb-1.5">Titel *</Text>
+            <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('dishForm.fields.titleLabel')}</Text>
             <TextInput
               className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 mb-4"
-              placeholder="Bijv. Pasta bolognese"
+              placeholder={t('dishForm.fields.titlePlaceholder')}
               placeholderTextColor="#b0a89e"
               value={title}
               onChangeText={setTitle}
             />
 
             {/* Description */}
-            <Text className="text-sm font-bold text-warm-600 mb-1.5">Beschrijving</Text>
+            <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('dishForm.fields.descriptionLabel')}</Text>
             <TextInput
               className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 mb-4"
-              placeholder="Omschrijf je gerecht..."
+              placeholder={t('dishForm.fields.descriptionPlaceholder')}
               placeholderTextColor="#b0a89e"
               value={description}
               onChangeText={setDescription}
@@ -283,7 +285,7 @@ export default function EditDishScreen() {
             />
 
             {/* Quantity */}
-            <Text className="text-sm font-bold text-warm-600 mb-1.5">Aantal porties</Text>
+            <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('dishForm.fields.quantityLabel')}</Text>
             <View className="flex-row items-center mb-4">
               <Pressable
                 className="w-10 h-10 rounded-xl bg-warm-100 items-center justify-center"
@@ -306,18 +308,18 @@ export default function EditDishScreen() {
             </View>
 
             {/* Pickup times */}
-            <Text className="text-sm font-bold text-warm-600 mb-1.5">Ophaaltijd</Text>
+            <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('dishForm.fields.pickupWindow')}</Text>
             <View className="flex-row gap-3 mb-4">
               <TextInput
                 className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800"
-                placeholder="Van (bijv. 18:00)"
+                placeholder={t('dishForm.fields.pickupFromPlaceholder')}
                 placeholderTextColor="#b0a89e"
                 value={pickupStart}
                 onChangeText={setPickupStart}
               />
               <TextInput
                 className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800"
-                placeholder="Tot (bijv. 19:00)"
+                placeholder={t('dishForm.fields.pickupUntilPlaceholder')}
                 placeholderTextColor="#b0a89e"
                 value={pickupEnd}
                 onChangeText={setPickupEnd}
@@ -325,7 +327,7 @@ export default function EditDishScreen() {
             </View>
 
             {/* Toggle options */}
-            <Text className="text-sm font-bold text-warm-600 mb-2">Opties</Text>
+            <Text className="text-sm font-bold text-warm-600 mb-2">{t('dishForm.fields.optionsLabel')}</Text>
             <View className="gap-2 mb-4">
               <Pressable
                 className={`flex-row items-center rounded-xl px-4 py-3 border ${
@@ -335,7 +337,7 @@ export default function EditDishScreen() {
               >
                 <Ionicons name="leaf-outline" size={18} color={isVegetarian ? '#15803d' : '#b0a89e'} />
                 <Text className={`text-sm font-bold ml-2 ${isVegetarian ? 'text-brand-700' : 'text-warm-600'}`}>
-                  Vegetarisch
+                  {t('dishForm.fields.vegetarian')}
                 </Text>
               </Pressable>
               <Pressable
@@ -346,7 +348,7 @@ export default function EditDishScreen() {
               >
                 <Ionicons name="leaf-outline" size={18} color={isVegan ? '#15803d' : '#b0a89e'} />
                 <Text className={`text-sm font-bold ml-2 ${isVegan ? 'text-brand-700' : 'text-warm-600'}`}>
-                  Veganistisch
+                  {t('dishForm.fields.vegan')}
                 </Text>
               </Pressable>
               <Pressable
@@ -357,17 +359,17 @@ export default function EditDishScreen() {
               >
                 <Ionicons name="cube-outline" size={18} color={bringOwnContainer ? '#d97706' : '#b0a89e'} />
                 <Text className={`text-sm font-bold ml-2 ${bringOwnContainer ? 'text-amber-700' : 'text-warm-600'}`}>
-                  Eigen bakje meenemen
+                  {t('dishForm.fields.bringOwnContainer')}
                 </Text>
               </Pressable>
             </View>
 
             {/* Ingredients */}
-            <Text className="text-sm font-bold text-warm-600 mb-1.5">Ingrediënten</Text>
+            <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('dishForm.fields.ingredientsLabel')}</Text>
             <View className="flex-row items-center mb-2">
               <TextInput
                 className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800"
-                placeholder="Voeg ingrediënt toe..."
+                placeholder={t('dishForm.fields.ingredientsPlaceholder')}
                 placeholderTextColor="#b0a89e"
                 value={ingredientInput}
                 onChangeText={setIngredientInput}
@@ -395,7 +397,7 @@ export default function EditDishScreen() {
             {ingredients.length === 0 && <View className="mb-4" />}
 
             {/* Allergens */}
-            <Text className="text-sm font-bold text-warm-600 mb-2">Allergenen</Text>
+            <Text className="text-sm font-bold text-warm-600 mb-2">{t('dishForm.fields.allergensLabel')}</Text>
             <View className="flex-row flex-wrap gap-2 mb-6">
               {ALL_ALLERGENS.map((allergen) => {
                 const active = selectedAllergens.includes(allergen)
@@ -426,7 +428,7 @@ export default function EditDishScreen() {
               {submitting ? (
                 <ActivityIndicator color="#ffffff" />
               ) : (
-                <Text className="text-white font-bold text-base">Opslaan</Text>
+                <Text className="text-white font-bold text-base">{t('dishForm.edit.saveButton')}</Text>
               )}
             </Pressable>
           </View>

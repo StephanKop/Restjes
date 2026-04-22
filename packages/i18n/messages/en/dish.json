@@ -11,6 +11,43 @@
   "card": {
     "availability": "{count} left"
   },
+  "mobile": {
+    "notFound": "Dish not found.",
+    "labels": {
+      "pickup": "Pickup",
+      "available": "Available",
+      "type": "Type",
+      "bestBy": "Best by",
+      "packaging": "Packaging",
+      "bringOwnContainer": "Bring your own container"
+    },
+    "sections": {
+      "ingredients": "Ingredients",
+      "allergens": "Allergens"
+    },
+    "merchantRating": "{rating} ({count} reviews)",
+    "cta": {
+      "editDish": "Edit dish",
+      "reserving": "Reserving…",
+      "reserve": "Reserve",
+      "unavailable": "No longer available"
+    },
+    "reserve": {
+      "errorTitle": "Error",
+      "errorMessage": "Something went wrong while reserving. Please try again.",
+      "successTitle": "Done!",
+      "successSingular": "You reserved {count} portion of \"{dishTitle}\". Check your reservations for details.",
+      "successPlural": "You reserved {count} portions of \"{dishTitle}\". Check your reservations for details.",
+      "toReservations": "Go to reservations",
+      "ok": "OK"
+    },
+    "chat": {
+      "ownDishTitle": "Your own dish",
+      "ownDishMessage": "You can't chat with yourself.",
+      "startFailedTitle": "Error",
+      "startFailedMessage": "Couldn't start the conversation. Please try again."
+    }
+  },
   "detail": {
     "breadcrumbDiscover": "Discover",
     "metadataNotFound": "Dish not found - Kliekjesclub",

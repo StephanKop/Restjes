@@ -14,22 +14,7 @@ import { useLocalSearchParams, useNavigation, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
-
-const RATING_LABELS: Record<number, string> = {
-  1: 'Slecht',
-  2: 'Matig',
-  3: 'Oké',
-  4: 'Goed',
-  5: 'Uitstekend',
-}
-
-const PLACEHOLDERS: Record<number, string> = {
-  1: 'Wat ging er mis? Je feedback helpt de aanbieder verbeteren.',
-  2: 'Wat kan er beter? Deel je ervaring zodat de aanbieder kan verbeteren.',
-  3: 'Vertel meer over je ervaring. Was er iets dat opviel?',
-  4: 'Leuk dat je het goed vond! Wat vond je het beste?',
-  5: 'Geweldig! Vertel anderen waarom je zo tevreden bent.',
-}
+import { useTranslation } from '../../lib/i18n'
 
 interface ReservationInfo {
   id: string
@@ -39,6 +24,7 @@ interface ReservationInfo {
 }
 
 export default function ReviewScreen() {
+  const { t } = useTranslation()
   const { reservationId } = useLocalSearchParams<{ reservationId: string }>()
   const navigation = useNavigation()
   const { user } = useAuth()
@@ -53,8 +39,8 @@ export default function ReviewScreen() {
   const maxChars = 500
 
   useEffect(() => {
-    navigation.setOptions({ headerTitle: 'Beoordeling' })
-  }, [navigation])
+    navigation.setOptions({ headerTitle: t('reviews.form.headerTitle') })
+  }, [navigation, t])
 
   const fetchReservation = useCallback(async () => {
     const { data } = await supabase
@@ -82,7 +68,7 @@ export default function ReviewScreen() {
     if (!user || !reservation) return
 
     if (rating < 1 || rating > 5) {
-      Alert.alert('Beoordeling nodig', 'Selecteer een beoordeling van 1 tot 5 sterren.')
+      Alert.alert(t('reviews.form.errors.needRatingTitle'), t('reviews.form.errors.needRatingBody'))
       return
     }
 
@@ -100,9 +86,9 @@ export default function ReviewScreen() {
 
     if (error) {
       if (error.code === '23505') {
-        Alert.alert('Al beoordeeld', 'Je hebt al een beoordeling geplaatst voor deze reservering.')
+        Alert.alert(t('reviews.form.errors.alreadyRatedTitle'), t('reviews.form.errors.alreadyRatedBody'))
       } else {
-        Alert.alert('Fout', 'Er ging iets mis. Probeer het opnieuw.')
+        Alert.alert(t('reviews.form.errors.genericTitle'), t('reviews.form.errors.genericBody'))
       }
       return
     }
@@ -122,7 +108,7 @@ export default function ReviewScreen() {
     return (
       <View className="flex-1 bg-offwhite items-center justify-center px-5">
         <Text className="text-warm-400 text-base text-center">
-          Reservering niet gevonden.
+          {t('reviews.form.notFound')}
         </Text>
       </View>
     )
@@ -135,17 +121,17 @@ export default function ReviewScreen() {
           <Ionicons name="checkmark-circle" size={36} color="#22c55e" />
         </View>
         <Text className="text-xl font-bold text-warm-800 text-center mb-2">
-          Bedankt voor je beoordeling!
+          {t('reviews.form.success.title')}
         </Text>
         <Text className="text-base text-warm-500 text-center mb-8">
-          Je helpt {reservation.merchant.business_name} en andere gebruikers met je feedback.
+          {t('reviews.form.success.body', { merchantName: reservation.merchant.business_name })}
         </Text>
         <Pressable
           className="bg-brand-500 rounded-xl px-8 py-3.5 mb-3 w-full"
           onPress={() => router.push('/(tabs)/reservations')}
         >
           <Text className="text-white font-bold text-base text-center">
-            Terug naar reserveringen
+            {t('reviews.form.success.backToReservations')}
           </Text>
         </Pressable>
         <Pressable
@@ -153,7 +139,7 @@ export default function ReviewScreen() {
           onPress={() => router.back()}
         >
           <Text className="text-warm-600 font-bold text-base text-center">
-            Sluiten
+            {t('reviews.form.success.close')}
           </Text>
         </Pressable>
       </View>
@@ -174,7 +160,7 @@ export default function ReviewScreen() {
       >
         {/* Dish info */}
         <View className="bg-white rounded-2xl p-5 mb-6">
-          <Text className="text-sm text-warm-500 mb-1">Beoordeling voor</Text>
+          <Text className="text-sm text-warm-500 mb-1">{t('reviews.form.forLabel')}</Text>
           <Text className="text-lg font-bold text-warm-800">
             {reservation.dish.title}
           </Text>
@@ -186,7 +172,7 @@ export default function ReviewScreen() {
         {/* Star rating */}
         <View className="items-center mb-6">
           <Text className="text-sm font-bold text-warm-800 mb-3">
-            Hoe was het?
+            {t('reviews.form.ratingPrompt')}
           </Text>
           <View className="flex-row gap-2">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -205,7 +191,7 @@ export default function ReviewScreen() {
           </View>
           {rating > 0 && (
             <Text className="text-sm font-bold text-amber-600 mt-2">
-              {RATING_LABELS[rating]}
+              {t(`reviews.form.ratingLabels.${rating}`)}
             </Text>
           )}
         </View>
@@ -214,11 +200,11 @@ export default function ReviewScreen() {
         {rating > 0 && (
           <View className="mb-6">
             <Text className="text-sm font-bold text-warm-800 mb-2">
-              Vertel meer (optioneel)
+              {t('reviews.form.commentLabel')}
             </Text>
             <TextInput
               className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 min-h-[120px]"
-              placeholder={PLACEHOLDERS[rating] ?? 'Deel je ervaring...'}
+              placeholder={rating >= 1 && rating <= 5 ? t(`reviews.form.placeholders.${rating}`) : t('reviews.form.commentFallbackPlaceholder')}
               placeholderTextColor="#b0a89e"
               value={comment}
               onChangeText={(text) => {
@@ -255,7 +241,7 @@ export default function ReviewScreen() {
                 rating === 0 ? 'text-warm-400' : 'text-white'
               }`}
             >
-              Beoordeling plaatsen
+              {t('reviews.form.submit')}
             </Text>
           )}
         </Pressable>
