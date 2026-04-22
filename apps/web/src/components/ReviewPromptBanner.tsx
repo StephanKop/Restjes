@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { createBrowserClient } from '@supabase/ssr'
+import { useTranslations } from 'next-intl'
 import { CookingPotIcon } from '@/components/icons'
 
 interface UnreviewedReservation {
@@ -37,6 +38,7 @@ function dismissId(id: string) {
 }
 
 export function ReviewPromptBanner() {
+  const t = useTranslations('reviews.promptBanner')
   const [reservation, setReservation] = useState<UnreviewedReservation | null>(null)
   const [visible, setVisible] = useState(false)
   const [closing, setClosing] = useState(false)
@@ -131,10 +133,10 @@ export function ReviewPromptBanner() {
           {/* Text */}
           <div className="min-w-0 flex-1">
             <p className="text-sm font-bold text-warm-900">
-              Hoe was {reservation.dish.title}?
+              {t('headline', { dishTitle: reservation.dish.title })}
             </p>
             <p className="text-sm text-warm-500">
-              Opgehaald bij {reservation.merchant.business_name} — laat een beoordeling achter!
+              {t('subtext', { merchantName: reservation.merchant.business_name })}
             </p>
           </div>
 
@@ -143,14 +145,14 @@ export function ReviewPromptBanner() {
             href={`/review/${reservation.id}`}
             className="hidden flex-shrink-0 rounded-xl bg-brand-500 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-brand-600 active:scale-[0.97] sm:inline-flex"
           >
-            Beoordelen
+            {t('cta')}
           </Link>
 
           {/* Dismiss button */}
           <button
             onClick={handleDismiss}
             className="flex-shrink-0 rounded-lg p-1.5 text-warm-400 transition-colors hover:bg-warm-50 hover:text-warm-600"
-            aria-label="Sluiten"
+            aria-label={t('dismiss')}
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
               <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />

@@ -2,14 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-
-const items = [
-  { href: '/aanbieder/dishes', label: 'Gerechten' },
-  { href: '/aanbieder/reservations', label: 'Reserveringen' },
-  { href: '/aanbieder/reviews', label: 'Beoordelingen' },
-  { href: '/aanbieder/messages', label: 'Berichten' },
-  { href: '/aanbieder/profile', label: 'Profiel' },
-]
+import { useTranslations } from 'next-intl'
 
 function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`)
@@ -17,6 +10,14 @@ function isActive(pathname: string, href: string): boolean {
 
 export function AanbiederSubNav() {
   const pathname = usePathname()
+  const t = useTranslations('nav.aanbiederSub')
+  const items = [
+    { href: '/aanbieder/dishes', label: t('dishes') },
+    { href: '/aanbieder/reservations', label: t('reservations') },
+    { href: '/aanbieder/reviews', label: t('reviews') },
+    { href: '/aanbieder/messages', label: t('messages') },
+    { href: '/aanbieder/profile', label: t('profile') },
+  ]
   return (
     <div className="border-b border-warm-100 bg-white">
       <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-6 py-2">

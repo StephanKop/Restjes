@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
+import { useTranslations } from 'next-intl'
 
 interface MobileMenuProps {
   isLoggedIn: boolean
@@ -13,18 +14,18 @@ interface MobileMenuProps {
   unreadCount?: number
 }
 
-const NAV_ITEMS_LOGGED_IN = [
-  { href: '/browse', label: 'Ontdekken' },
-  { href: '/messages', label: 'Berichten' },
-  { href: '/reservations', label: 'Reserveringen' },
-  { href: '/aanbieder/dishes', label: 'Mijn aanbod' },
-  { href: '/aanbieder/reservations', label: 'Reserveringen (aanbieder)' },
-  { href: '/profile', label: 'Mijn profiel' },
-]
-
 export function MobileMenu({ isLoggedIn, displayName, initial, unreadCount }: MobileMenuProps) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
+  const t = useTranslations('nav')
+  const navItemsLoggedIn = [
+    { href: '/browse', label: t('discover') },
+    { href: '/messages', label: t('messages') },
+    { href: '/reservations', label: t('reservations') },
+    { href: '/aanbieder/dishes', label: t('myOffer') },
+    { href: '/aanbieder/reservations', label: t('mobileMenu.reservationsMerchant') },
+    { href: '/profile', label: t('mobileMenu.myProfile') },
+  ]
 
   // Close on navigation
   useEffect(() => {
@@ -57,7 +58,7 @@ export function MobileMenu({ isLoggedIn, displayName, initial, unreadCount }: Mo
         type="button"
         onClick={() => setOpen((o) => !o)}
         className="flex h-9 w-9 items-center justify-center rounded-xl text-inherit transition-colors hover:bg-white/20 group-data-[scrolled]/header:hover:bg-warm-100"
-        aria-label={open ? 'Menu sluiten' : 'Menu openen'}
+        aria-label={open ? t('closeMenu') : t('openMenu')}
       >
         {open ? (
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
@@ -90,13 +91,13 @@ export function MobileMenu({ isLoggedIn, displayName, initial, unreadCount }: Mo
                   </div>
                 </div>
               ) : (
-                <p className="font-bold text-warm-800">Menu</p>
+                <p className="font-bold text-warm-800">{t('menu')}</p>
               )}
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-warm-400 hover:text-warm-600"
-                aria-label="Menu sluiten"
+                aria-label={t('closeMenu')}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
                   <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
@@ -108,7 +109,7 @@ export function MobileMenu({ isLoggedIn, displayName, initial, unreadCount }: Mo
             <div className="flex-1 overflow-y-auto px-3 py-4">
               {isLoggedIn ? (
                 <div className="space-y-1">
-                  {NAV_ITEMS_LOGGED_IN.map((item) => {
+                  {navItemsLoggedIn.map((item) => {
                     const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
                     return (
                       <Link
@@ -138,7 +139,7 @@ export function MobileMenu({ isLoggedIn, displayName, initial, unreadCount }: Mo
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
                       <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
                     </svg>
-                    Gerecht aanmaken
+                    {t('createDish')}
                   </Link>
                 </div>
               ) : (
@@ -147,7 +148,7 @@ export function MobileMenu({ isLoggedIn, displayName, initial, unreadCount }: Mo
                     href="/browse"
                     className="block rounded-xl px-4 py-3 text-sm font-semibold text-warm-700 hover:bg-warm-50"
                   >
-                    Ontdekken
+                    {t('discover')}
                   </Link>
                 </div>
               )}
@@ -161,7 +162,7 @@ export function MobileMenu({ isLoggedIn, displayName, initial, unreadCount }: Mo
                   onClick={handleLogout}
                   className="w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
                 >
-                  Uitloggen
+                  {t('signOut')}
                 </button>
               ) : (
                 <div className="space-y-2">
@@ -169,13 +170,13 @@ export function MobileMenu({ isLoggedIn, displayName, initial, unreadCount }: Mo
                     href="/login"
                     className="block rounded-xl bg-brand-500 px-4 py-3 text-center text-sm font-bold text-white transition-colors hover:bg-brand-600"
                   >
-                    Inloggen
+                    {t('signIn')}
                   </Link>
                   <Link
                     href="/signup"
                     className="block rounded-xl border-2 border-brand-500 px-4 py-3 text-center text-sm font-bold text-brand-700 transition-colors hover:bg-brand-50"
                   >
-                    Aanmelden
+                    {t('signUp')}
                   </Link>
                 </div>
               )}

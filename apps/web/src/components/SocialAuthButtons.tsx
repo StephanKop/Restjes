@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
+import { useTranslations } from 'next-intl'
 import type { Provider } from '@supabase/supabase-js'
 
 const PROVIDERS: { id: Provider; label: string; icon: React.ReactNode; bg: string; text: string }[] = [
@@ -22,6 +23,7 @@ const PROVIDERS: { id: Provider; label: string; icon: React.ReactNode; bg: strin
 ]
 
 export function SocialAuthButtons() {
+  const t = useTranslations('auth.social')
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null)
 
   const supabase = createBrowserClient(
@@ -50,7 +52,7 @@ export function SocialAuthButtons() {
           className={`flex w-full items-center justify-center gap-3 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 ${p.bg} ${p.text} disabled:opacity-50 disabled:active:scale-100`}
         >
           {p.icon}
-          {loadingProvider === p.id ? 'Even geduld...' : `Doorgaan met ${p.label}`}
+          {loadingProvider === p.id ? t('loading') : t('continueWith', { provider: p.label })}
         </button>
       ))}
     </div>

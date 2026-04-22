@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { getTranslations } from 'next-intl/server'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { UserMenu } from '@/components/UserMenu'
 import { NotificationBell } from '@/components/NotificationBell'
@@ -39,6 +40,7 @@ async function Notifications() {
 /** Async: resolves the user-dependent parts (avatar, notifications, mobile menu) */
 async function UserNav() {
   const user = await getUser()
+  const t = await getTranslations('nav')
 
   if (!user) {
     return (
@@ -47,13 +49,13 @@ async function UserNav() {
           href="/login"
           className="hidden rounded-xl px-5 py-2.5 font-bold text-inherit transition-colors hover:bg-white/20 group-data-[scrolled]/header:hover:bg-warm-100 sm:inline-flex"
         >
-          Inloggen
+          {t('signIn')}
         </Link>
         <Link
           href="/signup"
           className="hidden rounded-xl bg-brand-500 px-5 py-2.5 font-bold text-white shadow-button transition-colors hover:bg-brand-600 sm:inline-flex"
         >
-          Aanmelden
+          {t('signUp')}
         </Link>
         <MobileMenu isLoggedIn={false} />
       </>
@@ -79,7 +81,7 @@ async function UserNav() {
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
           <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
         </svg>
-        Nieuw gerecht
+        {t('newDish')}
       </Link>
       <UserMenu initial={initial} />
       <MobileMenu isLoggedIn displayName={displayName} initial={initial} />

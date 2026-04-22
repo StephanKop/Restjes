@@ -3,6 +3,7 @@
 import { Suspense, type ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 function isActive(pathname: string, href: string): boolean {
   if (href === '/') return pathname === '/'
@@ -22,28 +23,29 @@ function linkClass(active: boolean): string {
 
 export function MainNavLinks({ unreadBadge }: { unreadBadge: ReactNode }) {
   const pathname = usePathname()
+  const t = useTranslations('nav')
   return (
     <>
       <Link href="/browse" className={linkClass(isActive(pathname, '/browse'))}>
-        Ontdekken
+        {t('discover')}
       </Link>
       <Link
         href="/aanbieder/dishes"
         className={linkClass(isActive(pathname, '/aanbieder'))}
       >
-        Mijn aanbod
+        {t('myOffer')}
       </Link>
       <Link
         href="/reservations"
         className={linkClass(isActive(pathname, '/reservations'))}
       >
-        Reserveringen
+        {t('reservations')}
       </Link>
       <Link
         href="/messages"
         className={`relative ${linkClass(isActive(pathname, '/messages'))}`}
       >
-        Berichten
+        {t('messages')}
         <Suspense>{unreadBadge}</Suspense>
       </Link>
     </>

@@ -10,6 +10,14 @@ import {
   messagesEnFooter,
   messagesNlProfile,
   messagesEnProfile,
+  messagesNlNav,
+  messagesEnNav,
+  messagesNlHowItWorks,
+  messagesEnHowItWorks,
+  messagesNlReviews,
+  messagesEnReviews,
+  messagesNlAuth,
+  messagesEnAuth,
 } from '@kliekjesclub/i18n'
 
 export const LOCALE_COOKIE = 'kc_locale'
@@ -20,11 +28,19 @@ const messagesByLocale: Record<Locale, Record<string, unknown>> = {
     common: messagesNlCommon,
     footer: messagesNlFooter,
     profile: messagesNlProfile,
+    nav: messagesNlNav,
+    howItWorks: messagesNlHowItWorks,
+    reviews: messagesNlReviews,
+    auth: messagesNlAuth,
   },
   en: {
     common: messagesEnCommon,
     footer: messagesEnFooter,
     profile: messagesEnProfile,
+    nav: messagesEnNav,
+    howItWorks: messagesEnHowItWorks,
+    reviews: messagesEnReviews,
+    auth: messagesEnAuth,
   },
 }
 

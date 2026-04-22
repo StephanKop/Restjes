@@ -1,0 +1,28 @@
+{
+  "discover": "Discover",
+  "myOffer": "My listings",
+  "reservations": "Reservations",
+  "messages": "Messages",
+  "newDish": "New dish",
+  "createDish": "Create dish",
+  "userMenu": "User menu",
+  "viewProfile": "View profile",
+  "impact": "My impact",
+  "menu": "Menu",
+  "openMenu": "Open menu",
+  "closeMenu": "Close menu",
+  "signIn": "Sign in",
+  "signUp": "Sign up",
+  "signOut": "Sign out",
+  "aanbiederSub": {
+    "dishes": "Dishes",
+    "reservations": "Reservations",
+    "reviews": "Reviews",
+    "messages": "Messages",
+    "profile": "Profile"
+  },
+  "mobileMenu": {
+    "reservationsMerchant": "Reservations (merchant)",
+    "myProfile": "My profile"
+  }
+}

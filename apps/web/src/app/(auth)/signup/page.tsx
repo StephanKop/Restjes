@@ -3,11 +3,13 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { createBrowserClient } from '@supabase/ssr'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { SocialAuthButtons } from '@/components/SocialAuthButtons'
 
 export default function SignupPage() {
+  const t = useTranslations('auth')
   const [displayName, setDisplayName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -38,13 +40,13 @@ export default function SignupPage() {
     if (error) {
       switch (error.message) {
         case 'User already registered':
-          setError('Er bestaat al een account met dit e-mailadres.')
+          setError(t('signup.errors.alreadyRegistered'))
           break
         case 'Password should be at least 6 characters':
-          setError('Je wachtwoord moet minimaal 6 tekens bevatten.')
+          setError(t('signup.errors.passwordTooShort'))
           break
         default:
-          setError('Er is iets misgegaan. Probeer het opnieuw.')
+          setError(t('signup.errors.generic'))
       }
       setLoading(false)
       return
@@ -57,9 +59,9 @@ export default function SignupPage() {
   if (success) {
     return (
       <div className="text-center">
-        <h1 className="mb-4 text-2xl font-bold text-warm-800">Bijna klaar!</h1>
+        <h1 className="mb-4 text-2xl font-bold text-warm-800">{t('signup.success.heading')}</h1>
         <p className="text-warm-600">
-          Check je e-mail om je account te bevestigen!
+          {t('signup.success.body')}
         </p>
       </div>
     )
@@ -68,7 +70,7 @@ export default function SignupPage() {
   return (
     <>
       <h1 className="mb-6 text-center text-2xl font-bold text-warm-800">
-        Maak een account aan
+        {t('signup.heading')}
       </h1>
 
       <SocialAuthButtons />
@@ -78,31 +80,31 @@ export default function SignupPage() {
           <div className="w-full border-t border-warm-200" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="bg-cream px-3 text-warm-400">of met e-mail</span>
+          <span className="bg-cream px-3 text-warm-400">{t('divider')}</span>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
-          label="Naam"
+          label={t('fields.nameLabel')}
           type="text"
-          placeholder="Je naam"
+          placeholder={t('fields.namePlaceholder')}
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
           required
         />
         <Input
-          label="E-mailadres"
+          label={t('fields.emailLabel')}
           type="email"
-          placeholder="jouw@email.nl"
+          placeholder={t('fields.emailPlaceholder')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
         <Input
-          label="Wachtwoord"
+          label={t('fields.passwordLabel')}
           type="password"
-          placeholder="Minimaal 6 tekens"
+          placeholder={t('fields.passwordPlaceholderMin')}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -114,18 +116,18 @@ export default function SignupPage() {
         )}
 
         <Button type="submit" variant="primary" loading={loading} className="w-full">
-          Account aanmaken
+          {t('signup.submit')}
         </Button>
       </form>
 
       <div className="mt-6 space-y-2 text-center text-sm">
         <p className="text-warm-500">
-          Heb je al een account?{' '}
+          {t('signup.haveAccount')}{' '}
           <Link
             href="/login"
             className="text-brand-600 hover:text-brand-700 font-semibold"
           >
-            Inloggen
+            {t('signup.loginLink')}
           </Link>
         </p>
       </div>

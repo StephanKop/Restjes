@@ -1,0 +1,28 @@
+{
+  "discover": "Ontdekken",
+  "myOffer": "Mijn aanbod",
+  "reservations": "Reserveringen",
+  "messages": "Berichten",
+  "newDish": "Nieuw gerecht",
+  "createDish": "Gerecht aanmaken",
+  "userMenu": "Gebruikersmenu",
+  "viewProfile": "Bekijk profiel",
+  "impact": "Mijn impact",
+  "menu": "Menu",
+  "openMenu": "Menu openen",
+  "closeMenu": "Menu sluiten",
+  "signIn": "Inloggen",
+  "signUp": "Aanmelden",
+  "signOut": "Uitloggen",
+  "aanbiederSub": {
+    "dishes": "Gerechten",
+    "reservations": "Reserveringen",
+    "reviews": "Beoordelingen",
+    "messages": "Berichten",
+    "profile": "Profiel"
+  },
+  "mobileMenu": {
+    "reservationsMerchant": "Reserveringen (aanbieder)",
+    "myProfile": "Mijn profiel"
+  }
+}

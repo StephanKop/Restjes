@@ -1,0 +1,8 @@
+{
+  "promptBanner": {
+    "headline": "How was {dishTitle}?",
+    "subtext": "Picked up from {merchantName} — leave a review!",
+    "cta": "Review",
+    "dismiss": "Close"
+  }
+}

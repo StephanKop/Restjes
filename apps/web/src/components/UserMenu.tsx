@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createBrowserClient } from '@supabase/ssr'
+import { useTranslations } from 'next-intl'
 
 interface UserMenuProps {
   initial: string
@@ -13,6 +14,7 @@ export function UserMenu({ initial }: UserMenuProps) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const t = useTranslations('nav')
 
   // Close on outside click
   useEffect(() => {
@@ -41,7 +43,7 @@ export function UserMenu({ initial }: UserMenuProps) {
         type="button"
         onClick={() => setOpen((o) => !o)}
         className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700 transition-all duration-150 hover:bg-brand-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2"
-        aria-label="Gebruikersmenu"
+        aria-label={t('userMenu')}
         aria-expanded={open}
       >
         {initial}
@@ -56,21 +58,21 @@ export function UserMenu({ initial }: UserMenuProps) {
               onClick={() => setOpen(false)}
               className="block px-4 py-2.5 text-sm font-medium text-warm-700 transition-colors hover:bg-warm-50 hover:text-warm-900 active:bg-warm-100 focus-visible:outline-none focus-visible:bg-warm-50 focus-visible:text-warm-900"
             >
-              Bekijk profiel
+              {t('viewProfile')}
             </Link>
             <Link
               href="/impact"
               onClick={() => setOpen(false)}
               className="block px-4 py-2.5 text-sm font-medium text-warm-700 transition-colors hover:bg-warm-50 hover:text-warm-900 active:bg-warm-100 focus-visible:outline-none focus-visible:bg-warm-50 focus-visible:text-warm-900"
             >
-              Mijn impact
+              {t('impact')}
             </Link>
             <button
               type="button"
               onClick={handleLogout}
               className="block w-full px-4 py-2.5 text-left text-sm font-medium text-warm-700 transition-colors hover:bg-warm-50 hover:text-warm-900 active:bg-warm-100 focus-visible:outline-none focus-visible:bg-warm-50 focus-visible:text-warm-900"
             >
-              Uitloggen
+              {t('signOut')}
             </button>
           </div>
         </div>

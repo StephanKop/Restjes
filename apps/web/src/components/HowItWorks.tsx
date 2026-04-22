@@ -1,7 +1,9 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useLocale, useTranslations } from 'next-intl'
 import type { HowItWorksContent } from '@kliekjesclub/types'
+import { localeMeta, type Locale } from '@kliekjesclub/i18n'
 
 function CameraIcon({ className }: { className?: string }) {
   return (
@@ -52,6 +54,7 @@ function AnimatedNumber({
   prefix: string
   suffix: string
 }) {
+  const locale = useLocale() as Locale
   const [value, setValue] = useState(0)
   const [hasStarted, setHasStarted] = useState(false)
   const ref = useRef<HTMLSpanElement>(null)
@@ -99,12 +102,13 @@ function AnimatedNumber({
 
   return (
     <span ref={ref}>
-      {prefix}{value.toLocaleString('nl-NL')}{suffix}
+      {prefix}{value.toLocaleString(localeMeta[locale]?.htmlLang ?? 'nl-NL')}{suffix}
     </span>
   )
 }
 
 export function HowItWorks({ content }: { content: HowItWorksContent }) {
+  const t = useTranslations('howItWorks')
   const STEPS = content.steps.map((step, i) => ({
     step: String(i + 1),
     icon: STEP_ICONS[i] ?? STEP_ICONS[0],
@@ -243,7 +247,7 @@ export function HowItWorks({ content }: { content: HowItWorksContent }) {
               <div className="animate-target relative overflow-hidden rounded-3xl shadow-lg">
                 <img
                   src="/community.jpg"
-                  alt="Buren die eten delen"
+                  alt={t('communityImageAlt')}
                   className="aspect-[4/3] w-full object-cover"
                 />
                 <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-black/10" />
