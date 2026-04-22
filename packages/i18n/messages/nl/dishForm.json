@@ -1,0 +1,69 @@
+{
+  "steps": {
+    "dish": "Gerecht",
+    "pickup": "Ophalen",
+    "details": "Details"
+  },
+  "image": {
+    "placeholder": "Voeg een foto toe *",
+    "changeShort": "Wijzigen",
+    "dialogTitle": "Foto toevoegen",
+    "dialogMessage": "Kies een optie",
+    "camera": "Camera",
+    "library": "Fotobibliotheek",
+    "cancel": "Annuleren"
+  },
+  "fields": {
+    "titleLabel": "Titel *",
+    "titlePlaceholder": "Bijv. Pasta bolognese",
+    "descriptionLabel": "Beschrijving",
+    "descriptionPlaceholder": "Omschrijf je gerecht...",
+    "quantityLabel": "Aantal porties",
+    "pickupStartLabel": "Ophalen vanaf *",
+    "pickupEndLabel": "Ophalen tot",
+    "pickupTimePlaceholder": "Kies een tijd",
+    "storageLabel": "Vers of ingevroren",
+    "fresh": "Vers",
+    "frozen": "Ingevroren",
+    "expiresLabel": "Houdbaar tot *",
+    "expiresHint": "Geef aan tot wanneer het gerecht vers en veilig te eten is.",
+    "frozenNote": "Ingevroren gerechten hebben geen houdbaarheidsdatum nodig.",
+    "ingredientsLabel": "Ingrediënten",
+    "ingredientsPlaceholder": "Voeg ingrediënt toe...",
+    "allergensLabel": "Allergenen",
+    "optionsLabel": "Opties",
+    "vegetarian": "Vegetarisch",
+    "vegan": "Veganistisch",
+    "bringOwnContainer": "Eigen bakje meenemen"
+  },
+  "autoExpire": {
+    "label": "Ik ga ermee akkoord dat dit gerecht automatisch op 'verlopen' wordt gezet na de houdbaarheidsdatum of het einde van de ophaaltijd.",
+    "requiredTitle": "Verplicht",
+    "requiredBody": "Je moet akkoord gaan met het automatisch verlopen."
+  },
+  "validation": {
+    "requiredFieldTitle": "Verplicht veld",
+    "titleRequired": "Vul een titel in voor je gerecht.",
+    "imageRequired": "Voeg een foto toe van je gerecht.",
+    "quantityMin": "Het aantal porties moet minimaal 1 zijn.",
+    "pickupStartRequired": "Vul een ophaaltijd in.",
+    "expiresRequired": "Vul een houdbaarheidsdatum in voor verse gerechten."
+  },
+  "actions": {
+    "previous": "Vorige",
+    "next": "Volgende",
+    "cancel": "Annuleren",
+    "submit": "Gerecht plaatsen",
+    "view": "Bekijken",
+    "ok": "OK"
+  },
+  "submit": {
+    "errorTitle": "Fout",
+    "errorGeneric": "Er is iets misgegaan. Probeer het opnieuw.",
+    "errorCreateMerchant": "Kon je aanbiedersprofiel niet aanmaken.",
+    "errorCreateDish": "Kon het gerecht niet aanmaken.",
+    "successTitle": "Gelukt!",
+    "successBody": "Je gerecht is aangemaakt.",
+    "defaultKitchenName": "Mijn keuken"
+  }
+}

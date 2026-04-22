@@ -10,5 +10,53 @@
   },
   "card": {
     "availability": "Nog {count} beschikbaar"
+  },
+  "detail": {
+    "breadcrumbDiscover": "Ontdekken",
+    "metadataNotFound": "Gerecht niet gevonden - Kliekjesclub",
+    "metadataTitle": "{dishTitle} bij {merchantName} - Kliekjesclub",
+    "metadataDescriptionFallback": "Bekijk {dishTitle} bij {merchantName} op Kliekjesclub.",
+    "badges": {
+      "reserved": "Gereserveerd",
+      "collected": "Opgehaald",
+      "expired": "Verlopen",
+      "unavailable": "Niet beschikbaar",
+      "frozen": "Ingevroren",
+      "fresh": "Vers"
+    },
+    "stats": {
+      "remaining": "Nog {count} beschikbaar"
+    },
+    "unavailable": {
+      "reserved": "Dit gerecht is al gereserveerd",
+      "collected": "Dit gerecht is al opgehaald",
+      "expired": "Dit gerecht is verlopen",
+      "noQuantity": "Dit gerecht is niet meer beschikbaar",
+      "seeMore": "Bekijk andere gerechten →"
+    },
+    "cta": {
+      "ownerEdit": "Dit is jouw gerecht — Bewerken",
+      "loginToReserve": "Inloggen om te reserveren"
+    },
+    "sections": {
+      "details": "Details",
+      "ingredients": "Ingredienten",
+      "allergens": "Allergenen"
+    },
+    "info": {
+      "pickupMoment": "Ophaalmoment",
+      "available": "Beschikbaar",
+      "type": "Type",
+      "bestBy": "Houdbaar tot",
+      "bringOwnContainer": "Eigen bakje meenemen",
+      "bringOwnContainerYes": "Ja, graag!",
+      "bringOwnContainerNo": "Niet nodig",
+      "diet": "Dieet",
+      "dietVegan": "Veganistisch",
+      "dietVegetarian": "Vegetarisch",
+      "dietNone": "Geen specifiek dieet",
+      "portionsSingular": "{count} portie",
+      "portionsPlural": "{count} porties"
+    }
   }
 }

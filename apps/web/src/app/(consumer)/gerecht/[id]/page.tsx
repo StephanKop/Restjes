@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { getLocale, getTranslations } from 'next-intl/server'
+import { localeMeta, type Locale } from '@kliekjesclub/i18n'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { getCachedDish } from '@/lib/cached-queries'
 import { formatPickupTime, allergenLabel } from '@/lib/format'
@@ -17,6 +19,7 @@ interface DishPageProps {
 export async function generateMetadata({ params }: DishPageProps): Promise<Metadata> {
   const { id } = await params
   const supabase = await createServerComponentClient()
+  const t = await getTranslations('dish.detail')
 
   const { data: dish } = await supabase
     .from('dishes')
@@ -25,16 +28,16 @@ export async function generateMetadata({ params }: DishPageProps): Promise<Metad
     .single()
 
   if (!dish) {
-    return { title: 'Gerecht niet gevonden - Kliekjesclub' }
+    return { title: t('metadataNotFound') }
   }
 
   const merchant = dish.merchant as unknown as { business_name: string }
 
   return {
-    title: `${dish.title} bij ${merchant.business_name} - Kliekjesclub`,
-    description: dish.description ?? `Bekijk ${dish.title} bij ${merchant.business_name} op Kliekjesclub.`,
+    title: t('metadataTitle', { dishTitle: dish.title, merchantName: merchant.business_name }),
+    description: dish.description ?? t('metadataDescriptionFallback', { dishTitle: dish.title, merchantName: merchant.business_name }),
     openGraph: {
-      title: `${dish.title} bij ${merchant.business_name}`,
+      title: t('metadataTitle', { dishTitle: dish.title, merchantName: merchant.business_name }),
       description: dish.description ?? undefined,
       type: 'website',
       images: dish.image_url ? [{ url: dish.image_url }] : undefined,
@@ -44,6 +47,9 @@ export async function generateMetadata({ params }: DishPageProps): Promise<Metad
 
 export default async function DishPage({ params }: DishPageProps) {
   const { id } = await params
+  const t = await getTranslations('dish')
+  const locale = (await getLocale()) as Locale
+  const dateLocale = localeMeta[locale]?.htmlLang ?? 'nl-NL'
 
   const dish = await getCachedDish(id)
 
@@ -122,7 +128,7 @@ export default async function DishPage({ params }: DishPageProps) {
 
       {/* Breadcrumb */}
       <nav className="mb-4 flex items-center gap-2 text-sm text-warm-400" data-reveal>
-        <Link href="/browse" className="transition-colors hover:text-brand-600">Ontdekken</Link>
+        <Link href="/browse" className="transition-colors hover:text-brand-600">{t('detail.breadcrumbDiscover')}</Link>
         <span>/</span>
         <span className="text-warm-600">{dish.title}</span>
       </nav>
@@ -164,25 +170,25 @@ export default async function DishPage({ params }: DishPageProps) {
                           ? 'bg-red-100 text-red-800'
                           : 'bg-warm-100 text-warm-700'
                   }`}>
-                    {dish.status === 'reserved' && 'Gereserveerd'}
-                    {dish.status === 'collected' && 'Opgehaald'}
-                    {dish.status === 'expired' && 'Verlopen'}
-                    {dish.status === 'available' && 'Niet beschikbaar'}
+                    {dish.status === 'reserved' && t('detail.badges.reserved')}
+                    {dish.status === 'collected' && t('detail.badges.collected')}
+                    {dish.status === 'expired' && t('detail.badges.expired')}
+                    {dish.status === 'available' && t('detail.badges.unavailable')}
                   </span>
                 )}
                 {dish.is_vegan && (
                   <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
-                    Veganistisch
+                    {t('badges.vegan')}
                   </span>
                 )}
                 {dish.is_vegetarian && !dish.is_vegan && (
                   <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
-                    Vegetarisch
+                    {t('badges.vegetarian')}
                   </span>
                 )}
                 {dish.bring_own_container && (
                   <span className="rounded-full bg-brand-100 px-2.5 py-0.5 text-xs font-semibold text-brand-800">
-                    Eigen bakje
+                    {t('badges.bringOwnContainer')}
                   </span>
                 )}
                 <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
@@ -195,7 +201,7 @@ export default async function DishPage({ params }: DishPageProps) {
                   ) : (
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-3 w-3"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" /></svg>
                   )}
-                  {dish.is_frozen ? 'Ingevroren' : 'Vers'}
+                  {dish.is_frozen ? t('detail.badges.frozen') : t('detail.badges.fresh')}
                 </span>
               </div>
               <h1 className="mb-2 text-3xl font-extrabold text-warm-900 lg:text-4xl">{dish.title}</h1>
@@ -253,7 +259,7 @@ export default async function DishPage({ params }: DishPageProps) {
               {isAvailable && (
                 <span className="flex items-center gap-1.5">
                   <CubeIcon className="h-4 w-4 text-warm-400" />
-                  Nog {dish.quantity_available} beschikbaar
+                  {t('detail.stats.remaining', { count: dish.quantity_available })}
                 </span>
               )}
             </div>
@@ -275,14 +281,14 @@ export default async function DishPage({ params }: DishPageProps) {
                     ? 'text-red-800'
                     : 'text-warm-700'
               }`}>
-                {dish.status === 'reserved' && 'Dit gerecht is al gereserveerd'}
-                {dish.status === 'collected' && 'Dit gerecht is al opgehaald'}
-                {dish.status === 'expired' && 'Dit gerecht is verlopen'}
-                {dish.status === 'available' && dish.quantity_available <= 0 && 'Dit gerecht is niet meer beschikbaar'}
+                {dish.status === 'reserved' && t('detail.unavailable.reserved')}
+                {dish.status === 'collected' && t('detail.unavailable.collected')}
+                {dish.status === 'expired' && t('detail.unavailable.expired')}
+                {dish.status === 'available' && dish.quantity_available <= 0 && t('detail.unavailable.noQuantity')}
               </p>
               <p className="mt-1 text-sm text-warm-500">
                 <Link href="/browse" className="font-medium text-brand-600 hover:text-brand-700">
-                  Bekijk andere gerechten &rarr;
+                  {t('detail.unavailable.seeMore')}
                 </Link>
               </p>
             </div>
@@ -296,7 +302,7 @@ export default async function DishPage({ params }: DishPageProps) {
                   href={`/aanbieder/dishes/${dish.id}/edit`}
                   className="flex items-center justify-center gap-2 rounded-xl bg-warm-100 px-6 py-3 font-bold text-warm-700 transition-all duration-150 hover:bg-warm-200 active:scale-[0.97]"
                 >
-                  Dit is jouw gerecht — Bewerken
+                  {t('detail.cta.ownerEdit')}
                 </Link>
               ) : user ? (
                 <>
@@ -316,7 +322,7 @@ export default async function DishPage({ params }: DishPageProps) {
                   href="/login"
                   className="flex items-center justify-center rounded-xl bg-brand-500 px-6 py-3 font-bold text-white shadow-button transition-all duration-150 hover:bg-brand-600 active:scale-[0.97]"
                 >
-                  Inloggen om te reserveren
+                  {t('detail.cta.loginToReserve')}
                 </Link>
               )}
             </div>
@@ -326,50 +332,50 @@ export default async function DishPage({ params }: DishPageProps) {
 
       {/* Details section */}
       <div className="mt-10 space-y-6" data-reveal>
-        <h2 className="text-xl font-extrabold text-warm-900">Details</h2>
+        <h2 className="text-xl font-extrabold text-warm-900">{t('detail.sections.details')}</h2>
 
         <div className="overflow-hidden rounded-2xl bg-white shadow-card">
           {/* Info rows */}
           <div className="divide-y divide-warm-100">
             <InfoItem
               icon={<ClockIcon className="h-5 w-5" />}
-              label="Ophaalmoment"
+              label={t('detail.info.pickupMoment')}
               value={pickupLabel}
             />
             <InfoItem
               icon={<CubeIcon className="h-5 w-5" />}
-              label="Beschikbaar"
-              value={`${dish.quantity_available} portie${dish.quantity_available !== 1 ? 's' : ''}`}
+              label={t('detail.info.available')}
+              value={t(dish.quantity_available === 1 ? 'detail.info.portionsSingular' : 'detail.info.portionsPlural', { count: dish.quantity_available })}
             />
             <InfoItem
               icon={dish.is_frozen
                 ? <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 2v20M12 6l-3-3m3 3 3-3M12 18l-3 3m3-3 3 3M2 12h20M6 12l-3-3m3 3-3 3M18 12l3-3m-3 3 3 3M7.05 4.93l9.9 9.9M7.05 4.93 5.64 7.76m1.41-2.83 2.83 1.42M16.95 19.07l-2.83-1.42m2.83 1.42 1.41-2.83M16.95 4.93l-9.9 9.9M16.95 4.93l1.41 2.83m-1.41-2.83-2.83 1.42M7.05 19.07l2.83-1.42m-2.83 1.42L5.64 16.24" /></svg>
                 : <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" /></svg>
               }
-              label="Type"
-              value={dish.is_frozen ? 'Ingevroren' : 'Vers'}
+              label={t('detail.info.type')}
+              value={dish.is_frozen ? t('detail.badges.frozen') : t('detail.badges.fresh')}
             />
             {!dish.is_frozen && dish.expires_at && (
               <InfoItem
                 icon={<ClockIcon className="h-5 w-5" />}
-                label="Houdbaar tot"
-                value={new Date(dish.expires_at).toLocaleString('nl-NL', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}
+                label={t('detail.info.bestBy')}
+                value={new Date(dish.expires_at).toLocaleString(dateLocale, { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}
               />
             )}
             <InfoItem
               icon={<ContainerIcon className="h-5 w-5" />}
-              label="Eigen bakje meenemen"
-              value={dish.bring_own_container ? 'Ja, graag!' : 'Niet nodig'}
+              label={t('detail.info.bringOwnContainer')}
+              value={dish.bring_own_container ? t('detail.info.bringOwnContainerYes') : t('detail.info.bringOwnContainerNo')}
             />
             <InfoItem
               icon={<LeafIcon className="h-5 w-5" />}
-              label="Dieet"
+              label={t('detail.info.diet')}
               value={
                 dish.is_vegan
-                  ? 'Veganistisch'
+                  ? t('detail.info.dietVegan')
                   : dish.is_vegetarian
-                    ? 'Vegetarisch'
-                    : 'Geen specifiek dieet'
+                    ? t('detail.info.dietVegetarian')
+                    : t('detail.info.dietNone')
               }
             />
           </div>
@@ -384,7 +390,7 @@ export default async function DishPage({ params }: DishPageProps) {
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
                     <LeafIcon className="h-4 w-4" />
                   </div>
-                  <h3 className="font-bold text-warm-900">Ingredienten</h3>
+                  <h3 className="font-bold text-warm-900">{t('detail.sections.ingredients')}</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {ingredients.map((ingredient) => (
@@ -405,7 +411,7 @@ export default async function DishPage({ params }: DishPageProps) {
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-600">
                     <DishIcon className="h-4 w-4" />
                   </div>
-                  <h3 className="font-bold text-warm-900">Allergenen</h3>
+                  <h3 className="font-bold text-warm-900">{t('detail.sections.allergens')}</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {allergies.map((allergy) => (

@@ -10,5 +10,53 @@
   },
   "card": {
     "availability": "{count} left"
+  },
+  "detail": {
+    "breadcrumbDiscover": "Discover",
+    "metadataNotFound": "Dish not found - Kliekjesclub",
+    "metadataTitle": "{dishTitle} at {merchantName} - Kliekjesclub",
+    "metadataDescriptionFallback": "View {dishTitle} at {merchantName} on Kliekjesclub.",
+    "badges": {
+      "reserved": "Reserved",
+      "collected": "Picked up",
+      "expired": "Expired",
+      "unavailable": "Unavailable",
+      "frozen": "Frozen",
+      "fresh": "Fresh"
+    },
+    "stats": {
+      "remaining": "{count} left"
+    },
+    "unavailable": {
+      "reserved": "This dish has already been reserved",
+      "collected": "This dish has already been picked up",
+      "expired": "This dish has expired",
+      "noQuantity": "This dish is no longer available",
+      "seeMore": "See other dishes →"
+    },
+    "cta": {
+      "ownerEdit": "This is your dish — Edit",
+      "loginToReserve": "Sign in to reserve"
+    },
+    "sections": {
+      "details": "Details",
+      "ingredients": "Ingredients",
+      "allergens": "Allergens"
+    },
+    "info": {
+      "pickupMoment": "Pickup window",
+      "available": "Available",
+      "type": "Type",
+      "bestBy": "Best by",
+      "bringOwnContainer": "Bring own container",
+      "bringOwnContainerYes": "Yes, please!",
+      "bringOwnContainerNo": "Not required",
+      "diet": "Diet",
+      "dietVegan": "Vegan",
+      "dietVegetarian": "Vegetarian",
+      "dietNone": "No specific diet",
+      "portionsSingular": "{count} portion",
+      "portionsPlural": "{count} portions"
+    }
   }
 }

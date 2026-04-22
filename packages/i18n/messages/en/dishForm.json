@@ -1,0 +1,69 @@
+{
+  "steps": {
+    "dish": "Dish",
+    "pickup": "Pickup",
+    "details": "Details"
+  },
+  "image": {
+    "placeholder": "Add a photo *",
+    "changeShort": "Change",
+    "dialogTitle": "Add photo",
+    "dialogMessage": "Choose an option",
+    "camera": "Camera",
+    "library": "Photo library",
+    "cancel": "Cancel"
+  },
+  "fields": {
+    "titleLabel": "Title *",
+    "titlePlaceholder": "E.g. Spaghetti bolognese",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Describe your dish…",
+    "quantityLabel": "Portions",
+    "pickupStartLabel": "Pickup from *",
+    "pickupEndLabel": "Pickup until",
+    "pickupTimePlaceholder": "Choose a time",
+    "storageLabel": "Fresh or frozen",
+    "fresh": "Fresh",
+    "frozen": "Frozen",
+    "expiresLabel": "Best by *",
+    "expiresHint": "Indicate until when the dish is fresh and safe to eat.",
+    "frozenNote": "Frozen dishes don't need a best-by date.",
+    "ingredientsLabel": "Ingredients",
+    "ingredientsPlaceholder": "Add ingredient…",
+    "allergensLabel": "Allergens",
+    "optionsLabel": "Options",
+    "vegetarian": "Vegetarian",
+    "vegan": "Vegan",
+    "bringOwnContainer": "Bring own container"
+  },
+  "autoExpire": {
+    "label": "I agree that this dish will automatically be marked as 'expired' after the best-by date or end of pickup window.",
+    "requiredTitle": "Required",
+    "requiredBody": "You must agree to automatic expiry."
+  },
+  "validation": {
+    "requiredFieldTitle": "Required field",
+    "titleRequired": "Enter a title for your dish.",
+    "imageRequired": "Add a photo of your dish.",
+    "quantityMin": "Portions must be at least 1.",
+    "pickupStartRequired": "Enter a pickup time.",
+    "expiresRequired": "Enter a best-by date for fresh dishes."
+  },
+  "actions": {
+    "previous": "Previous",
+    "next": "Next",
+    "cancel": "Cancel",
+    "submit": "List dish",
+    "view": "View",
+    "ok": "OK"
+  },
+  "submit": {
+    "errorTitle": "Error",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "errorCreateMerchant": "Couldn't create your merchant profile.",
+    "errorCreateDish": "Couldn't create the dish.",
+    "successTitle": "Done!",
+    "successBody": "Your dish has been created.",
+    "defaultKitchenName": "My kitchen"
+  }
+}

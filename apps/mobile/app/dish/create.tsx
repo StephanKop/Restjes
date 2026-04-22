@@ -21,6 +21,7 @@ import DateTimePicker, {
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
 import { allergenLabel } from '../../lib/format'
+import { useTranslation } from '../../lib/i18n'
 import {
   pickImage as pickImageFromLib,
   takePhoto as takePhotoFromLib,
@@ -91,11 +92,12 @@ const ALL_ALLERGENS = [
   'milk', 'nuts', 'celery', 'mustard', 'sesame', 'sulphites', 'lupin', 'molluscs',
 ] as const
 
-const STEP_LABELS = ['Gerecht', 'Ophalen', 'Details']
-
 export default function CreateDishScreen() {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const scrollRef = useRef<ScrollView>(null)
+
+  const STEP_LABELS = [t('dishForm.steps.dish'), t('dishForm.steps.pickup'), t('dishForm.steps.details')]
 
   // Step state
   const [step, setStep] = useState(0)
@@ -134,25 +136,25 @@ export default function CreateDishScreen() {
   const validateAndNext = () => {
     if (step === 0) {
       if (!title.trim()) {
-        Alert.alert('Verplicht veld', 'Vul een titel in voor je gerecht.')
+        Alert.alert(t('dishForm.validation.requiredFieldTitle'), t('dishForm.validation.titleRequired'))
         return
       }
       if (!image) {
-        Alert.alert('Verplicht veld', 'Voeg een foto toe van je gerecht.')
+        Alert.alert(t('dishForm.validation.requiredFieldTitle'), t('dishForm.validation.imageRequired'))
         return
       }
     }
     if (step === 1) {
       if ((parseInt(quantity, 10) || 0) < 1) {
-        Alert.alert('Verplicht veld', 'Het aantal porties moet minimaal 1 zijn.')
+        Alert.alert(t('dishForm.validation.requiredFieldTitle'), t('dishForm.validation.quantityMin'))
         return
       }
       if (!pickupStart.trim()) {
-        Alert.alert('Verplicht veld', 'Vul een ophaaltijd in.')
+        Alert.alert(t('dishForm.validation.requiredFieldTitle'), t('dishForm.validation.pickupStartRequired'))
         return
       }
       if (!isFrozen && !expiresAt.trim()) {
-        Alert.alert('Verplicht veld', 'Vul een houdbaarheidsdatum in voor verse gerechten.')
+        Alert.alert(t('dishForm.validation.requiredFieldTitle'), t('dishForm.validation.expiresRequired'))
         return
       }
     }
@@ -177,10 +179,10 @@ export default function CreateDishScreen() {
   }
 
   const showImageOptions = () => {
-    Alert.alert('Foto toevoegen', 'Kies een optie', [
-      { text: 'Camera', onPress: takePhoto },
-      { text: 'Fotobibliotheek', onPress: pickImage },
-      { text: 'Annuleren', style: 'cancel' },
+    Alert.alert(t('dishForm.image.dialogTitle'), t('dishForm.image.dialogMessage'), [
+      { text: t('dishForm.image.camera'), onPress: takePhoto },
+      { text: t('dishForm.image.library'), onPress: pickImage },
+      { text: t('dishForm.image.cancel'), style: 'cancel' },
     ])
   }
 
@@ -228,7 +230,7 @@ export default function CreateDishScreen() {
   // Submit
   const handleSubmit = async () => {
     if (!autoExpire) {
-      Alert.alert('Verplicht', 'Je moet akkoord gaan met het automatisch verlopen.')
+      Alert.alert(t('dishForm.autoExpire.requiredTitle'), t('dishForm.autoExpire.requiredBody'))
       return
     }
     if (!user) return
@@ -246,7 +248,7 @@ export default function CreateDishScreen() {
         merchantId = merchants[0].id
       } else {
         const displayName =
-          user.user_metadata?.display_name ?? user.email?.split('@')[0] ?? 'Mijn keuken'
+          user.user_metadata?.display_name ?? user.email?.split('@')[0] ?? t('dishForm.submit.defaultKitchenName')
         const { data: profile } = await supabase
           .from('profiles')
           .select('city')
@@ -258,7 +260,7 @@ export default function CreateDishScreen() {
           .select('id')
           .single()
         if (createError || !created) {
-          Alert.alert('Fout', createError?.message ?? 'Kon je aanbiedersprofiel niet aanmaken.')
+          Alert.alert(t('dishForm.submit.errorTitle'), createError?.message ?? t('dishForm.submit.errorCreateMerchant'))
           setSubmitting(false)
           return
         }
@@ -316,7 +318,7 @@ export default function CreateDishScreen() {
         .single()
 
       if (dishError || !dish) {
-        Alert.alert('Fout', dishError?.message ?? 'Kon het gerecht niet aanmaken.')
+        Alert.alert(t('dishForm.submit.errorTitle'), dishError?.message ?? t('dishForm.submit.errorCreateDish'))
         setSubmitting(false)
         return
       }
@@ -332,12 +334,12 @@ export default function CreateDishScreen() {
           .insert(selectedAllergens.map((allergen) => ({ dish_id: dish.id, allergen })))
       }
 
-      Alert.alert('Gelukt!', 'Je gerecht is aangemaakt.', [
-        { text: 'Bekijken', onPress: () => router.replace(`/dish/${dish.id}`) },
-        { text: 'OK', onPress: () => router.back() },
+      Alert.alert(t('dishForm.submit.successTitle'), t('dishForm.submit.successBody'), [
+        { text: t('dishForm.actions.view'), onPress: () => router.replace(`/dish/${dish.id}`) },
+        { text: t('dishForm.actions.ok'), onPress: () => router.back() },
       ])
     } catch {
-      Alert.alert('Fout', 'Er is iets misgegaan. Probeer het opnieuw.')
+      Alert.alert(t('dishForm.submit.errorTitle'), t('dishForm.submit.errorGeneric'))
     } finally {
       setSubmitting(false)
     }
@@ -407,31 +409,31 @@ export default function CreateDishScreen() {
             <Image source={{ uri: image.uri }} className="w-full h-56" resizeMode="cover" />
             <View className="absolute bottom-3 right-3 bg-black/50 rounded-lg px-3 py-1.5 flex-row items-center">
               <Ionicons name="camera-outline" size={16} color="#fff" />
-              <Text className="text-white text-xs font-bold ml-1">Wijzigen</Text>
+              <Text className="text-white text-xs font-bold ml-1">{t('dishForm.image.changeShort')}</Text>
             </View>
           </View>
         ) : (
           <View className="w-full h-56 bg-warm-100 items-center justify-center">
             <Ionicons name="camera-outline" size={48} color="#b0a89e" />
-            <Text className="text-warm-500 text-sm mt-2">Voeg een foto toe *</Text>
+            <Text className="text-warm-500 text-sm mt-2">{t('dishForm.image.placeholder')}</Text>
           </View>
         )}
       </Pressable>
 
       <View className="px-5 pt-5">
-        <Text className="text-sm font-bold text-warm-600 mb-1.5">Titel *</Text>
+        <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('dishForm.fields.titleLabel')}</Text>
         <TextInput
           className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 mb-4"
-          placeholder="Bijv. Pasta bolognese"
+          placeholder={t('dishForm.fields.titlePlaceholder')}
           placeholderTextColor="#b0a89e"
           value={title}
           onChangeText={setTitle}
         />
 
-        <Text className="text-sm font-bold text-warm-600 mb-1.5">Beschrijving</Text>
+        <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('dishForm.fields.descriptionLabel')}</Text>
         <TextInput
           className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800"
-          placeholder="Omschrijf je gerecht..."
+          placeholder={t('dishForm.fields.descriptionPlaceholder')}
           placeholderTextColor="#b0a89e"
           value={description}
           onChangeText={setDescription}
@@ -446,7 +448,7 @@ export default function CreateDishScreen() {
   // ---- Step 2: Ophalen ----
   const renderStep1 = () => (
     <View className="px-5 pt-4">
-      <Text className="text-sm font-bold text-warm-600 mb-1.5">Aantal porties</Text>
+      <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('dishForm.fields.quantityLabel')}</Text>
       <View className="flex-row items-center mb-5">
         <Pressable
           className="w-10 h-10 rounded-xl bg-warm-100 items-center justify-center"
@@ -468,10 +470,10 @@ export default function CreateDishScreen() {
         </Pressable>
       </View>
 
-      <Text className="text-sm font-bold text-warm-600 mb-1.5">Ophalen vanaf *</Text>
+      <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('dishForm.fields.pickupStartLabel')}</Text>
       <TimePickerField
         value={pickupStart}
-        placeholder="Kies een tijd"
+        placeholder={t('dishForm.fields.pickupTimePlaceholder')}
         onChange={(t) => {
           setPickupStart(t)
           if (!pickupEnd && /^\d{2}:\d{2}$/.test(t)) {
@@ -482,14 +484,14 @@ export default function CreateDishScreen() {
         }}
       />
 
-      <Text className="text-sm font-bold text-warm-600 mb-1.5">Ophalen tot</Text>
+      <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('dishForm.fields.pickupEndLabel')}</Text>
       <TimePickerField
         value={pickupEnd}
-        placeholder="Kies een tijd"
+        placeholder={t('dishForm.fields.pickupTimePlaceholder')}
         onChange={setPickupEnd}
       />
 
-      <Text className="text-sm font-bold text-warm-600 mb-2">Vers of ingevroren</Text>
+      <Text className="text-sm font-bold text-warm-600 mb-2">{t('dishForm.fields.storageLabel')}</Text>
       <View className="flex-row gap-3 mb-3">
         <Pressable
           className={`flex-1 rounded-xl px-4 py-4 border-2 items-center ${
@@ -499,7 +501,7 @@ export default function CreateDishScreen() {
         >
           <Ionicons name="sunny-outline" size={28} color={!isFrozen ? '#15803d' : '#b0a89e'} />
           <Text className={`text-sm font-bold mt-1 ${!isFrozen ? 'text-brand-700' : 'text-warm-500'}`}>
-            Vers
+            {t('dishForm.fields.fresh')}
           </Text>
         </Pressable>
         <Pressable
@@ -510,27 +512,27 @@ export default function CreateDishScreen() {
         >
           <Ionicons name="snow-outline" size={28} color={isFrozen ? '#1d4ed8' : '#b0a89e'} />
           <Text className={`text-sm font-bold mt-1 ${isFrozen ? 'text-blue-700' : 'text-warm-500'}`}>
-            Ingevroren
+            {t('dishForm.fields.frozen')}
           </Text>
         </Pressable>
       </View>
 
       {!isFrozen && (
         <View className="mb-2">
-          <Text className="text-sm font-bold text-warm-600 mb-1.5">Houdbaar tot *</Text>
+          <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('dishForm.fields.expiresLabel')}</Text>
           <TimePickerField
             value={expiresAt}
-            placeholder="Kies een tijd"
+            placeholder={t('dishForm.fields.pickupTimePlaceholder')}
             onChange={setExpiresAt}
           />
           <Text className="text-xs text-warm-400 mt-1">
-            Geef aan tot wanneer het gerecht vers en veilig te eten is.
+            {t('dishForm.fields.expiresHint')}
           </Text>
         </View>
       )}
       {isFrozen && (
         <Text className="text-sm text-warm-500 mb-2">
-          Ingevroren gerechten hebben geen houdbaarheidsdatum nodig.
+          {t('dishForm.fields.frozenNote')}
         </Text>
       )}
     </View>
@@ -540,7 +542,7 @@ export default function CreateDishScreen() {
   const renderStep2 = () => (
     <View className="px-5 pt-4">
       {/* Toggle options */}
-      <Text className="text-sm font-bold text-warm-600 mb-2">Opties</Text>
+      <Text className="text-sm font-bold text-warm-600 mb-2">{t('dishForm.fields.optionsLabel')}</Text>
       <View className="gap-2 mb-5">
         <Pressable
           className={`flex-row items-center rounded-xl px-4 py-3.5 border ${
@@ -550,7 +552,7 @@ export default function CreateDishScreen() {
         >
           <Ionicons name="leaf-outline" size={20} color={isVegetarian ? '#15803d' : '#b0a89e'} />
           <Text className={`text-base ml-3 flex-1 ${isVegetarian ? 'text-brand-700 font-bold' : 'text-warm-600'}`}>
-            Vegetarisch
+            {t('dishForm.fields.vegetarian')}
           </Text>
           {isVegetarian && <Ionicons name="checkmark-circle" size={22} color="#22c55e" />}
         </Pressable>
@@ -562,7 +564,7 @@ export default function CreateDishScreen() {
         >
           <Ionicons name="leaf-outline" size={20} color={isVegan ? '#15803d' : '#b0a89e'} />
           <Text className={`text-base ml-3 flex-1 ${isVegan ? 'text-brand-700 font-bold' : 'text-warm-600'}`}>
-            Veganistisch
+            {t('dishForm.fields.vegan')}
           </Text>
           {isVegan && <Ionicons name="checkmark-circle" size={22} color="#22c55e" />}
         </Pressable>
@@ -574,18 +576,18 @@ export default function CreateDishScreen() {
         >
           <Ionicons name="cube-outline" size={20} color={bringOwnContainer ? '#d97706' : '#b0a89e'} />
           <Text className={`text-base ml-3 flex-1 ${bringOwnContainer ? 'text-amber-700 font-bold' : 'text-warm-600'}`}>
-            Eigen bakje meenemen
+            {t('dishForm.fields.bringOwnContainer')}
           </Text>
           {bringOwnContainer && <Ionicons name="checkmark-circle" size={22} color="#d97706" />}
         </Pressable>
       </View>
 
       {/* Ingredients */}
-      <Text className="text-sm font-bold text-warm-600 mb-1.5">Ingrediënten</Text>
+      <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('dishForm.fields.ingredientsLabel')}</Text>
       <View className="flex-row items-center mb-2">
         <TextInput
           className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800"
-          placeholder="Voeg ingrediënt toe..."
+          placeholder={t('dishForm.fields.ingredientsPlaceholder')}
           placeholderTextColor="#b0a89e"
           value={ingredientInput}
           onChangeText={setIngredientInput}
@@ -613,7 +615,7 @@ export default function CreateDishScreen() {
       {ingredients.length === 0 && <View className="mb-5" />}
 
       {/* Allergens */}
-      <Text className="text-sm font-bold text-warm-600 mb-2">Allergenen</Text>
+      <Text className="text-sm font-bold text-warm-600 mb-2">{t('dishForm.fields.allergensLabel')}</Text>
       <View className="flex-row flex-wrap gap-2 mb-6">
         {ALL_ALLERGENS.map((allergen) => {
           const active = selectedAllergens.includes(allergen)
@@ -647,8 +649,7 @@ export default function CreateDishScreen() {
           style={{ marginTop: 1 }}
         />
         <Text className={`text-sm ml-3 flex-1 leading-5 ${autoExpire ? 'text-brand-700' : 'text-warm-600'}`}>
-          Ik ga ermee akkoord dat dit gerecht automatisch op 'verlopen' wordt gezet na de
-          houdbaarheidsdatum of het einde van de ophaaltijd.
+          {t('dishForm.autoExpire.label')}
         </Text>
       </Pressable>
     </View>
@@ -682,14 +683,14 @@ export default function CreateDishScreen() {
                 className="flex-1 border border-warm-300 rounded-xl py-3.5 items-center active:bg-warm-50"
                 onPress={goBack}
               >
-                <Text className="text-warm-700 font-bold text-base">Vorige</Text>
+                <Text className="text-warm-700 font-bold text-base">{t('dishForm.actions.previous')}</Text>
               </Pressable>
             ) : (
               <Pressable
                 className="flex-1 border border-warm-300 rounded-xl py-3.5 items-center active:bg-warm-50"
                 onPress={() => router.back()}
               >
-                <Text className="text-warm-700 font-bold text-base">Annuleren</Text>
+                <Text className="text-warm-700 font-bold text-base">{t('dishForm.actions.cancel')}</Text>
               </Pressable>
             )}
 
@@ -702,7 +703,7 @@ export default function CreateDishScreen() {
                 }`}
                 onPress={validateAndNext}
               >
-                <Text className="text-white font-bold text-base">Volgende</Text>
+                <Text className="text-white font-bold text-base">{t('dishForm.actions.next')}</Text>
               </Pressable>
             ) : (
               <Pressable
@@ -715,7 +716,7 @@ export default function CreateDishScreen() {
                 {submitting ? (
                   <ActivityIndicator color="#ffffff" />
                 ) : (
-                  <Text className="text-white font-bold text-base">Gerecht plaatsen</Text>
+                  <Text className="text-white font-bold text-base">{t('dishForm.actions.submit')}</Text>
                 )}
               </Pressable>
             )}
