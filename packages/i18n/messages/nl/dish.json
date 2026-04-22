@@ -5,6 +5,10 @@
     "frozen": "Ingevroren",
     "bringOwnContainer": "Eigen bakje",
     "allergensCount": "{count} allergenen",
+    "allergensCountSingular": "{count} allergeen",
     "remaining": "Nog {count}"
+  },
+  "card": {
+    "availability": "Nog {count} beschikbaar"
   }
 }

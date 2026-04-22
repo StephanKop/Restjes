@@ -5,6 +5,10 @@
     "frozen": "Frozen",
     "bringOwnContainer": "Bring container",
     "allergensCount": "{count} allergens",
+    "allergensCountSingular": "{count} allergen",
     "remaining": "{count} left"
+  },
+  "card": {
+    "availability": "{count} left"
   }
 }

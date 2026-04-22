@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import { formatPickupTime } from '@/lib/format'
 import { DishIcon, ClockIcon } from '@/components/icons'
 
@@ -28,6 +29,7 @@ interface DishCardProps {
 }
 
 export function DishCard({ dish }: DishCardProps) {
+  const t = useTranslations('dish')
   const pickupLabel = formatPickupTime(dish.pickup_start, dish.pickup_end)
 
   return (
@@ -71,29 +73,29 @@ export function DishCard({ dish }: DishCardProps) {
         <div className="mb-3 flex flex-wrap gap-1.5">
           {dish.is_vegan && (
             <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
-              Veganistisch
+              {t('badges.vegan')}
             </span>
           )}
           {dish.is_vegetarian && !dish.is_vegan && (
             <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
-              Vegetarisch
+              {t('badges.vegetarian')}
             </span>
           )}
           {dish.bring_own_container && (
             <span className="rounded-full bg-brand-100 px-2.5 py-0.5 text-xs font-semibold text-brand-800">
-              Eigen bakje
+              {t('badges.bringOwnContainer')}
             </span>
           )}
           {dish.allergen_count !== undefined && dish.allergen_count > 0 && (
             <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700">
-              {dish.allergen_count} allergeen{dish.allergen_count !== 1 ? 'en' : ''}
+              {t(dish.allergen_count === 1 ? 'badges.allergensCountSingular' : 'badges.allergensCount', { count: dish.allergen_count })}
             </span>
           )}
         </div>
 
         {/* Availability */}
         <p className="text-sm font-semibold text-brand-600">
-          Nog {dish.quantity_available} beschikbaar
+          {t('card.availability', { count: dish.quantity_available })}
         </p>
       </div>
     </Link>

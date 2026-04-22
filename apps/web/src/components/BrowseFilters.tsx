@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
+import { useTranslations } from 'next-intl'
 import { ALL_ALLERGENS, allergenLabel } from '@/lib/format'
 import { MapPinIcon } from '@/components/icons'
 
@@ -11,6 +12,7 @@ interface BrowseFiltersProps {
 }
 
 export function BrowseFilters({ userCity }: BrowseFiltersProps) {
+  const t = useTranslations('browse')
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -65,7 +67,7 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
 
   function requestLocation() {
     if (!navigator.geolocation) {
-      setLocationError('Locatie wordt niet ondersteund door je browser.')
+      setLocationError(t('web.locationUnsupported'))
       return
     }
 
@@ -86,9 +88,9 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
       (err) => {
         setLocating(false)
         if (err.code === err.PERMISSION_DENIED) {
-          setLocationError('Locatietoegang geweigerd. Sta dit toe in je browser.')
+          setLocationError(t('web.locationDenied'))
         } else {
-          setLocationError('Kon je locatie niet bepalen.')
+          setLocationError(t('web.locationFailed'))
         }
       },
       { enableHighAccuracy: false, timeout: 10000 },
@@ -115,36 +117,36 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
       {/* Search */}
       <div>
         <label htmlFor="browse-search" className="mb-2 block text-sm font-semibold text-warm-700">
-          Zoeken
+          {t('web.searchLabel')}
         </label>
         <input
           id="browse-search"
           type="search"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
-          placeholder="Gerecht of aanbieder..."
+          placeholder={t('web.searchPlaceholderWeb')}
           className="w-full rounded-xl border border-warm-200 bg-white px-4 py-2.5 text-sm text-warm-800 placeholder:text-warm-400 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100"
         />
       </div>
 
       {/* Location / Distance */}
       <div>
-        <p className="mb-2 text-sm font-semibold text-warm-700">Afstand</p>
+        <p className="mb-2 text-sm font-semibold text-warm-700">{t('web.distance')}</p>
         {hasLocation ? (
           <div className="space-y-3">
             <div className="flex items-center justify-between rounded-xl bg-brand-50 px-3 py-2.5">
-              <span className="flex items-center gap-1.5 text-sm font-medium text-brand-700"><MapPinIcon className="h-4 w-4" /> Mijn locatie</span>
+              <span className="flex items-center gap-1.5 text-sm font-medium text-brand-700"><MapPinIcon className="h-4 w-4" /> {t('web.myLocation')}</span>
               <button
                 type="button"
                 onClick={clearLocation}
                 className="text-xs font-semibold text-brand-600 hover:text-brand-700"
               >
-                Wissen
+                {t('web.clear')}
               </button>
             </div>
             <div>
               <div className="mb-3 flex items-center justify-between">
-                <span className="text-xs text-warm-500">Straal</span>
+                <span className="text-xs text-warm-500">{t('web.radius')}</span>
                 <span className="rounded-lg bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">{sliderValue} km</span>
               </div>
               <input
@@ -233,7 +235,7 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
               disabled={locating}
               className="w-full rounded-xl border border-warm-200 px-3 py-2.5 text-sm font-medium text-warm-600 transition-colors hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-50"
             >
-              {locating ? 'Locatie ophalen...' : <><MapPinIcon className="inline h-4 w-4" /> Gebruik mijn locatie</>}
+              {locating ? t('web.locating') : <><MapPinIcon className="inline h-4 w-4" /> {t('web.useMyLocation')}</>}
             </button>
             {locationError && (
               <p className="mt-2 text-xs text-red-600">{locationError}</p>
@@ -253,7 +255,7 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
 
       {/* Diet */}
       <div>
-        <p className="mb-2 text-sm font-semibold text-warm-700">Dieet</p>
+        <p className="mb-2 text-sm font-semibold text-warm-700">{t('filters.diet')}</p>
         <div className="space-y-2">
           <label className="flex cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-warm-50">
             <input
@@ -263,7 +265,7 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
               className="h-4 w-4 rounded border-warm-300 text-brand-500 focus:ring-brand-400"
             />
             <span className={vegetarian ? 'font-semibold text-warm-800' : 'text-warm-600'}>
-              Vegetarisch
+              {t('filters.vegetarian')}
             </span>
           </label>
           <label className="flex cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-warm-50">
@@ -274,7 +276,7 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
               className="h-4 w-4 rounded border-warm-300 text-brand-500 focus:ring-brand-400"
             />
             <span className={vegan ? 'font-semibold text-warm-800' : 'text-warm-600'}>
-              Veganistisch
+              {t('filters.vegan')}
             </span>
           </label>
         </div>
@@ -282,7 +284,7 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
 
       {/* Frozen / Fresh */}
       <div>
-        <p className="mb-2 text-sm font-semibold text-warm-700">Bewaring</p>
+        <p className="mb-2 text-sm font-semibold text-warm-700">{t('filters.storage')}</p>
         <div className="space-y-2">
           <label className="flex cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-warm-50">
             <input
@@ -292,7 +294,7 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
               className="h-4 w-4 rounded border-warm-300 text-brand-500 focus:ring-brand-400"
             />
             <span className={fresh ? 'font-semibold text-warm-800' : 'text-warm-600'}>
-              Vers
+              {t('filters.fresh')}
             </span>
           </label>
           <label className="flex cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-warm-50">
@@ -303,7 +305,7 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
               className="h-4 w-4 rounded border-warm-300 text-brand-500 focus:ring-brand-400"
             />
             <span className={frozen ? 'font-semibold text-warm-800' : 'text-warm-600'}>
-              Ingevroren
+              {t('filters.frozen')}
             </span>
           </label>
         </div>
@@ -312,7 +314,7 @@ export function BrowseFilters({ userCity }: BrowseFiltersProps) {
       {/* Allergens */}
       <div>
         <p className="mb-2 text-sm font-semibold text-warm-700">
-          Allergenen uitsluiten
+          {t('filters.excludeAllergens')}
           {excludedAllergens.length > 0 && (
             <span className="ml-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-100 px-1.5 text-[10px] font-bold text-red-700">
               {excludedAllergens.length}
@@ -354,6 +356,7 @@ function CitySearch({
   onSelect: (city: string) => void
   onClear: () => void
 }) {
+  const t = useTranslations('browse.web')
   const [query, setQuery] = useState('')
   const [suggestions, setSuggestions] = useState<{ description: string; place_id: string }[]>([])
   const [open, setOpen] = useState(false)
@@ -409,7 +412,7 @@ function CitySearch({
 
   return (
     <div>
-      <p className="mb-2 text-sm font-semibold text-warm-700">Stad</p>
+      <p className="mb-2 text-sm font-semibold text-warm-700">{t('city')}</p>
 
       {showingCity && (
         <div className="mb-2 flex items-center justify-between rounded-xl bg-brand-50 px-3 py-2.5">
@@ -421,7 +424,7 @@ function CitySearch({
             onClick={onClear}
             className="text-xs font-semibold text-brand-600 hover:text-brand-700"
           >
-            Wissen
+            {t('clear')}
           </button>
         </div>
       )}
@@ -434,7 +437,7 @@ function CitySearch({
             value={query}
             onChange={(e) => handleInputChange(e.target.value)}
             onFocus={() => suggestions.length > 0 && setOpen(true)}
-            placeholder={showingCity ? 'Andere stad zoeken...' : 'Zoek op stad...'}
+            placeholder={showingCity ? t('otherCitySearchPlaceholder') : t('citySearchPlaceholder')}
             className="w-full rounded-xl border border-warm-200 bg-white py-2.5 pl-9 pr-4 text-sm text-warm-800 placeholder:text-warm-400 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100"
           />
         </div>

@@ -29,5 +29,21 @@
   },
   "merchantCard": {
     "rating": "{rating} · {count} beoordelingen"
+  },
+  "web": {
+    "searchLabel": "Zoeken",
+    "searchPlaceholderWeb": "Gerecht of aanbieder...",
+    "distance": "Afstand",
+    "myLocation": "Mijn locatie",
+    "clear": "Wissen",
+    "radius": "Straal",
+    "useMyLocation": "Gebruik mijn locatie",
+    "locating": "Locatie ophalen...",
+    "city": "Stad",
+    "citySearchPlaceholder": "Zoek op stad...",
+    "otherCitySearchPlaceholder": "Andere stad zoeken...",
+    "locationUnsupported": "Locatie wordt niet ondersteund door je browser.",
+    "locationDenied": "Locatietoegang geweigerd. Sta dit toe in je browser.",
+    "locationFailed": "Kon je locatie niet bepalen."
   }
 }
