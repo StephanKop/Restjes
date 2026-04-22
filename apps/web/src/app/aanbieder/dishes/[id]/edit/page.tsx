@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
 import { redirect, notFound } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { DishForm } from '@/components/DishForm'
 
-export const metadata: Metadata = {
-  title: 'Gerecht bewerken',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('aanbieder.web')
+  return { title: t('editDishMetadataTitle') }
 }
 
 interface EditDishPageProps {
@@ -13,6 +15,7 @@ interface EditDishPageProps {
 
 export default async function EditDishPage({ params }: EditDishPageProps) {
   const { id } = await params
+  const t = await getTranslations('aanbieder.web')
   const user = await getUser()
 
   if (!user) {
@@ -74,7 +77,7 @@ export default async function EditDishPage({ params }: EditDishPageProps) {
 
   return (
     <div>
-      <h1 className="mb-8 text-3xl font-extrabold text-warm-900">Gerecht bewerken</h1>
+      <h1 className="mb-8 text-3xl font-extrabold text-warm-900">{t('editDishHeading')}</h1>
       <DishForm initialData={initialData} merchantId={merchant.id} />
     </div>
   )

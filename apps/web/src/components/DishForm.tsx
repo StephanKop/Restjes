@@ -4,35 +4,18 @@ import { useState, useRef, type FormEvent, type KeyboardEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { createBrowserClient } from '@supabase/ssr'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 
-const ALLERGEN_LABELS: Record<string, string> = {
-  gluten: 'Gluten',
-  crustaceans: 'Schaaldieren',
-  eggs: 'Eieren',
-  fish: 'Vis',
-  peanuts: "Pinda's",
-  soybeans: 'Soja',
-  milk: 'Melk',
-  nuts: 'Noten',
-  celery: 'Selderij',
-  mustard: 'Mosterd',
-  sesame: 'Sesam',
-  sulphites: 'Sulfieten',
-  lupin: 'Lupine',
-  molluscs: 'Weekdieren',
-}
-
-const ALL_ALLERGENS = Object.keys(ALLERGEN_LABELS)
+const ALL_ALLERGENS = [
+  'gluten', 'crustaceans', 'eggs', 'fish', 'peanuts', 'soybeans',
+  'milk', 'nuts', 'celery', 'mustard', 'sesame', 'sulphites', 'lupin', 'molluscs',
+] as const
 
 const CHECKBOX = "h-5 w-5 flex-shrink-0 cursor-pointer appearance-none rounded-lg border-2 border-warm-300 bg-white transition-colors checked:border-brand-500 checked:bg-brand-500 checked:bg-[url('data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22white%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M12.207%204.793a1%201%200%20010%201.414l-5%205a1%201%200%2001-1.414%200l-2.5-2.5a1%201%200%20011.414-1.414L6.5%209.086l4.293-4.293a1%201%200%20011.414%200z%22%2F%3E%3C%2Fsvg%3E')] checked:bg-center checked:bg-no-repeat focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2"
 
-const STEPS = [
-  { label: 'Gerecht', shortLabel: 'Gerecht' },
-  { label: 'Ophalen', shortLabel: 'Ophalen' },
-  { label: 'Details', shortLabel: 'Details' },
-] as const
+const STEP_KEYS = ['dish', 'pickup', 'details'] as const
 
 interface DishData {
   id: string
@@ -67,6 +50,7 @@ function toLocalDatetimeString(iso: string | null): string {
 
 export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) {
   const router = useRouter()
+  const t = useTranslations('dishForm')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [step, setStep] = useState(0)
@@ -145,18 +129,18 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
     const errs: Record<string, string> = {}
 
     if (s === 0) {
-      if (!title.trim()) errs.title = 'Titel is verplicht'
-      if (!hasImage) errs.image = 'Foto is verplicht'
+      if (!title.trim()) errs.title = t('web.titleRequired')
+      if (!hasImage) errs.image = t('web.photoRequired')
     }
 
     if (s === 1) {
-      if (quantity < 1) errs.quantity = 'Minimaal 1'
-      if (!pickupStart) errs.pickupStart = 'Ophalen vanaf is verplicht'
-      if (!isFrozen && !expiresAt) errs.expiresAt = 'Houdbaarheidsdatum is verplicht voor verse gerechten'
+      if (quantity < 1) errs.quantity = t('web.quantityMin')
+      if (!pickupStart) errs.pickupStart = t('web.pickupFromRequired')
+      if (!isFrozen && !expiresAt) errs.expiresAt = t('web.expiresRequired')
     }
 
     if (s === 2) {
-      if (!autoExpire) errs.autoExpire = 'Je moet akkoord gaan met automatisch verlopen'
+      if (!autoExpire) errs.autoExpire = t('web.autoExpireRequired')
     }
 
     setErrors(errs)
@@ -167,7 +151,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
     setTried(true)
     if (!validateStep(step)) return
     setTried(false)
-    setStep((s) => Math.min(s + 1, STEPS.length - 1))
+    setStep((s) => Math.min(s + 1, STEP_KEYS.length - 1))
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -262,7 +246,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
       }
     } catch (err) {
       console.error('Dish save error:', err)
-      setErrors({ submit: 'Er ging iets mis bij het opslaan. Probeer het opnieuw.' })
+      setErrors({ submit: t('web.submitError') })
     } finally {
       setLoading(false)
     }
@@ -273,8 +257,8 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
       {/* Progress indicator */}
       <div className="mb-8">
         <div className="flex items-center">
-          {STEPS.map((s, i) => (
-            <div key={s.label} className={`flex items-center ${i < STEPS.length - 1 ? 'flex-1' : ''}`}>
+          {STEP_KEYS.map((key, i) => (
+            <div key={key} className={`flex items-center ${i < STEP_KEYS.length - 1 ? 'flex-1' : ''}`}>
               <div className="flex flex-col items-center">
                 <div
                   className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-colors ${
@@ -298,10 +282,10 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
                     i <= step ? 'text-brand-700' : 'text-warm-400'
                   }`}
                 >
-                  {s.shortLabel}
+                  {t(`steps.${key}`)}
                 </span>
               </div>
-              {i < STEPS.length - 1 && (
+              {i < STEP_KEYS.length - 1 && (
                 <div className="mx-3 mb-5 h-0.5 flex-1">
                   <div
                     className={`h-full rounded-full transition-colors ${
@@ -319,27 +303,27 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
       {step === 0 && (
         <div className="space-y-6">
           <div className="rounded-2xl bg-white p-6 shadow-card">
-            <h2 className="mb-1 text-lg font-bold text-warm-900">Wat deel je?</h2>
-            <p className="mb-5 text-sm text-warm-500">Geef je gerecht een naam en voeg een foto toe.</p>
+            <h2 className="mb-1 text-lg font-bold text-warm-900">{t('web.step0Title')}</h2>
+            <p className="mb-5 text-sm text-warm-500">{t('web.step0Subtitle')}</p>
             <div className="space-y-4">
               <Input
-                label={<>Titel <span className="text-red-500">*</span></>}
-                placeholder="Bijv. Pasta bolognese"
+                label={<>{t('fields.titleLabel').replace(' *', '')} <span className="text-red-500">*</span></>}
+                placeholder={t('fields.titlePlaceholder')}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                error={tried && !title.trim() ? 'Titel is verplicht' : undefined}
+                error={tried && !title.trim() ? t('web.titleRequired') : undefined}
                 required
               />
 
               <div>
                 <label htmlFor="description" className="mb-1.5 block text-sm font-semibold text-warm-800">
-                  Beschrijving
+                  {t('fields.descriptionLabel')}
                 </label>
                 <textarea
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Beschrijf je gerecht..."
+                  placeholder={t('fields.descriptionPlaceholder')}
                   rows={3}
                   className="w-full rounded-xl border border-warm-200 bg-white px-4 py-3 text-base sm:text-sm text-warm-800 placeholder:text-warm-400 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100"
                 />
@@ -347,7 +331,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
 
               <div>
                 <label className="mb-1.5 block text-sm font-semibold text-warm-800">
-                  Foto <span className="text-red-500">*</span>
+                  {t('web.photoLabel')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   ref={fileInputRef}
@@ -376,14 +360,14 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
                     <div className="relative aspect-[16/9]">
                       <Image
                         src={imagePreview}
-                        alt="Voorbeeld"
+                        alt={title || t('fields.titleLabel').replace(' *', '')}
                         fill
                         className="object-cover"
                         sizes="(max-width: 640px) 100vw, 500px"
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-warm-900/0 transition-colors hover:bg-warm-900/40">
                         <span className="rounded-lg bg-white/90 px-3 py-1.5 text-sm font-semibold text-warm-700 opacity-0 shadow transition-opacity hover:opacity-100 [div:hover>&]:opacity-100">
-                          Foto wijzigen
+                          {t('web.photoChange')}
                         </span>
                       </div>
                     </div>
@@ -393,14 +377,14 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
                         <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21ZM16.5 7.5a1.125 1.125 0 1 1-2.25 0 1.125 1.125 0 0 1 2.25 0Z" />
                       </svg>
                       <p className="text-sm font-semibold text-warm-600">
-                        Sleep een foto hierheen of <span className="text-brand-600">klik om te uploaden</span>
+                        {t('web.photoDrop')} <span className="text-brand-600">{t('web.photoClick')}</span>
                       </p>
-                      <p className="mt-1 text-xs text-warm-400">JPG, PNG of WebP</p>
+                      <p className="mt-1 text-xs text-warm-400">{t('web.photoTypes')}</p>
                     </div>
                   )}
                 </div>
                 {tried && !hasImage && (
-                  <p className="mt-2 text-sm text-red-600">Foto is verplicht</p>
+                  <p className="mt-2 text-sm text-red-600">{t('web.photoRequired')}</p>
                 )}
               </div>
             </div>
@@ -412,11 +396,11 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
       {step === 1 && (
         <div className="space-y-6">
           <div className="rounded-2xl bg-white p-6 shadow-card">
-            <h2 className="mb-1 text-lg font-bold text-warm-900">Ophalen &amp; beschikbaarheid</h2>
-            <p className="mb-5 text-sm text-warm-500">Wanneer en hoeveel porties kunnen opgehaald worden?</p>
+            <h2 className="mb-1 text-lg font-bold text-warm-900">{t('web.step1Title')}</h2>
+            <p className="mb-5 text-sm text-warm-500">{t('web.step1Subtitle')}</p>
             <div className="grid gap-4 sm:grid-cols-2">
               <Input
-                label="Aantal beschikbaar"
+                label={t('web.quantityLabel')}
                 type="number"
                 min={1}
                 value={quantity}
@@ -425,7 +409,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
               />
               <div className="hidden sm:block" />
               <Input
-                label={<>Ophalen vanaf <span className="text-red-500">*</span></>}
+                label={<>{t('fields.pickupStartLabel').replace(' *', '')} <span className="text-red-500">*</span></>}
                 type="datetime-local"
                 value={pickupStart}
                 onChange={(e) => {
@@ -441,7 +425,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
                 required
               />
               <Input
-                label="Ophalen tot"
+                label={t('web.pickupUntilLabel')}
                 type="datetime-local"
                 value={pickupEnd}
                 onChange={(e) => setPickupEnd(e.target.value)}
@@ -450,7 +434,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
           </div>
 
           <div className="rounded-2xl bg-white p-6 shadow-card">
-            <h2 className="mb-4 text-lg font-bold text-warm-900">Vers of ingevroren</h2>
+            <h2 className="mb-4 text-lg font-bold text-warm-900">{t('web.storageLabel')}</h2>
             <div className="flex gap-3">
               <button
                 type="button"
@@ -464,7 +448,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mx-auto mb-1 h-6 w-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
                 </svg>
-                Vers
+                {t('fields.fresh')}
               </button>
               <button
                 type="button"
@@ -478,24 +462,24 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mx-auto mb-1 h-6 w-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v20M12 6l-3-3m3 3 3-3M12 18l-3 3m3-3 3 3M2 12h20M6 12l-3-3m3 3-3 3M18 12l3-3m-3 3 3 3M7.05 4.93l9.9 9.9M7.05 4.93 5.64 7.76m1.41-2.83 2.83 1.42M16.95 19.07l-2.83-1.42m2.83 1.42 1.41-2.83M16.95 4.93l-9.9 9.9M16.95 4.93l1.41 2.83m-1.41-2.83-2.83 1.42M7.05 19.07l2.83-1.42m-2.83 1.42L5.64 16.24" />
                 </svg>
-                Ingevroren
+                {t('fields.frozen')}
               </button>
             </div>
             {!isFrozen && (
               <div className="mt-4">
                 <Input
-                  label="Houdbaar tot"
+                  label={t('fields.expiresLabel').replace(' *', '')}
                   type="datetime-local"
                   value={expiresAt}
                   onChange={(e) => setExpiresAt(e.target.value)}
                   error={errors.expiresAt}
                 />
-                <p className="mt-1 text-xs text-warm-400">Geef aan tot wanneer het gerecht vers en veilig te eten is.</p>
+                <p className="mt-1 text-xs text-warm-400">{t('web.expiresHint')}</p>
               </div>
             )}
             {isFrozen && (
               <p className="mt-3 text-sm text-warm-500">
-                Ingevroren gerechten hebben geen houdbaarheidsdatum nodig op het platform.
+                {t('web.frozenNote')}
               </p>
             )}
           </div>
@@ -506,8 +490,8 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
       {step === 2 && (
         <div className="space-y-6">
           <div className="rounded-2xl bg-white p-6 shadow-card">
-            <h2 className="mb-1 text-lg font-bold text-warm-900">Dieet &amp; verpakking</h2>
-            <p className="mb-4 text-sm text-warm-500">Geef aan wat van toepassing is.</p>
+            <h2 className="mb-1 text-lg font-bold text-warm-900">{t('web.step2Title')}</h2>
+            <p className="mb-4 text-sm text-warm-500">{t('web.step2Subtitle')}</p>
             <div className="space-y-3">
               <label className="flex items-center gap-3 text-sm text-warm-800">
                 <input
@@ -516,7 +500,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
                   onChange={(e) => setBringOwnContainer(e.target.checked)}
                   className={CHECKBOX}
                 />
-                <span className="font-medium">Eigen bakje meenemen</span>
+                <span className="font-medium">{t('fields.bringOwnContainer')}</span>
               </label>
               <label className="flex items-center gap-3 text-sm text-warm-800">
                 <input
@@ -525,7 +509,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
                   onChange={(e) => setIsVegetarian(e.target.checked)}
                   className={CHECKBOX}
                 />
-                <span className="font-medium">Vegetarisch</span>
+                <span className="font-medium">{t('fields.vegetarian')}</span>
               </label>
               <label className="flex items-center gap-3 text-sm text-warm-800">
                 <input
@@ -534,14 +518,14 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
                   onChange={(e) => setIsVegan(e.target.checked)}
                   className={CHECKBOX}
                 />
-                <span className="font-medium">Veganistisch</span>
+                <span className="font-medium">{t('fields.vegan')}</span>
               </label>
             </div>
           </div>
 
           <div className="rounded-2xl bg-white p-6 shadow-card">
-            <h2 className="mb-1 text-lg font-bold text-warm-900">Ingrediënten</h2>
-            <p className="mb-4 text-sm text-warm-500">Voeg ingrediënten toe zodat anderen weten wat erin zit.</p>
+            <h2 className="mb-1 text-lg font-bold text-warm-900">{t('web.ingredientsTitle')}</h2>
+            <p className="mb-4 text-sm text-warm-500">{t('web.ingredientsSubtitle')}</p>
             <div className="mb-3 flex flex-wrap gap-2">
               {ingredients.map((ing) => (
                 <span
@@ -553,7 +537,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
                     type="button"
                     onClick={() => removeIngredient(ing)}
                     className="ml-1 text-brand-400 hover:text-brand-700"
-                    aria-label={`Verwijder ${ing}`}
+                    aria-label={t('web.removeIngredient', { name: ing })}
                   >
                     &times;
                   </button>
@@ -561,7 +545,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
               ))}
             </div>
             <Input
-              placeholder="Typ een ingrediënt en druk op Enter"
+              placeholder={t('web.ingredientPlaceholder')}
               value={ingredientInput}
               onChange={(e) => setIngredientInput(e.target.value)}
               onKeyDown={addIngredient}
@@ -569,8 +553,8 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
           </div>
 
           <div className="rounded-2xl bg-white p-6 shadow-card">
-            <h2 className="mb-1 text-lg font-bold text-warm-900">Allergenen</h2>
-            <p className="mb-3 text-sm text-warm-500">Selecteer de aanwezige allergenen (EU-14).</p>
+            <h2 className="mb-1 text-lg font-bold text-warm-900">{t('web.allergensTitle')}</h2>
+            <p className="mb-3 text-sm text-warm-500">{t('web.allergensSubtitle')}</p>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
               {ALL_ALLERGENS.map((key) => (
                 <label
@@ -587,7 +571,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
                     onChange={() => toggleAllergen(key)}
                     className="sr-only"
                   />
-                  {ALLERGEN_LABELS[key]}
+                  {t(`web.allergens.${key}`)}
                 </label>
               ))}
             </div>
@@ -602,7 +586,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
                 className={`mt-0.5 ${CHECKBOX}`}
               />
               <span className="font-medium">
-                Ik ga ermee akkoord dat dit gerecht automatisch op &quot;verlopen&quot; wordt gezet na de houdbaarheidsdatum of het einde van de ophaaltijd (de laatste van de twee).
+                {t('web.autoExpireLabel')}
               </span>
             </label>
             {errors.autoExpire && (
@@ -626,7 +610,7 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
             onClick={() => router.push('/aanbieder/dishes')}
             className="text-sm font-semibold text-warm-500 transition-colors hover:text-warm-700"
           >
-            Annuleren
+            {t('actions.cancel')}
           </button>
         )}
         {step > 0 && (
@@ -636,22 +620,22 @@ export function DishForm({ initialData, merchantId, onSuccess }: DishFormProps) 
             onClick={goBack}
             disabled={loading}
           >
-            Vorige
+            {t('web.previous')}
           </Button>
         )}
         <div className="flex-1" />
-        {step < STEPS.length - 1 ? (
+        {step < STEP_KEYS.length - 1 ? (
           <Button
             type="button"
             variant="primary"
             onClick={goNext}
             className={step === 0 && !step0Complete ? 'opacity-50' : ''}
           >
-            Volgende
+            {t('web.next')}
           </Button>
         ) : (
           <Button type="submit" variant="primary" loading={loading}>
-            {initialData ? 'Opslaan' : 'Gerecht plaatsen'}
+            {initialData ? t('web.saveEdit') : t('web.submitCreate')}
           </Button>
         )}
       </div>

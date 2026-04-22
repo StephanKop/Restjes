@@ -1,4 +1,43 @@
 {
+  "web": {
+    "dashboardMetadataTitle": "Dashboard",
+    "dashboardHeading": "Dashboard",
+    "stats": {
+      "activeDishes": "Actieve gerechten",
+      "pendingReservations": "Openstaande reserveringen",
+      "unreadMessages": "Ongelezen berichten"
+    },
+    "welcomeHeading": "Welkom bij Kliekjesclub!",
+    "welcomeBody": "Begin met het plaatsen van je eerste restje. Zo help je voedselverspilling tegen te gaan.",
+    "dishesMetadataTitle": "Mijn gerechten",
+    "dishesHeading": "Mijn gerechten",
+    "addDish": "Gerecht toevoegen",
+    "noDishesTitle": "Nog geen gerechten",
+    "noDishesBody": "Begin met het plaatsen van je eerste restje.",
+    "firstDishCta": "Eerste gerecht plaatsen",
+    "reservationsMetadataTitle": "Reserveringen",
+    "reservationsHeading": "Reserveringen",
+    "messagesMetadataTitle": "Berichten",
+    "reviewsMetadataTitle": "Beoordelingen",
+    "reviewsHeading": "Beoordelingen",
+    "profileMetadataTitle": "Mijn bedrijfsprofiel",
+    "profileHeading": "Mijn bedrijfsprofiel",
+    "profileSubheading": "Beheer hoe klanten je bedrijf zien",
+    "newDishMetadataTitle": "Nieuw gerecht",
+    "newDishHeading": "Nieuw gerecht plaatsen",
+    "editDishMetadataTitle": "Gerecht bewerken",
+    "editDishHeading": "Gerecht bewerken",
+    "settingsMetadataTitle": "Instellingen",
+    "dishBadges": {
+      "overdue": "Over datum",
+      "pickupPassed": "Ophaaltijd verstreken"
+    },
+    "pickup": {
+      "none": "Geen ophaaltijd",
+      "from": "Vanaf {time}",
+      "until": "Tot {time}"
+    }
+  },
   "dashboard": {
     "becomeMerchantTitle": "Word aanbieder",
     "becomeMerchantBody": "Je hebt nog geen aanbiedersprofiel. Maak een gerecht aan om te beginnen, of stel je profiel in.",
@@ -28,6 +67,10 @@
       "collected": "Opgehaald",
       "expired": "Verlopen"
     },
+    "deleteButton": "Verwijder",
+    "deleteTitle": "Gerecht verwijderen?",
+    "deleteBodyDetailed": "Dit kan niet ongedaan worden gemaakt. Alle reserveringen voor dit gerecht worden ook verwijderd.",
+    "deleteError": "Er ging iets mis. Probeer het opnieuw.",
     "quantityLabel": "Aantal: {count}",
     "editButton": "Bewerken",
     "newDishCta": "Nieuw gerecht",

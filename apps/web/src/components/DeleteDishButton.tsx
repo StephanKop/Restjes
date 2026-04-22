@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/Button'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
@@ -13,6 +14,7 @@ interface DeleteDishButtonProps {
 }
 
 export function DeleteDishButton({ dishId, imageUrl, merchantId }: DeleteDishButtonProps) {
+  const t = useTranslations('aanbieder.dishes')
   const [loading, setLoading] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [error, setError] = useState(false)
@@ -61,18 +63,14 @@ export function DeleteDishButton({ dishId, imageUrl, merchantId }: DeleteDishBut
         onClick={() => setShowConfirm(true)}
         className="text-sm text-red-600 hover:text-red-700"
       >
-        Verwijder
+        {t('deleteButton')}
       </Button>
 
       <ConfirmModal
         open={showConfirm}
-        title="Gerecht verwijderen?"
-        description={
-          error
-            ? 'Er ging iets mis. Probeer het opnieuw.'
-            : 'Dit kan niet ongedaan worden gemaakt. Alle reserveringen voor dit gerecht worden ook verwijderd.'
-        }
-        confirmLabel="Verwijderen"
+        title={t('deleteTitle')}
+        description={error ? t('deleteError') : t('deleteBodyDetailed')}
+        confirmLabel={t('delete.confirm')}
         variant="danger"
         loading={loading}
         onConfirm={handleDelete}

@@ -1,4 +1,43 @@
 {
+  "web": {
+    "dashboardMetadataTitle": "Dashboard",
+    "dashboardHeading": "Dashboard",
+    "stats": {
+      "activeDishes": "Active dishes",
+      "pendingReservations": "Pending reservations",
+      "unreadMessages": "Unread messages"
+    },
+    "welcomeHeading": "Welcome to Kliekjesclub!",
+    "welcomeBody": "Start by listing your first leftover. That's how you help fight food waste.",
+    "dishesMetadataTitle": "My dishes",
+    "dishesHeading": "My dishes",
+    "addDish": "Add dish",
+    "noDishesTitle": "No dishes yet",
+    "noDishesBody": "Start by listing your first leftover.",
+    "firstDishCta": "List your first dish",
+    "reservationsMetadataTitle": "Reservations",
+    "reservationsHeading": "Reservations",
+    "messagesMetadataTitle": "Messages",
+    "reviewsMetadataTitle": "Reviews",
+    "reviewsHeading": "Reviews",
+    "profileMetadataTitle": "My business profile",
+    "profileHeading": "My business profile",
+    "profileSubheading": "Manage how customers see your business",
+    "newDishMetadataTitle": "New dish",
+    "newDishHeading": "List a new dish",
+    "editDishMetadataTitle": "Edit dish",
+    "editDishHeading": "Edit dish",
+    "settingsMetadataTitle": "Settings",
+    "dishBadges": {
+      "overdue": "Past date",
+      "pickupPassed": "Pickup window passed"
+    },
+    "pickup": {
+      "none": "No pickup time",
+      "from": "From {time}",
+      "until": "Until {time}"
+    }
+  },
   "dashboard": {
     "becomeMerchantTitle": "Become a merchant",
     "becomeMerchantBody": "You don't have a merchant profile yet. Create a dish to get started, or set up your profile.",
@@ -28,6 +67,10 @@
       "collected": "Picked up",
       "expired": "Expired"
     },
+    "deleteButton": "Delete",
+    "deleteTitle": "Delete dish?",
+    "deleteBodyDetailed": "This can't be undone. All reservations for this dish will also be deleted.",
+    "deleteError": "Something went wrong. Please try again.",
     "quantityLabel": "Quantity: {count}",
     "editButton": "Edit",
     "newDishCta": "New dish",
