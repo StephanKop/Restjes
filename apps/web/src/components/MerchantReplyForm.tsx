@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/Button'
 
 interface MerchantReplyFormProps {
@@ -12,6 +13,7 @@ interface MerchantReplyFormProps {
 
 export function MerchantReplyForm({ reviewId, existingReply }: MerchantReplyFormProps) {
   const router = useRouter()
+  const t = useTranslations('aanbieder.reviews')
   const [open, setOpen] = useState(false)
   const [reply, setReply] = useState(existingReply ?? '')
   const [loading, setLoading] = useState(false)
@@ -42,7 +44,7 @@ export function MerchantReplyForm({ reviewId, existingReply }: MerchantReplyForm
         .eq('id', reviewId)
 
       if (updateError) {
-        setError('Kon reactie niet opslaan. Probeer het opnieuw.')
+        setError(t('errors.replyFailedBody'))
         setLoading(false)
         return
       }
@@ -50,7 +52,7 @@ export function MerchantReplyForm({ reviewId, existingReply }: MerchantReplyForm
       setOpen(false)
       router.refresh()
     } catch {
-      setError('Er ging iets mis. Probeer het opnieuw.')
+      setError(t('errors.replyFailedBody'))
     } finally {
       setLoading(false)
     }
@@ -61,12 +63,12 @@ export function MerchantReplyForm({ reviewId, existingReply }: MerchantReplyForm
     return (
       <div className="mt-3 rounded-xl bg-brand-50 p-4">
         <div className="mb-1 flex items-center justify-between">
-          <span className="text-xs font-semibold text-brand-700">Jouw reactie</span>
+          <span className="text-xs font-semibold text-brand-700">{t('replyLabel')}</span>
           <button
             onClick={() => setOpen(true)}
             className="text-xs font-medium text-brand-600 hover:text-brand-700"
           >
-            Bewerken
+            {t('editReply')}
           </button>
         </div>
         <p className="text-sm text-brand-800">{existingReply}</p>
@@ -81,7 +83,7 @@ export function MerchantReplyForm({ reviewId, existingReply }: MerchantReplyForm
         onClick={() => setOpen(true)}
         className="mt-2 text-sm font-medium text-brand-600 transition-colors hover:text-brand-700"
       >
-        Reageren
+        {t('replyCta')}
       </button>
     )
   }
@@ -97,7 +99,7 @@ export function MerchantReplyForm({ reviewId, existingReply }: MerchantReplyForm
         }}
         rows={3}
         className="w-full resize-none rounded-xl border border-warm-200 bg-white px-4 py-3 text-sm text-warm-800 placeholder:text-warm-400 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100"
-        placeholder="Reageer op deze beoordeling..."
+        placeholder={t('replyPlaceholder')}
         autoFocus
       />
       <div className="flex items-center justify-between">
@@ -115,7 +117,7 @@ export function MerchantReplyForm({ reviewId, existingReply }: MerchantReplyForm
               setError(null)
             }}
           >
-            Annuleren
+            {t('cancelEdit')}
           </Button>
           <Button
             type="submit"
@@ -123,7 +125,7 @@ export function MerchantReplyForm({ reviewId, existingReply }: MerchantReplyForm
             disabled={!reply.trim()}
             className="px-4 py-2 text-sm"
           >
-            {existingReply ? 'Bijwerken' : 'Plaatsen'}
+            {existingReply ? t('updateReply') : t('postReply')}
           </Button>
         </div>
       </div>

@@ -1,10 +1,13 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { ConversationList, type ConversationItem } from '@/components/ConversationList'
 import { MessagesShell } from '@/app/(consumer)/messages/MessagesShell'
 
-export const metadata = {
-  title: 'Berichten - Kliekjesclub Aanbieder',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('messages.web')
+  return { title: t('merchantSidebarTitle') }
 }
 
 export default async function MerchantMessagesLayout({
@@ -12,6 +15,7 @@ export default async function MerchantMessagesLayout({
 }: {
   children: React.ReactNode
 }) {
+  const t = await getTranslations('messages.web')
   const user = await getUser()
 
   if (!user) {
@@ -52,9 +56,9 @@ export default async function MerchantMessagesLayout({
   if (!conversations || conversations.length === 0) {
     return (
       <div>
-        <h1 className="mb-6 text-2xl font-extrabold text-warm-900">Berichten</h1>
+        <h1 className="mb-6 text-2xl font-extrabold text-warm-900">{t('merchantHeading')}</h1>
         <div className="rounded-2xl bg-white p-12 text-center shadow-card">
-          <p className="text-warm-500">Je hebt nog geen berichten ontvangen</p>
+          <p className="text-warm-500">{t('merchantEmpty')}</p>
         </div>
       </div>
     )
@@ -99,7 +103,7 @@ export default async function MerchantMessagesLayout({
 
     return {
       id: conv.id,
-      otherPartyName: consumer?.display_name ?? 'Onbekende gebruiker',
+      otherPartyName: consumer?.display_name ?? t('unknownUser'),
       otherPartyAvatar: consumer?.avatar_url ?? null,
       dishTitle: dish?.title ?? null,
       lastMessage: lastMsg?.content ?? null,

@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getLocale, getTranslations } from 'next-intl/server'
+import { localeMeta, type Locale } from '@kliekjesclub/i18n'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
 import { formatRelativeDate } from '@/lib/format'
@@ -8,18 +10,12 @@ import { StatusBadge } from '@/components/StatusBadge'
 import { ReservationActions } from '@/components/ReservationActions'
 import { ClipboardIcon } from '@/components/icons'
 
-export const metadata: Metadata = {
-  title: 'Reserveringen',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('aanbieder.web')
+  return { title: t('reservationsMetadataTitle') }
 }
 
 type TabFilter = 'alle' | 'nieuw' | 'bevestigd' | 'afgerond'
-
-const TABS: { key: TabFilter; label: string }[] = [
-  { key: 'alle', label: 'Alle' },
-  { key: 'nieuw', label: 'Nieuw' },
-  { key: 'bevestigd', label: 'Bevestigd' },
-  { key: 'afgerond', label: 'Afgerond' },
-]
 
 function matchesTab(status: string, tab: TabFilter): boolean {
   switch (tab) {
@@ -44,6 +40,16 @@ export default async function MerchantReservationsPage({
 }: MerchantReservationsPageProps) {
   const params = await searchParams
   const activeTab = (typeof params.tab === 'string' ? params.tab : 'alle') as TabFilter
+  const t = await getTranslations('aanbieder')
+  const locale = (await getLocale()) as Locale
+  const dateLocale = localeMeta[locale]?.htmlLang ?? 'nl-NL'
+
+  const TABS: { key: TabFilter; label: string }[] = [
+    { key: 'alle', label: t('reservations.tabs.all') },
+    { key: 'nieuw', label: t('reservations.tabs.new') },
+    { key: 'bevestigd', label: t('reservations.tabs.confirmed') },
+    { key: 'afgerond', label: t('reservations.tabs.completed') },
+  ]
 
   const user = await getUser()
 
@@ -88,7 +94,6 @@ export default async function MerchantReservationsPage({
   const allReservations = reservations ?? []
   const filtered = allReservations.filter((r) => matchesTab(r.status, activeTab))
 
-  // Count pending for badge
   const pendingCount = allReservations.filter((r) => r.status === 'pending').length
 
   return (
@@ -96,10 +101,10 @@ export default async function MerchantReservationsPage({
       <RealtimeRefresh table="reservations" filter={`merchant_id=eq.${merchant.id}`} />
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold text-warm-900">Reserveringen</h1>
+          <h1 className="text-3xl font-extrabold text-warm-900">{t('web.reservationsHeading')}</h1>
           {pendingCount > 0 && (
             <p className="mt-1 text-sm text-warm-500">
-              {pendingCount} {pendingCount === 1 ? 'nieuwe reservering' : 'nieuwe reserveringen'} wachtend op bevestiging
+              {t(pendingCount === 1 ? 'reservations.pendingBannerSingular' : 'reservations.pendingBannerPlural', { count: pendingCount })}
             </p>
           )}
         </div>
@@ -142,14 +147,10 @@ export default async function MerchantReservationsPage({
             <ClipboardIcon className="h-7 w-7" />
           </div>
           <h2 className="mb-2 text-xl font-bold text-warm-900">
-            {activeTab === 'alle'
-              ? 'Er zijn nog geen reserveringen binnengekomen'
-              : 'Geen reserveringen in deze categorie'}
+            {activeTab === 'alle' ? t('reservations.empty.all') : t('reservations.empty.other')}
           </h2>
           <p className="text-warm-500">
-            {activeTab === 'alle'
-              ? 'Zodra een klant een gerecht reserveert, verschijnt het hier.'
-              : 'Er zijn geen reserveringen die aan dit filter voldoen.'}
+            {activeTab === 'alle' ? t('reservations.empty.all') : t('reservations.empty.other')}
           </p>
         </div>
       ) : (
@@ -179,18 +180,19 @@ export default async function MerchantReservationsPage({
 
                     <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-warm-600">
                       <span>
-                        Klant: {consumer?.display_name ?? 'Onbekend'}
+                        {t('reservations.customerLabel', { name: consumer?.display_name ?? t('reservations.customerUnknown') })}
                       </span>
-                      <span>Aantal: {reservation.quantity}</span>
+                      <span>{t('reservations.quantityLabel', { count: reservation.quantity })}</span>
                       <span>{formatRelativeDate(reservation.created_at)}</span>
                       {reservation.pickup_time && (
                         <span>
-                          Ophalen:{' '}
-                          {new Date(reservation.pickup_time).toLocaleString('nl-NL', {
-                            day: 'numeric',
-                            month: 'short',
-                            hour: '2-digit',
-                            minute: '2-digit',
+                          {t('reservations.pickupLabel', {
+                            time: new Date(reservation.pickup_time).toLocaleString(dateLocale, {
+                              day: 'numeric',
+                              month: 'short',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            }),
                           })}
                         </span>
                       )}
@@ -198,7 +200,7 @@ export default async function MerchantReservationsPage({
 
                     {reservation.notes && (
                       <p className="mt-2 rounded-lg bg-warm-50 px-3 py-2 text-sm text-warm-700">
-                        <span className="font-semibold">Opmerking:</span> {reservation.notes}
+                        <span className="font-semibold">{t('reservations.noteLabel')}</span> {reservation.notes}
                       </p>
                     )}
                   </div>

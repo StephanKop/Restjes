@@ -1,15 +1,18 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { ReviewList, type ReviewData } from '@/components/ReviewList'
 import { MerchantReplyForm } from '@/components/MerchantReplyForm'
 import { StarRating } from '@/components/StarRating'
 
-export const metadata: Metadata = {
-  title: 'Beoordelingen',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('aanbieder.web')
+  return { title: t('reviewsMetadataTitle') }
 }
 
 export default async function AanbiederReviewsPage() {
+  const t = await getTranslations('aanbieder')
   const user = await getUser()
 
   if (!user) {
@@ -77,10 +80,10 @@ export default async function AanbiederReviewsPage() {
   return (
     <div>
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-3xl font-extrabold text-warm-900">Beoordelingen</h1>
+        <h1 className="text-3xl font-extrabold text-warm-900">{t('web.reviewsHeading')}</h1>
         {unreplied > 0 && (
           <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-800">
-            {unreplied} onbeantwoord
+            {t('reviews.unanswered', { count: unreplied })}
           </span>
         )}
       </div>
@@ -93,10 +96,10 @@ export default async function AanbiederReviewsPage() {
             </svg>
           </div>
           <h2 className="mb-2 text-xl font-bold text-warm-900">
-            Je hebt nog geen beoordelingen ontvangen
+            {t('reviews.emptyTitle')}
           </h2>
           <p className="text-warm-500">
-            Zodra klanten een beoordeling achterlaten, verschijnen ze hier.
+            {t('reviews.emptySubtitle')}
           </p>
         </div>
       ) : (
@@ -114,8 +117,7 @@ export default async function AanbiederReviewsPage() {
                 <StarRating rating={Math.round(merchant.avg_rating ?? 0)} size="md" />
               </div>
               <p className="mt-1 text-sm text-warm-400">
-                {merchant.review_count}{' '}
-                {merchant.review_count === 1 ? 'beoordeling' : 'beoordelingen'}
+                {t(merchant.review_count === 1 ? 'reviews.stats.totalSingular' : 'reviews.stats.totalPlural', { count: merchant.review_count })}
               </p>
             </div>
 
@@ -127,7 +129,7 @@ export default async function AanbiederReviewsPage() {
                 return (
                   <div key={star} className="flex items-center gap-3 text-sm">
                     <span className="w-12 text-right font-medium text-warm-600">
-                      {star} ster{star !== 1 ? 'ren' : ''}
+                      {t(star === 1 ? 'reviews.starsSingular' : 'reviews.starsPlural', { count: star })}
                     </span>
                     <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-warm-100">
                       <div

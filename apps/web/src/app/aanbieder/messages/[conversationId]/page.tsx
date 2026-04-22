@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound, redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { ChatThread } from '@/components/ChatThread'
 
@@ -21,8 +22,9 @@ export async function generateMetadata({
     .eq('id', conversationId)
     .single()
 
+  const t = await getTranslations('messages.web')
   if (!conversation) {
-    return { title: 'Gesprek niet gevonden - Kliekjesclub' }
+    return { title: t('conversationMetadataNotFound') }
   }
 
   const consumer = conversation.consumer as unknown as {
@@ -30,7 +32,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `Chat met ${consumer?.display_name ?? 'klant'} - Kliekjesclub`,
+    title: t('merchantConvoMetadataTitle', { name: consumer?.display_name ?? t('customerFallback') }),
   }
 }
 
@@ -38,6 +40,7 @@ export default async function MerchantConversationPage({
   params,
 }: ConversationPageProps) {
   const { conversationId } = await params
+  const t = await getTranslations('messages.web')
   const supabase = await createServerComponentClient()
 
   const user = await getUser()
@@ -82,7 +85,7 @@ export default async function MerchantConversationPage({
     avatar_url: string | null
   }
 
-  const consumerName = consumer?.display_name ?? 'Onbekende gebruiker'
+  const consumerName = consumer?.display_name ?? t('unknownUser')
   const initials = consumerName
     .split(' ')
     .map((w) => w[0])
@@ -104,7 +107,7 @@ export default async function MerchantConversationPage({
         <Link
           href="/aanbieder/messages"
           className="flex h-9 w-9 items-center justify-center rounded-xl text-warm-500 transition-colors hover:bg-warm-50 hover:text-warm-700 lg:hidden"
-          aria-label="Terug naar berichten"
+          aria-label={t('backAria')}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

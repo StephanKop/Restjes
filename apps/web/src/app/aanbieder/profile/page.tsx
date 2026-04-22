@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { ProfileForm } from '@/app/(consumer)/profile/ProfileForm'
 
-export const metadata: Metadata = {
-  title: 'Profiel - Aanbieder',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('aanbieder.web')
+  return { title: t('profileMetadataTitle') }
 }
 
 interface AanbiederProfilePageProps {
@@ -14,6 +16,7 @@ interface AanbiederProfilePageProps {
 export default async function AanbiederProfilePage({ searchParams }: AanbiederProfilePageProps) {
   const params = await searchParams
   const isSetup = params.setup === 'aanbieder'
+  const t = await getTranslations('aanbieder.web')
 
   const user = await getUser()
 
@@ -43,18 +46,16 @@ export default async function AanbiederProfilePage({ searchParams }: AanbiederPr
       {isSetup && !merchant && (
         <div className="mb-6 rounded-2xl border border-brand-200 bg-brand-50 p-5">
           <h2 className="mb-1 text-base font-bold text-brand-800">
-            Maak eerst je aanbiedersprofiel aan
+            {t('setupMerchantTitle')}
           </h2>
           <p className="text-sm text-brand-700">
-            Om gerechten te kunnen plaatsen heb je een aanbiedersprofiel nodig.
-            Vul hieronder je adresgegevens in en sla je profiel op.
-            Daarna kun je direct je eerste gerecht aanmaken.
+            {t('setupMerchantBody')}
           </p>
         </div>
       )}
 
-      <h1 className="mb-2 text-3xl font-extrabold text-warm-900">Mijn profiel</h1>
-      <p className="mb-8 text-warm-500">Beheer je persoonlijke gegevens</p>
+      <h1 className="mb-2 text-3xl font-extrabold text-warm-900">{t('profileHeading')}</h1>
+      <p className="mb-8 text-warm-500">{t('profileSubheading')}</p>
 
       <ProfileForm
         userId={user.id}
