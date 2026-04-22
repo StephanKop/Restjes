@@ -1,0 +1,13 @@
+{
+  "name": "@kliekjesclub/i18n",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./messages/*": "./messages/*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}

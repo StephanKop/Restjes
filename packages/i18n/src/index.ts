@@ -1,0 +1,7 @@
+export * from './config'
+export { default as messagesNlCommon } from '../messages/nl/common.json'
+export { default as messagesEnCommon } from '../messages/en/common.json'
+export { default as messagesNlFooter } from '../messages/nl/footer.json'
+export { default as messagesEnFooter } from '../messages/en/footer.json'
+export { default as messagesNlProfile } from '../messages/nl/profile.json'
+export { default as messagesEnProfile } from '../messages/en/profile.json'

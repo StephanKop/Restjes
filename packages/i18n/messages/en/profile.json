@@ -1,0 +1,32 @@
+{
+  "title": "Profile",
+  "fallbackName": "User",
+  "fields": {
+    "displayName": {
+      "label": "Name",
+      "placeholder": "Set your name"
+    },
+    "city": {
+      "label": "City",
+      "placeholder": "Set your city"
+    },
+    "phone": {
+      "label": "Phone",
+      "placeholder": "Set your phone number"
+    }
+  },
+  "avatar": {
+    "uploadFailed": "Couldn't upload profile photo."
+  },
+  "errors": {
+    "saveFailed": "Couldn't save."
+  },
+  "sections": {
+    "impact": "My impact",
+    "myOffer": "My listings",
+    "newDish": "List a new dish",
+    "settings": "Settings",
+    "help": "Help & support",
+    "about": "About Kliekjesclub"
+  }
+}

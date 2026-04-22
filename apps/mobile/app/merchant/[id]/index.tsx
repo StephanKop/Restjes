@@ -260,14 +260,16 @@ export default function MerchantDetailScreen() {
             Beschikbare gerechten
           </Text>
           {dishes.length > 0 ? (
-            <FlatList
-              data={dishes}
-              keyExtractor={(item) => item.id}
-              renderItem={renderDishCard}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingRight: 20 }}
-            />
+            <View className="-mx-5">
+              <FlatList
+                data={dishes}
+                keyExtractor={(item) => item.id}
+                renderItem={renderDishCard}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingHorizontal: 20 }}
+              />
+            </View>
           ) : (
             <View className="bg-white rounded-xl p-4">
               <Text className="text-sm text-warm-400 text-center">

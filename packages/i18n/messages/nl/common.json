@@ -1,0 +1,27 @@
+{
+  "actions": {
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "edit": "Bewerken",
+    "delete": "Verwijderen",
+    "confirm": "Bevestigen",
+    "back": "Terug",
+    "next": "Volgende",
+    "previous": "Vorige",
+    "close": "Sluiten",
+    "retry": "Opnieuw proberen",
+    "signOut": "Uitloggen",
+    "signIn": "Inloggen"
+  },
+  "status": {
+    "loading": "Laden...",
+    "saving": "Opslaan...",
+    "error": "Er is iets misgegaan",
+    "empty": "Geen resultaten",
+    "success": "Gelukt!"
+  },
+  "language": {
+    "label": "Taal",
+    "selectLanguage": "Kies een taal"
+  }
+}

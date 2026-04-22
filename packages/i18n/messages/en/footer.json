@@ -1,0 +1,29 @@
+{
+  "tagline": "Kliekjesclub connects people with leftover food to people who'll love it. Together against food waste!",
+  "navHeading": "Navigation",
+  "infoHeading": "Information",
+  "newsletterHeading": "Stay in the loop",
+  "newsletterDescription": "Sign up for our newsletter and get updates on new features and offers.",
+  "newsletterPlaceholder": "Email address",
+  "newsletterSubmit": "Subscribe",
+  "copyright": "© {year} Kliekjesclub.nl — Together against food waste.",
+  "bottomPrivacy": "Privacy",
+  "bottomTerms": "Terms",
+  "links": {
+    "discover": "Discover",
+    "reservations": "Reservations",
+    "messages": "Messages",
+    "myOffer": "My listings",
+    "about": "About us",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "privacy": "Privacy policy",
+    "terms": "Terms of service"
+  },
+  "social": {
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "tiktok": "TikTok",
+    "linkedin": "LinkedIn"
+  }
+}

@@ -15,6 +15,8 @@ import { router } from 'expo-router'
 import { useAuth } from '../../lib/auth-context'
 import { supabase } from '../../lib/supabase'
 import { pickImage as pickImageFromLib } from '../../lib/image-picker'
+import { useTranslation } from '../../lib/i18n'
+import { LanguageSwitcher } from '../../components/LanguageSwitcher'
 
 interface ProfileData {
   display_name: string | null
@@ -25,6 +27,7 @@ interface ProfileData {
 
 export default function ProfileScreen() {
   const { user, signOut } = useAuth()
+  const { t } = useTranslation()
 
   const [profile, setProfile] = useState<ProfileData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -63,7 +66,7 @@ export default function ProfileScreen() {
       .eq('id', user.id)
 
     if (error) {
-      Alert.alert('Fout', 'Kon niet opslaan.')
+      Alert.alert(t('common.status.error'), t('profile.errors.saveFailed'))
     } else {
       setProfile((prev) => prev ? { ...prev, [field]: trimmed || null } : prev)
 
@@ -105,7 +108,7 @@ export default function ProfileScreen() {
       })
 
     if (uploadError) {
-      Alert.alert('Fout', 'Kon profielfoto niet uploaden.')
+      Alert.alert(t('common.status.error'), t('profile.avatar.uploadFailed'))
       setUploadingAvatar(false)
       return
     }
@@ -127,7 +130,7 @@ export default function ProfileScreen() {
     router.replace('/(auth)/login')
   }
 
-  const displayName = profile?.display_name ?? user?.user_metadata?.display_name ?? email.split('@')[0] ?? 'Gebruiker'
+  const displayName = profile?.display_name ?? user?.user_metadata?.display_name ?? email.split('@')[0] ?? t('profile.fallbackName')
 
   const renderEditableRow = (
     icon: keyof typeof Ionicons.glyphMap,
@@ -161,7 +164,7 @@ export default function ProfileScreen() {
             {savingField ? (
               <ActivityIndicator size="small" color="#ffffff" />
             ) : (
-              <Text className="text-white font-bold text-sm">Opslaan</Text>
+              <Text className="text-white font-bold text-sm">{t('common.actions.save')}</Text>
             )}
           </Pressable>
           <Pressable className="ml-2" onPress={() => setEditingField(null)}>
@@ -200,7 +203,9 @@ export default function ProfileScreen() {
     <SafeAreaView className="flex-1 bg-offwhite" edges={['top', 'bottom']}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-5 pt-2 pb-8">
-          <Text className="text-2xl font-extrabold text-warm-800 mb-6">Profiel</Text>
+          <Text className="text-2xl font-extrabold text-warm-800 mb-6">{t('profile.title')}</Text>
+
+          <LanguageSwitcher />
 
           <View className="bg-white rounded-2xl p-5 mb-4">
             {/* Avatar + name */}
@@ -239,9 +244,25 @@ export default function ProfileScreen() {
             </View>
 
             {/* Editable fields */}
-            {renderEditableRow('person-outline', 'Naam', 'display_name', profile?.display_name ?? null, 'Stel je naam in')}
-            {renderEditableRow('location-outline', 'Woonplaats', 'city', profile?.city ?? null, 'Stel je woonplaats in')}
-            {renderEditableRow('call-outline', 'Telefoon', 'phone', profile?.phone ?? null, 'Stel je telefoonnummer in', 'phone-pad')}
+            {renderEditableRow('person-outline', t('profile.fields.displayName.label'), 'display_name', profile?.display_name ?? null, t('profile.fields.displayName.placeholder'))}
+            {renderEditableRow('location-outline', t('profile.fields.city.label'), 'city', profile?.city ?? null, t('profile.fields.city.placeholder'))}
+            {renderEditableRow('call-outline', t('profile.fields.phone.label'), 'phone', profile?.phone ?? null, t('profile.fields.phone.placeholder'), 'phone-pad')}
+          </View>
+
+          {/* Impact */}
+          <View className="bg-white rounded-2xl overflow-hidden mb-4">
+            <Pressable
+              onPress={() => router.push('/impact' as any)}
+              className="flex-row items-center px-5 py-4 active:bg-warm-100"
+            >
+              <View className="w-8 h-8 rounded-lg bg-brand-100 items-center justify-center mr-3">
+                <Ionicons name="leaf-outline" size={18} color="#22c55e" />
+              </View>
+              <Text className="text-warm-800 text-base font-bold flex-1">
+                {t('profile.sections.impact')}
+              </Text>
+              <Ionicons name="chevron-forward" size={18} color="#b0a89e" />
+            </Pressable>
           </View>
 
           {/* Impact */}
@@ -270,7 +291,7 @@ export default function ProfileScreen() {
                 <Ionicons name="storefront-outline" size={18} color="#22c55e" />
               </View>
               <Text className="text-warm-800 text-base font-bold flex-1">
-                Mijn aanbod
+                {t('profile.sections.myOffer')}
               </Text>
               <Ionicons name="chevron-forward" size={18} color="#b0a89e" />
             </Pressable>
@@ -282,7 +303,7 @@ export default function ProfileScreen() {
                 <Ionicons name="add-circle-outline" size={18} color="#22c55e" />
               </View>
               <Text className="text-brand-600 text-base font-semibold flex-1">
-                Nieuw gerecht plaatsen
+                {t('profile.sections.newDish')}
               </Text>
               <Ionicons name="chevron-forward" size={18} color="#22c55e" />
             </Pressable>
@@ -296,7 +317,7 @@ export default function ProfileScreen() {
             >
               <Ionicons name="settings-outline" size={20} color="#3d3833" />
               <Text className="text-warm-800 text-base ml-3 flex-1">
-                Instellingen
+                {t('profile.sections.settings')}
               </Text>
               <Ionicons name="chevron-forward" size={18} color="#b0a89e" />
             </Pressable>
@@ -306,7 +327,7 @@ export default function ProfileScreen() {
             >
               <Ionicons name="help-circle-outline" size={20} color="#3d3833" />
               <Text className="text-warm-800 text-base ml-3 flex-1">
-                Hulp en ondersteuning
+                {t('profile.sections.help')}
               </Text>
               <Ionicons name="chevron-forward" size={18} color="#b0a89e" />
             </Pressable>
@@ -316,7 +337,7 @@ export default function ProfileScreen() {
             >
               <Ionicons name="information-circle-outline" size={20} color="#3d3833" />
               <Text className="text-warm-800 text-base ml-3 flex-1">
-                Over Kliekjesclub
+                {t('profile.sections.about')}
               </Text>
               <Ionicons name="chevron-forward" size={18} color="#b0a89e" />
             </Pressable>
@@ -327,7 +348,7 @@ export default function ProfileScreen() {
             onPress={handleSignOut}
             className="border border-red-200 rounded-xl px-6 py-3.5 items-center active:bg-red-50"
           >
-            <Text className="text-red-500 font-bold text-base">Uitloggen</Text>
+            <Text className="text-red-500 font-bold text-base">{t('common.actions.signOut')}</Text>
           </Pressable>
         </View>
       </ScrollView>

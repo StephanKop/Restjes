@@ -8,6 +8,7 @@ import { supabase } from '../../lib/supabase'
 export default function TabsLayout() {
   const { session, user, loading } = useAuth()
   const [unreadMessages, setUnreadMessages] = useState(0)
+  const [reservationAlerts, setReservationAlerts] = useState(0)
 
   const fetchUnreadCount = useCallback(async () => {
     if (!user) return
@@ -60,6 +61,33 @@ export default function TabsLayout() {
     }
   }, [user, fetchUnreadCount])
 
+  // Tab indicator for reservation status changes (consumer side). RLS filters
+  // the realtime stream to rows where consumer_id = auth.uid(), so the client
+  // only sees events for reservations the user owns.
+  useEffect(() => {
+    if (!user) return
+
+    const channel = supabase
+      .channel('tab-reservations')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'reservations',
+          filter: `consumer_id=eq.${user.id}`,
+        },
+        () => {
+          setReservationAlerts((c) => c + 1)
+        },
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [user])
+
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-offwhite">
@@ -95,10 +123,37 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="reservations"
+        listeners={{
+          tabPress: () => {
+            setReservationAlerts(0)
+          },
+        }}
         options={{
           title: 'Reserveringen',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar-outline" size={size} color={color} />
+            <View>
+              <Ionicons name="calendar-outline" size={size} color={color} />
+              {reservationAlerts > 0 && (
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: -4,
+                    right: -8,
+                    backgroundColor: '#ef4444',
+                    borderRadius: 9,
+                    minWidth: 18,
+                    height: 18,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingHorizontal: 4,
+                  }}
+                >
+                  <Text style={{ color: '#fff', fontSize: 10, fontWeight: '700' }}>
+                    {reservationAlerts > 9 ? '9+' : reservationAlerts}
+                  </Text>
+                </View>
+              )}
+            </View>
           ),
         }}
       />

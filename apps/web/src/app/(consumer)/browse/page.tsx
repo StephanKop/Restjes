@@ -23,7 +23,12 @@ interface BrowsePageProps {
 }
 
 export default async function BrowsePage({ searchParams }: BrowsePageProps) {
+  const t0 = Date.now()
+  const mark = (label: string) => {
+    console.log(`[browse] ${label}: ${Date.now() - t0}ms`)
+  }
   const params = await searchParams
+  mark('params resolved')
   const q = typeof params.q === 'string' ? params.q : undefined
   const city = typeof params.city === 'string' ? params.city : undefined
   const vegetarian = params.vegetarian === '1'
@@ -42,6 +47,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   const hasLocation = lat !== undefined && lng !== undefined && !isNaN(lat) && !isNaN(lng)
 
   const supabase = await createServerComponentClient()
+  mark('supabase client ready')
 
   // If using geolocation, get nearby dish IDs first via RPC
   let nearbyDishIds: string[] | null = null
@@ -51,6 +57,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
       user_lng: lng,
       radius_m: radiusKm * 1000,
     })
+    mark('nearby_dish_ids RPC')
     if (rpcError) {
       console.error('nearby_dish_ids RPC error:', rpcError)
       // Fall back to showing all dishes rather than showing nothing

@@ -2,6 +2,9 @@ import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import Script from 'next/script'
 import { Nunito } from 'next/font/google'
+import { NextIntlClientProvider } from 'next-intl'
+import { getLocale, getMessages } from 'next-intl/server'
+import { localeMeta, type Locale } from '@kliekjesclub/i18n'
 import { NavigationProgress } from '@/components/NavigationProgress'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { AuthRefresh } from '@/components/AuthRefresh'
@@ -44,10 +47,13 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = (await getLocale()) as Locale
+  const messages = await getMessages()
   return (
-    <html lang="nl" className={nunito.variable}>
+    <html lang={localeMeta[locale]?.htmlLang ?? 'nl-NL'} className={nunito.variable}>
       <body suppressHydrationWarning className="min-h-screen bg-offwhite text-warm-800 antialiased">
+        <NextIntlClientProvider locale={locale} messages={messages}>
         <Script id="microsoft-clarity" strategy="afterInteractive">
           {`(function(c,l,a,r,i,t,y){
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -68,6 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ScrollReveal />
         <AuthRefresh />
         {children}
+        </NextIntlClientProvider>
       </body>
     </html>
   )

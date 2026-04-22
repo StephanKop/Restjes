@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { AuthProvider, useAuth } from '../lib/auth-context'
+import { LocaleProvider } from '../lib/i18n'
 import {
   registerForPushNotifications,
   setupNotificationListeners,
@@ -33,6 +34,7 @@ const headerOptions = {
 
 export default function RootLayout() {
   return (
+    <LocaleProvider>
     <AuthProvider>
       <StatusBar style="dark" />
       <NotificationSetup />
@@ -59,5 +61,6 @@ export default function RootLayout() {
         <Stack.Screen name="aanbieder/settings" options={{ ...headerOptions, headerTitle: 'Instellingen' }} />
       </Stack>
     </AuthProvider>
+    </LocaleProvider>
   )
 }

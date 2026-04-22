@@ -14,7 +14,7 @@ import {
   Dimensions,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { router } from 'expo-router'
+import { router, useFocusEffect } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
@@ -207,6 +207,18 @@ export default function DiscoverScreen() {
     Promise.all([fetchDishes(), fetchMerchants()]).finally(() => setLoading(false))
   }, [fetchDishes, fetchMerchants])
 
+  // Silently refetch when the screen regains focus (e.g. after creating a dish)
+  const didInitialFocusRef = useRef(false)
+  useFocusEffect(
+    useCallback(() => {
+      if (!didInitialFocusRef.current) {
+        didInitialFocusRef.current = true
+        return
+      }
+      Promise.all([fetchDishes(), fetchMerchants()])
+    }, [fetchDishes, fetchMerchants])
+  )
+
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
     await Promise.all([fetchDishes(), fetchMerchants()])
@@ -362,7 +374,7 @@ export default function DiscoverScreen() {
 
         {/* Search + Filter button */}
         <View className="flex-row items-center gap-2 mb-4">
-          <View className="flex-1 flex-row items-center bg-white border border-warm-200 rounded-xl px-4 py-3">
+          <View className="flex-1 h-12 flex-row items-center bg-white border border-warm-200 rounded-xl px-4">
             <Ionicons name="search-outline" size={20} color="#b0a89e" />
             <TextInput
               className="flex-1 ml-2 text-[16px] text-warm-800"
@@ -379,7 +391,7 @@ export default function DiscoverScreen() {
             )}
           </View>
           <Pressable
-            className={`rounded-xl px-3.5 py-3 border ${
+            className={`h-12 rounded-xl px-3.5 border items-center justify-center ${
               activeFilterCount > 0
                 ? 'bg-brand-500 border-brand-500'
                 : 'bg-white border-warm-200'
@@ -408,8 +420,8 @@ export default function DiscoverScreen() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            className="mb-3"
-            contentContainerStyle={{ gap: 6 }}
+            className="mb-3 -mx-5"
+            contentContainerStyle={{ gap: 6, paddingHorizontal: 20 }}
           >
             {activeFilters.map((f) => (
               <Pressable

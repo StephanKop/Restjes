@@ -10,12 +10,14 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@kliekjesclub/i18n": "workspace:*",
     "@kliekjesclub/supabase": "workspace:*",
     "@kliekjesclub/types": "workspace:*",
     "@kliekjesclub/ui": "workspace:*",
     "@supabase/ssr": "^0.6.0",
     "@supabase/supabase-js": "^2.49.0",
     "next": "^15.3.0",
+    "next-intl": "^4.9.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },

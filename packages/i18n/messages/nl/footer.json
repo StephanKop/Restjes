@@ -1,0 +1,29 @@
+{
+  "tagline": "Kliekjesclub verbindt mensen die eten over hebben met mensen die er blij mee zijn. Samen tegen voedselverspilling!",
+  "navHeading": "Navigatie",
+  "infoHeading": "Informatie",
+  "newsletterHeading": "Blijf op de hoogte",
+  "newsletterDescription": "Schrijf je in voor onze nieuwsbrief en ontvang updates over nieuwe functies en aanbiedingen.",
+  "newsletterPlaceholder": "E-mailadres",
+  "newsletterSubmit": "Aanmelden",
+  "copyright": "© {year} Kliekjesclub.nl — Samen tegen voedselverspilling.",
+  "bottomPrivacy": "Privacy",
+  "bottomTerms": "Voorwaarden",
+  "links": {
+    "discover": "Ontdekken",
+    "reservations": "Reserveringen",
+    "messages": "Berichten",
+    "myOffer": "Mijn aanbod",
+    "about": "Over ons",
+    "faq": "Veelgestelde vragen",
+    "contact": "Contact",
+    "privacy": "Privacybeleid",
+    "terms": "Algemene voorwaarden"
+  },
+  "social": {
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "tiktok": "TikTok",
+    "linkedin": "LinkedIn"
+  }
+}

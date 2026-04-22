@@ -1,0 +1,32 @@
+{
+  "title": "Profiel",
+  "fallbackName": "Gebruiker",
+  "fields": {
+    "displayName": {
+      "label": "Naam",
+      "placeholder": "Stel je naam in"
+    },
+    "city": {
+      "label": "Woonplaats",
+      "placeholder": "Stel je woonplaats in"
+    },
+    "phone": {
+      "label": "Telefoon",
+      "placeholder": "Stel je telefoonnummer in"
+    }
+  },
+  "avatar": {
+    "uploadFailed": "Kon profielfoto niet uploaden."
+  },
+  "errors": {
+    "saveFailed": "Kon niet opslaan."
+  },
+  "sections": {
+    "impact": "Mijn impact",
+    "myOffer": "Mijn aanbod",
+    "newDish": "Nieuw gerecht plaatsen",
+    "settings": "Instellingen",
+    "help": "Hulp en ondersteuning",
+    "about": "Over Kliekjesclub"
+  }
+}
