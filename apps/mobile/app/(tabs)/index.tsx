@@ -19,6 +19,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
 import { formatPickupTime, allergenLabel } from '../../lib/format'
+import { useTranslation } from '../../lib/i18n'
 
 interface Dish {
   id: string
@@ -61,6 +62,7 @@ const ALL_ALLERGENS = [
 const SCREEN_WIDTH = Dimensions.get('window').width
 
 export default function DiscoverScreen() {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const [dishes, setDishes] = useState<Dish[]>([])
   const [merchants, setMerchants] = useState<MerchantResult[]>([])
@@ -288,34 +290,34 @@ export default function DiscoverScreen() {
         <View className="flex-row flex-wrap mt-2.5 gap-1.5">
           {item.is_vegan && (
             <View className="bg-brand-100 rounded-lg px-2.5 py-1">
-              <Text className="text-xs font-bold text-brand-700">Veganistisch</Text>
+              <Text className="text-xs font-bold text-brand-700">{t('dish.badges.vegan')}</Text>
             </View>
           )}
           {item.is_vegetarian && !item.is_vegan && (
             <View className="bg-brand-100 rounded-lg px-2.5 py-1">
-              <Text className="text-xs font-bold text-brand-700">Vegetarisch</Text>
+              <Text className="text-xs font-bold text-brand-700">{t('dish.badges.vegetarian')}</Text>
             </View>
           )}
           {item.is_frozen && (
             <View className="bg-blue-50 rounded-lg px-2.5 py-1">
-              <Text className="text-xs font-bold text-blue-700">Ingevroren</Text>
+              <Text className="text-xs font-bold text-blue-700">{t('dish.badges.frozen')}</Text>
             </View>
           )}
           {item.bring_own_container && (
             <View className="bg-warm-100 rounded-lg px-2.5 py-1">
-              <Text className="text-xs font-bold text-warm-600">Eigen bakje</Text>
+              <Text className="text-xs font-bold text-warm-600">{t('dish.badges.bringOwnContainer')}</Text>
             </View>
           )}
           {item.dish_allergies?.length > 0 && (
             <View className="bg-red-50 rounded-lg px-2.5 py-1">
               <Text className="text-xs font-bold text-red-700">
-                {item.dish_allergies.length} allergenen
+                {t('dish.badges.allergensCount', { count: item.dish_allergies.length })}
               </Text>
             </View>
           )}
           <View className="bg-warm-100 rounded-lg px-2.5 py-1">
             <Text className="text-xs font-bold text-warm-600">
-              Nog {item.quantity_available}
+              {t('dish.badges.remaining', { count: item.quantity_available })}
             </Text>
           </View>
         </View>
@@ -358,7 +360,7 @@ export default function DiscoverScreen() {
           <View className="flex-row items-center mt-0.5">
             <Ionicons name="star" size={13} color="#f59e0b" />
             <Text className="text-sm text-warm-500 ml-1">
-              {Number(item.avg_rating).toFixed(1)} · {item.review_count} beoordelingen
+              {t('browse.merchantCard.rating', { rating: Number(item.avg_rating).toFixed(1), count: item.review_count })}
             </Text>
           </View>
         )}
@@ -370,7 +372,7 @@ export default function DiscoverScreen() {
   return (
     <SafeAreaView className="flex-1 bg-offwhite" edges={['top', 'bottom']}>
       <View className="flex-1 px-5 pt-2">
-        <Text className="text-2xl font-extrabold text-warm-800 mb-3">Ontdekken</Text>
+        <Text className="text-2xl font-extrabold text-warm-800 mb-3">{t('browse.title')}</Text>
 
         {/* Search + Filter button */}
         <View className="flex-row items-center gap-2 mb-4">
@@ -378,7 +380,7 @@ export default function DiscoverScreen() {
             <Ionicons name="search-outline" size={20} color="#b0a89e" />
             <TextInput
               className="flex-1 ml-2 text-[16px] text-warm-800"
-              placeholder="Zoek gerechten of aanbieders..."
+              placeholder={t('browse.searchPlaceholder')}
               placeholderTextColor="#b0a89e"
               value={search}
               onChangeText={setSearch}
@@ -436,7 +438,7 @@ export default function DiscoverScreen() {
             {excludedAllergens.length > 0 && (
               <View className="flex-row items-center bg-red-100 rounded-lg px-2.5 py-1.5">
                 <Text className="text-xs font-bold text-red-700">
-                  {excludedAllergens.length} allergenen uitgesloten
+                  {t('browse.filters.allergensExcluded', { count: excludedAllergens.length })}
                 </Text>
               </View>
             )}
@@ -466,14 +468,14 @@ export default function DiscoverScreen() {
               merchants.length > 0 ? (
                 <View className="mb-2">
                   <Text className="text-xs font-bold uppercase tracking-wide text-warm-500 mb-2">
-                    Aanbieders
+                    {t('browse.sections.merchants')}
                   </Text>
                   {merchants.map((m) => (
                     <View key={m.id}>{renderMerchantCard({ item: m })}</View>
                   ))}
                   {dishes.length > 0 && (
                     <Text className="text-xs font-bold uppercase tracking-wide text-warm-500 mt-3 mb-2">
-                      Gerechten
+                      {t('browse.sections.dishes')}
                     </Text>
                   )}
                 </View>
@@ -482,15 +484,15 @@ export default function DiscoverScreen() {
             ListEmptyComponent={
               merchants.length > 0 ? (
                 <Text className="text-sm text-warm-400 text-center py-6">
-                  Geen gerechten gevonden
+                  {t('browse.empty.noDishesFound')}
                 </Text>
               ) : (
                 <View className="flex-1 items-center justify-center py-20">
                   <Ionicons name="restaurant-outline" size={48} color="#d1cbc4" />
                   <Text className="text-warm-400 text-base text-center mt-4">
                     {search.trim()
-                      ? 'Geen resultaten gevonden'
-                      : 'Geen gerechten beschikbaar'}
+                      ? t('browse.empty.noResults')
+                      : t('browse.empty.noDishesAvailable')}
                   </Text>
                 </View>
               )
@@ -523,11 +525,11 @@ export default function DiscoverScreen() {
               <View className="flex-row items-center justify-between px-5 pt-2 pb-3 border-b border-warm-200">
                 <Pressable onPress={closeFilter} className="flex-row items-center">
                   <Ionicons name="arrow-back" size={24} color="#3d3833" />
-                  <Text className="text-lg font-bold text-warm-800 ml-2">Filters</Text>
+                  <Text className="text-lg font-bold text-warm-800 ml-2">{t('browse.filters.title')}</Text>
                 </Pressable>
                 {activeFilterCount > 0 && (
                   <Pressable onPress={clearAllFilters}>
-                    <Text className="text-sm font-bold text-red-500">Alles wissen</Text>
+                    <Text className="text-sm font-bold text-red-500">{t('browse.filters.clearAll')}</Text>
                   </Pressable>
                 )}
               </View>
@@ -539,7 +541,7 @@ export default function DiscoverScreen() {
               >
                 {/* Location section */}
                 <Text className="text-sm font-bold text-warm-500 uppercase tracking-wide mb-3">
-                  Locatie
+                  {t('browse.filters.location')}
                 </Text>
                 <View className="gap-2 mb-6">
                   <Pressable
@@ -558,7 +560,7 @@ export default function DiscoverScreen() {
                         !userCity ? 'text-brand-700 font-bold' : 'text-warm-700'
                       }`}
                     >
-                      Alle plaatsen
+                      {t('browse.filters.allCities')}
                     </Text>
                     {!userCity && (
                       <Ionicons name="checkmark-circle" size={22} color="#22c55e" />
@@ -591,7 +593,7 @@ export default function DiscoverScreen() {
                           userCity ? 'text-brand-700 font-bold' : 'text-warm-700'
                         }`}
                       >
-                        {userCity ?? 'Mijn stad'}
+                        {userCity ?? t('browse.filters.myCity')}
                       </Text>
                       {userCity && (
                         <Ionicons name="checkmark-circle" size={22} color="#22c55e" />
@@ -602,7 +604,7 @@ export default function DiscoverScreen() {
 
                 {/* Diet section */}
                 <Text className="text-sm font-bold text-warm-500 uppercase tracking-wide mb-3">
-                  Dieet
+                  {t('browse.filters.diet')}
                 </Text>
                 <View className="gap-2 mb-6">
                   {(['vegetarisch', 'veganistisch'] as DishFilter[]).map((filter) => {
@@ -625,7 +627,7 @@ export default function DiscoverScreen() {
                             active ? 'text-brand-700 font-bold' : 'text-warm-700'
                           }`}
                         >
-                          {filter === 'vegetarisch' ? 'Vegetarisch' : 'Veganistisch'}
+                          {filter === 'vegetarisch' ? t('browse.filters.vegetarian') : t('browse.filters.vegan')}
                         </Text>
                         {active && (
                           <Ionicons name="checkmark-circle" size={22} color="#22c55e" />
@@ -637,12 +639,12 @@ export default function DiscoverScreen() {
 
                 {/* Storage type section */}
                 <Text className="text-sm font-bold text-warm-500 uppercase tracking-wide mb-3">
-                  Bewaring
+                  {t('browse.filters.storage')}
                 </Text>
                 <View className="flex-row gap-3 mb-6">
                   {([
-                    { key: 'vers' as DishFilter, label: 'Vers', icon: 'sunny-outline' as const, activeColor: '#ea580c', activeBg: 'bg-orange-50', activeBorder: 'border-orange-300' },
-                    { key: 'ingevroren' as DishFilter, label: 'Ingevroren', icon: 'snow-outline' as const, activeColor: '#1d4ed8', activeBg: 'bg-blue-50', activeBorder: 'border-blue-300' },
+                    { key: 'vers' as DishFilter, label: t('browse.filters.fresh'), icon: 'sunny-outline' as const, activeColor: '#ea580c', activeBg: 'bg-orange-50', activeBorder: 'border-orange-300' },
+                    { key: 'ingevroren' as DishFilter, label: t('browse.filters.frozen'), icon: 'snow-outline' as const, activeColor: '#1d4ed8', activeBg: 'bg-blue-50', activeBorder: 'border-blue-300' },
                   ]).map(({ key, label, icon, activeColor, activeBg, activeBorder }) => {
                     const active = activeFilters.includes(key)
                     return (
@@ -672,10 +674,10 @@ export default function DiscoverScreen() {
 
                 {/* Allergens section */}
                 <Text className="text-sm font-bold text-warm-500 uppercase tracking-wide mb-1">
-                  Allergenen uitsluiten
+                  {t('browse.filters.excludeAllergens')}
                 </Text>
                 <Text className="text-xs text-warm-400 mb-3">
-                  Gerechten met deze allergenen worden niet getoond.
+                  {t('browse.filters.excludeAllergensSubtext')}
                 </Text>
                 <View className="gap-2">
                   {ALL_ALLERGENS.map((allergen) => {
@@ -713,7 +715,7 @@ export default function DiscoverScreen() {
                   onPress={closeFilter}
                 >
                   <Text className="text-white font-bold text-base">
-                    Toon resultaten ({dishes.length})
+                    {t('browse.filters.showResults', { count: dishes.length })}
                   </Text>
                 </Pressable>
               </View>

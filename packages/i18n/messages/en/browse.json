@@ -1,0 +1,33 @@
+{
+  "title": "Discover",
+  "searchPlaceholder": "Search dishes or merchants…",
+  "sections": {
+    "merchants": "Merchants",
+    "dishes": "Dishes"
+  },
+  "empty": {
+    "noDishesFound": "No dishes found",
+    "noResults": "No results found",
+    "noDishesAvailable": "No dishes available"
+  },
+  "filters": {
+    "title": "Filters",
+    "clearAll": "Clear all",
+    "location": "Location",
+    "allCities": "All cities",
+    "myCity": "My city",
+    "diet": "Diet",
+    "vegetarian": "Vegetarian",
+    "vegan": "Vegan",
+    "storage": "Storage",
+    "fresh": "Fresh",
+    "frozen": "Frozen",
+    "excludeAllergens": "Exclude allergens",
+    "excludeAllergensSubtext": "Dishes containing these allergens won't be shown.",
+    "allergensExcluded": "{count} allergens excluded",
+    "showResults": "Show results ({count})"
+  },
+  "merchantCard": {
+    "rating": "{rating} · {count} reviews"
+  }
+}

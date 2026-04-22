@@ -4,8 +4,10 @@ import { ActivityIndicator, View, Text, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useAuth } from '../../lib/auth-context'
 import { supabase } from '../../lib/supabase'
+import { useTranslation } from '../../lib/i18n'
 
 export default function TabsLayout() {
+  const { t } = useTranslation()
   const { session, user, loading } = useAuth()
   const [unreadMessages, setUnreadMessages] = useState(0)
   const [reservationAlerts, setReservationAlerts] = useState(0)
@@ -115,7 +117,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Ontdekken',
+          title: t('nav.discover'),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="compass-outline" size={size} color={color} />
           ),
@@ -129,7 +131,7 @@ export default function TabsLayout() {
           },
         }}
         options={{
-          title: 'Reserveringen',
+          title: t('nav.reservations'),
           tabBarIcon: ({ color, size }) => (
             <View>
               <Ionicons name="calendar-outline" size={size} color={color} />
@@ -192,7 +194,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="messages"
         options={{
-          title: 'Berichten',
+          title: t('nav.messages'),
           tabBarIcon: ({ color, size }) => (
             <View>
               <Ionicons name="chatbubbles-outline" size={size} color={color} />
@@ -223,7 +225,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profiel',
+          title: t('profile.title'),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-outline" size={size} color={color} />
           ),

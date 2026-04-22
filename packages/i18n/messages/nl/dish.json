@@ -1,0 +1,10 @@
+{
+  "badges": {
+    "vegan": "Veganistisch",
+    "vegetarian": "Vegetarisch",
+    "frozen": "Ingevroren",
+    "bringOwnContainer": "Eigen bakje",
+    "allergensCount": "{count} allergenen",
+    "remaining": "Nog {count}"
+  }
+}

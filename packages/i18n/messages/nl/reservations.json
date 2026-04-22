@@ -1,0 +1,38 @@
+{
+  "title": "Reserveringen",
+  "subtitle": "Bekijk en beheer je gereserveerde gerechten",
+  "tabs": {
+    "active": "Actief",
+    "completed": "Afgerond",
+    "cancelled": "Geannuleerd"
+  },
+  "status": {
+    "pending": "In afwachting",
+    "confirmed": "Bevestigd",
+    "collected": "Opgehaald",
+    "cancelled": "Geannuleerd",
+    "noShow": "Niet opgehaald"
+  },
+  "empty": {
+    "active": "Je hebt geen actieve reserveringen.",
+    "completed": "Je hebt nog geen afgeronde reserveringen.",
+    "cancelled": "Geen geannuleerde reserveringen."
+  },
+  "actions": {
+    "cancel": "Annuleren",
+    "writeReview": "Beoordeling schrijven"
+  },
+  "meta": {
+    "portionsSingular": "{count} portie · {date}",
+    "portionsPlural": "{count} porties · {date}"
+  },
+  "yourReview": "Jouw beoordeling:",
+  "cancelDialog": {
+    "title": "Reservering annuleren",
+    "message": "Weet je zeker dat je de reservering voor \"{dishTitle}\" wilt annuleren?",
+    "cancelNo": "Nee",
+    "confirmYes": "Ja, annuleren",
+    "errorTitle": "Fout",
+    "errorMessage": "Kon de reservering niet annuleren."
+  }
+}

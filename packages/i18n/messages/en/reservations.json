@@ -1,0 +1,38 @@
+{
+  "title": "Reservations",
+  "subtitle": "View and manage your reserved dishes",
+  "tabs": {
+    "active": "Active",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "status": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "collected": "Picked up",
+    "cancelled": "Cancelled",
+    "noShow": "No-show"
+  },
+  "empty": {
+    "active": "You have no active reservations.",
+    "completed": "You don't have any completed reservations yet.",
+    "cancelled": "No cancelled reservations."
+  },
+  "actions": {
+    "cancel": "Cancel",
+    "writeReview": "Write a review"
+  },
+  "meta": {
+    "portionsSingular": "{count} portion · {date}",
+    "portionsPlural": "{count} portions · {date}"
+  },
+  "yourReview": "Your review:",
+  "cancelDialog": {
+    "title": "Cancel reservation",
+    "message": "Are you sure you want to cancel the reservation for \"{dishTitle}\"?",
+    "cancelNo": "No",
+    "confirmYes": "Yes, cancel",
+    "errorTitle": "Error",
+    "errorMessage": "Couldn't cancel the reservation."
+  }
+}

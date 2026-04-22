@@ -1,0 +1,33 @@
+{
+  "title": "Ontdekken",
+  "searchPlaceholder": "Zoek gerechten of aanbieders...",
+  "sections": {
+    "merchants": "Aanbieders",
+    "dishes": "Gerechten"
+  },
+  "empty": {
+    "noDishesFound": "Geen gerechten gevonden",
+    "noResults": "Geen resultaten gevonden",
+    "noDishesAvailable": "Geen gerechten beschikbaar"
+  },
+  "filters": {
+    "title": "Filters",
+    "clearAll": "Alles wissen",
+    "location": "Locatie",
+    "allCities": "Alle plaatsen",
+    "myCity": "Mijn stad",
+    "diet": "Dieet",
+    "vegetarian": "Vegetarisch",
+    "vegan": "Veganistisch",
+    "storage": "Bewaring",
+    "fresh": "Vers",
+    "frozen": "Ingevroren",
+    "excludeAllergens": "Allergenen uitsluiten",
+    "excludeAllergensSubtext": "Gerechten met deze allergenen worden niet getoond.",
+    "allergensExcluded": "{count} allergenen uitgesloten",
+    "showResults": "Toon resultaten ({count})"
+  },
+  "merchantCard": {
+    "rating": "{rating} · {count} beoordelingen"
+  }
+}

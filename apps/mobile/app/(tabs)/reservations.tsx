@@ -14,6 +14,7 @@ import { router } from 'expo-router'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
 import { formatPickupTime, formatRelativeDate } from '../../lib/format'
+import { useTranslation } from '../../lib/i18n'
 
 type ReservationStatus = 'pending' | 'confirmed' | 'collected' | 'cancelled' | 'no_show'
 type TabKey = 'actief' | 'afgerond' | 'geannuleerd'
@@ -36,12 +37,12 @@ interface Reservation {
   }
 }
 
-const STATUS_CONFIG: Record<ReservationStatus, { label: string; bgClass: string; textClass: string }> = {
-  pending: { label: 'In afwachting', bgClass: 'bg-amber-100', textClass: 'text-amber-700' },
-  confirmed: { label: 'Bevestigd', bgClass: 'bg-brand-100', textClass: 'text-brand-700' },
-  collected: { label: 'Opgehaald', bgClass: 'bg-warm-100', textClass: 'text-warm-600' },
-  cancelled: { label: 'Geannuleerd', bgClass: 'bg-red-100', textClass: 'text-red-700' },
-  no_show: { label: 'Niet opgehaald', bgClass: 'bg-red-100', textClass: 'text-red-700' },
+const STATUS_STYLE: Record<ReservationStatus, { bgClass: string; textClass: string; key: string }> = {
+  pending: { bgClass: 'bg-amber-100', textClass: 'text-amber-700', key: 'pending' },
+  confirmed: { bgClass: 'bg-brand-100', textClass: 'text-brand-700', key: 'confirmed' },
+  collected: { bgClass: 'bg-warm-100', textClass: 'text-warm-600', key: 'collected' },
+  cancelled: { bgClass: 'bg-red-100', textClass: 'text-red-700', key: 'cancelled' },
+  no_show: { bgClass: 'bg-red-100', textClass: 'text-red-700', key: 'noShow' },
 }
 
 const TAB_FILTERS: Record<TabKey, ReservationStatus[]> = {
@@ -51,6 +52,7 @@ const TAB_FILTERS: Record<TabKey, ReservationStatus[]> = {
 }
 
 export default function ReservationsScreen() {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const [reservations, setReservations] = useState<Reservation[]>([])
   const [reviewMap, setReviewMap] = useState<Record<string, number>>({})
@@ -115,12 +117,12 @@ export default function ReservationsScreen() {
 
   const handleCancel = (reservation: Reservation) => {
     Alert.alert(
-      'Reservering annuleren',
-      `Weet je zeker dat je de reservering voor "${reservation.dish.title}" wilt annuleren?`,
+      t('reservations.cancelDialog.title'),
+      t('reservations.cancelDialog.message', { dishTitle: reservation.dish.title }),
       [
-        { text: 'Nee', style: 'cancel' },
+        { text: t('reservations.cancelDialog.cancelNo'), style: 'cancel' },
         {
-          text: 'Ja, annuleren',
+          text: t('reservations.cancelDialog.confirmYes'),
           style: 'destructive',
           onPress: async () => {
             const { error } = await supabase
@@ -139,7 +141,7 @@ export default function ReservationsScreen() {
             }
 
             if (error) {
-              Alert.alert('Fout', 'Kon de reservering niet annuleren.')
+              Alert.alert(t('reservations.cancelDialog.errorTitle'), t('reservations.cancelDialog.errorMessage'))
             } else {
               fetchReservations()
             }
@@ -172,7 +174,7 @@ export default function ReservationsScreen() {
   )
 
   const renderReservation = ({ item }: { item: Reservation }) => {
-    const status = STATUS_CONFIG[item.status]
+    const status = STATUS_STYLE[item.status]
     const canCancel = item.status === 'pending' || item.status === 'confirmed'
 
     return (
@@ -188,7 +190,7 @@ export default function ReservationsScreen() {
           </View>
           <View className={`${status.bgClass} rounded-lg px-2.5 py-1`}>
             <Text className={`text-xs font-bold ${status.textClass}`}>
-              {status.label}
+              {t(`reservations.status.${status.key}`)}
             </Text>
           </View>
         </View>
@@ -203,7 +205,7 @@ export default function ReservationsScreen() {
         <View className="flex-row items-center justify-between mt-3">
           <View className="flex-row items-center">
             <Text className="text-sm text-warm-500">
-              {item.quantity} portie{item.quantity !== 1 ? 's' : ''} · {formatRelativeDate(item.created_at)}
+              {t(item.quantity === 1 ? 'reservations.meta.portionsSingular' : 'reservations.meta.portionsPlural', { count: item.quantity, date: formatRelativeDate(item.created_at) })}
             </Text>
           </View>
           {canCancel && (
@@ -211,7 +213,7 @@ export default function ReservationsScreen() {
               className="border border-red-200 rounded-xl px-3 py-1.5"
               onPress={() => handleCancel(item)}
             >
-              <Text className="text-xs font-bold text-red-600">Annuleren</Text>
+              <Text className="text-xs font-bold text-red-600">{t('reservations.actions.cancel')}</Text>
             </Pressable>
           )}
         </View>
@@ -221,7 +223,7 @@ export default function ReservationsScreen() {
           <View className="mt-3 pt-3 border-t border-warm-100">
             {reviewMap[item.id] != null ? (
               <View className="flex-row items-center">
-                <Text className="text-xs font-bold text-warm-500 mr-2">Jouw beoordeling:</Text>
+                <Text className="text-xs font-bold text-warm-500 mr-2">{t('reservations.yourReview')}</Text>
                 <View className="flex-row">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Ionicons
@@ -240,7 +242,7 @@ export default function ReservationsScreen() {
               >
                 <Ionicons name="star-outline" size={16} color="#15803d" />
                 <Text className="text-sm font-bold text-brand-700 ml-1.5">
-                  Beoordeling schrijven
+                  {t('reservations.actions.writeReview')}
                 </Text>
               </Pressable>
             )}
@@ -254,17 +256,17 @@ export default function ReservationsScreen() {
     <SafeAreaView className="flex-1 bg-offwhite" edges={['top', 'bottom']}>
       <View className="flex-1 px-5 pt-2">
         <Text className="text-2xl font-extrabold text-warm-800 mb-1">
-          Reserveringen
+          {t('reservations.title')}
         </Text>
         <Text className="text-base text-warm-500 mb-4">
-          Bekijk en beheer je gereserveerde gerechten
+          {t('reservations.subtitle')}
         </Text>
 
         {/* Segmented control */}
         <View className="flex-row bg-warm-100 rounded-xl p-1 mb-4">
-          {renderTab('actief', 'Actief')}
-          {renderTab('afgerond', 'Afgerond')}
-          {renderTab('geannuleerd', 'Geannuleerd')}
+          {renderTab('actief', t('reservations.tabs.active'))}
+          {renderTab('afgerond', t('reservations.tabs.completed'))}
+          {renderTab('geannuleerd', t('reservations.tabs.cancelled'))}
         </View>
 
         {loading ? (
@@ -300,10 +302,10 @@ export default function ReservationsScreen() {
                 />
                 <Text className="text-warm-400 text-base text-center mt-4">
                   {activeTab === 'actief'
-                    ? 'Je hebt geen actieve reserveringen.'
+                    ? t('reservations.empty.active')
                     : activeTab === 'afgerond'
-                    ? 'Je hebt nog geen afgeronde reserveringen.'
-                    : 'Geen geannuleerde reserveringen.'}
+                    ? t('reservations.empty.completed')
+                    : t('reservations.empty.cancelled')}
                 </Text>
               </View>
             }

@@ -1,0 +1,10 @@
+{
+  "badges": {
+    "vegan": "Vegan",
+    "vegetarian": "Vegetarian",
+    "frozen": "Frozen",
+    "bringOwnContainer": "Bring container",
+    "allergensCount": "{count} allergens",
+    "remaining": "{count} left"
+  }
+}

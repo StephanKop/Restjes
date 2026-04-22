@@ -17,10 +17,12 @@ import { Video, ResizeMode } from 'expo-av'
 import * as WebBrowser from 'expo-web-browser'
 import { makeRedirectUri } from 'expo-auth-session'
 import { supabase } from '../../lib/supabase'
+import { useTranslation } from '../../lib/i18n'
 
 WebBrowser.maybeCompleteAuthSession()
 
 export default function SignupScreen() {
+  const { t } = useTranslation()
   const videoRef = useRef<Video>(null)
   const [name, setName] = useState('')
   const [city, setCity] = useState('')
@@ -33,12 +35,12 @@ export default function SignupScreen() {
 
   const handleSignup = async () => {
     if (!name || !city || !email || !password) {
-      setError('Vul alle velden in.')
+      setError(t('auth.mobile.signup.fillAllFields'))
       return
     }
 
     if (password.length < 6) {
-      setError('Je wachtwoord moet minimaal 6 tekens bevatten.')
+      setError(t('auth.signup.errors.passwordTooShort'))
       return
     }
 
@@ -60,9 +62,9 @@ export default function SignupScreen() {
 
     if (signUpError) {
       if (signUpError.message.includes('already registered')) {
-        setError('Dit e-mailadres is al in gebruik.')
+        setError(t('auth.mobile.signup.emailAlreadyUsed'))
       } else {
-        setError('Er is iets misgegaan. Probeer het opnieuw.')
+        setError(t('auth.signup.errors.generic'))
       }
       return
     }
@@ -86,7 +88,7 @@ export default function SignupScreen() {
       })
 
       if (oauthError || !data.url) {
-        setError('Kon Google-login niet starten. Probeer het opnieuw.')
+        setError(t('auth.mobile.errors.googleStartFailed'))
         setGoogleLoading(false)
         return
       }
@@ -113,10 +115,10 @@ export default function SignupScreen() {
           }
         }
 
-        setError('Kon sessie niet instellen. Probeer het opnieuw.')
+        setError(t('auth.mobile.errors.sessionFailed'))
       }
     } catch {
-      setError('Er is iets misgegaan met Google-login.')
+      setError(t('auth.mobile.errors.googleGeneric'))
     } finally {
       setGoogleLoading(false)
     }
@@ -128,16 +130,15 @@ export default function SignupScreen() {
         <View className="flex-1 justify-center px-6">
           <View className="bg-white rounded-2xl p-6 items-center">
             <Text className="text-2xl font-bold text-warm-800 mb-3">
-              Welkom bij Kliekjesclub!
+              {t('auth.mobile.signup.successHeading')}
             </Text>
             <Text className="text-warm-500 text-center text-base mb-6">
-              We hebben een bevestigingslink naar je e-mailadres gestuurd.
-              Controleer je inbox om je account te activeren.
+              {t('auth.mobile.signup.successBody')}
             </Text>
             <Link href="/(auth)/login" asChild>
               <Pressable className="bg-brand-500 rounded-xl px-6 py-3.5 active:opacity-80">
                 <Text className="text-white font-bold text-base">
-                  Naar inloggen
+                  {t('auth.mobile.signup.successCta')}
                 </Text>
               </Pressable>
             </Link>
@@ -181,10 +182,10 @@ export default function SignupScreen() {
           </View>
           <View className="mb-8">
             <Text className="text-3xl font-bold text-white mb-2">
-              Account aanmaken
+              {t('auth.mobile.signup.heading')}
             </Text>
             <Text className="text-base text-white/80">
-              Begin met het redden van eten bij jou in de buurt
+              {t('auth.mobile.signup.subheading')}
             </Text>
           </View>
 
@@ -208,7 +209,7 @@ export default function SignupScreen() {
                   <Text style={{ fontSize: 18, fontWeight: '700', color: '#4285F4' }}>G</Text>
                 </View>
                 <Text className="text-warm-800 font-bold text-base ml-3">
-                  Doorgaan met Google
+                  {t('auth.mobile.continueWithGoogle')}
                 </Text>
               </>
             )}
@@ -217,14 +218,14 @@ export default function SignupScreen() {
           {/* Divider */}
           <View className="flex-row items-center my-4">
             <View className="flex-1 h-px bg-white/20" />
-            <Text className="text-white/50 text-xs mx-4 font-semibold">OF</Text>
+            <Text className="text-white/50 text-xs mx-4 font-semibold">{t('auth.mobile.dividerOr')}</Text>
             <View className="flex-1 h-px bg-white/20" />
           </View>
 
           <View className="gap-3 mb-4">
             <TextInput
               className="bg-white/15 border border-white/20 rounded-xl px-4 py-3 text-white text-[16px]"
-              placeholder="Naam"
+              placeholder={t('auth.fields.nameLabel')}
               placeholderTextColor="rgba(255,255,255,0.5)"
               value={name}
               onChangeText={setName}
@@ -232,14 +233,14 @@ export default function SignupScreen() {
             />
             <TextInput
               className="bg-white/15 border border-white/20 rounded-xl px-4 py-3 text-white text-[16px]"
-              placeholder="Woonplaats"
+              placeholder={t('auth.mobile.signup.cityLabel')}
               placeholderTextColor="rgba(255,255,255,0.5)"
               value={city}
               onChangeText={setCity}
             />
             <TextInput
               className="bg-white/15 border border-white/20 rounded-xl px-4 py-3 text-white text-[16px]"
-              placeholder="E-mailadres"
+              placeholder={t('auth.fields.emailLabel')}
               placeholderTextColor="rgba(255,255,255,0.5)"
               value={email}
               onChangeText={setEmail}
@@ -249,7 +250,7 @@ export default function SignupScreen() {
             />
             <TextInput
               className="bg-white/15 border border-white/20 rounded-xl px-4 py-3 text-white text-[16px]"
-              placeholder="Wachtwoord"
+              placeholder={t('auth.fields.passwordLabel')}
               placeholderTextColor="rgba(255,255,255,0.5)"
               value={password}
               onChangeText={setPassword}
@@ -267,7 +268,7 @@ export default function SignupScreen() {
               <ActivityIndicator color="#fff" />
             ) : (
               <Text className="text-white font-bold text-base">
-                Account aanmaken
+                {t('auth.signup.submit')}
               </Text>
             )}
           </Pressable>
@@ -276,8 +277,8 @@ export default function SignupScreen() {
             <Link href="/(auth)/login" asChild>
               <Pressable>
                 <Text className="text-white/70 text-sm">
-                  Al een account?{' '}
-                  <Text className="text-white font-semibold">Inloggen</Text>
+                  {t('auth.mobile.signup.haveAccount')}{' '}
+                  <Text className="text-white font-semibold">{t('auth.login.submit')}</Text>
                 </Text>
               </Pressable>
             </Link>

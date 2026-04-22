@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
 import { formatRelativeDate } from '../../lib/format'
+import { useTranslation } from '../../lib/i18n'
 
 interface Conversation {
   id: string
@@ -39,6 +40,7 @@ interface Conversation {
 }
 
 export default function MessagesScreen() {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [loading, setLoading] = useState(true)
@@ -124,8 +126,8 @@ export default function MessagesScreen() {
 
     // Show the other party's info
     const otherName = isOwnMerchant
-      ? item.consumer?.display_name ?? 'Onbekend'
-      : item.merchant?.business_name ?? 'Onbekend'
+      ? item.consumer?.display_name ?? t('messages.unknown')
+      : item.merchant?.business_name ?? t('messages.unknown')
     const otherAvatar = isOwnMerchant
       ? item.consumer?.avatar_url
       : item.merchant?.logo_url
@@ -163,7 +165,7 @@ export default function MessagesScreen() {
               className={`text-sm mt-0.5 ${hasUnread ? 'text-warm-700 font-semibold' : 'text-warm-500'}`}
               numberOfLines={1}
             >
-              {item.last_message.sender_id === user?.id ? 'Jij: ' : ''}
+              {item.last_message.sender_id === user?.id ? `${t('messages.you')}: ` : ''}
               {item.last_message.content}
             </Text>
           )}
@@ -192,10 +194,10 @@ export default function MessagesScreen() {
     <SafeAreaView className="flex-1 bg-offwhite" edges={['top', 'bottom']}>
       <View className="flex-1 px-5 pt-2">
         <Text className="text-2xl font-extrabold text-warm-800 mb-1">
-          Berichten
+          {t('messages.title')}
         </Text>
         <Text className="text-base text-warm-500 mb-4">
-          Je gesprekken
+          {t('messages.subtitle')}
         </Text>
 
         {loading ? (
@@ -220,7 +222,7 @@ export default function MessagesScreen() {
               <View className="items-center justify-center py-20">
                 <Ionicons name="chatbubbles-outline" size={48} color="#d1cbc4" />
                 <Text className="text-warm-400 text-base text-center mt-4">
-                  Je hebt nog geen berichten
+                  {t('messages.empty')}
                 </Text>
               </View>
             }

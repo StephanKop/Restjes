@@ -12,8 +12,10 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { supabase } from '../../lib/supabase'
+import { useTranslation } from '../../lib/i18n'
 
 export default function ForgotPasswordScreen() {
+  const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -22,7 +24,7 @@ export default function ForgotPasswordScreen() {
   const handleReset = async () => {
     const trimmed = email.trim()
     if (!trimmed) {
-      setError('Vul je e-mailadres in.')
+      setError(t('auth.mobile.forgotPassword.fillEmail'))
       return
     }
 
@@ -34,7 +36,7 @@ export default function ForgotPasswordScreen() {
     setLoading(false)
 
     if (resetError) {
-      setError('Er is iets misgegaan. Probeer het opnieuw.')
+      setError(t('auth.forgotPassword.errors.generic'))
       return
     }
 
@@ -50,22 +52,22 @@ export default function ForgotPasswordScreen() {
               <Ionicons name="mail-outline" size={32} color="#22c55e" />
             </View>
             <Text className="text-xl font-bold text-warm-800 text-center mb-2">
-              E-mail verzonden
+              {t('auth.mobile.forgotPassword.successHeading')}
             </Text>
             <Text className="text-base text-warm-500 text-center mb-8">
-              We hebben een e-mail gestuurd naar {email.trim()} met instructies om je wachtwoord te herstellen.
+              {t('auth.mobile.forgotPassword.successBody', { email: email.trim() })}
             </Text>
             <Pressable
               className="bg-brand-500 rounded-xl px-8 py-3.5 w-full mb-3"
               onPress={() => router.replace('/(auth)/login')}
             >
               <Text className="text-white font-bold text-base text-center">
-                Terug naar inloggen
+                {t('auth.mobile.forgotPassword.back')}
               </Text>
             </Pressable>
             <Pressable onPress={() => setSuccess(false)}>
               <Text className="text-brand-500 font-semibold text-sm">
-                Opnieuw verzenden
+                {t('auth.mobile.forgotPassword.resend')}
               </Text>
             </Pressable>
           </View>
@@ -87,15 +89,15 @@ export default function ForgotPasswordScreen() {
             onPress={() => router.back()}
           >
             <Ionicons name="arrow-back" size={22} color="#3d3833" />
-            <Text className="text-warm-700 text-base ml-1">Terug</Text>
+            <Text className="text-warm-700 text-base ml-1">{t('auth.mobile.forgotPassword.backShort')}</Text>
           </Pressable>
 
           <View className="mb-8">
             <Text className="text-2xl font-bold text-warm-800 mb-2">
-              Wachtwoord vergeten?
+              {t('auth.mobile.forgotPassword.heading')}
             </Text>
             <Text className="text-base text-warm-500">
-              Vul je e-mailadres in en we sturen je een link om je wachtwoord te herstellen.
+              {t('auth.mobile.forgotPassword.subheading')}
             </Text>
           </View>
 
@@ -107,7 +109,7 @@ export default function ForgotPasswordScreen() {
 
           <TextInput
             className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-[16px] mb-6"
-            placeholder="E-mailadres"
+            placeholder={t('auth.fields.emailLabel')}
             placeholderTextColor="#b0a89e"
             value={email}
             onChangeText={setEmail}
@@ -127,7 +129,7 @@ export default function ForgotPasswordScreen() {
               <ActivityIndicator color="#fff" />
             ) : (
               <Text className="text-white font-bold text-base">
-                Verstuur herstel-e-mail
+                {t('auth.mobile.forgotPassword.submit')}
               </Text>
             )}
           </Pressable>

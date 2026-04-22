@@ -11,6 +11,18 @@ import {
   messagesEnCommon,
   messagesNlProfile,
   messagesEnProfile,
+  messagesNlAuth,
+  messagesEnAuth,
+  messagesNlNav,
+  messagesEnNav,
+  messagesNlBrowse,
+  messagesEnBrowse,
+  messagesNlDish,
+  messagesEnDish,
+  messagesNlMessages,
+  messagesEnMessages,
+  messagesNlReservations,
+  messagesEnReservations,
 } from '@kliekjesclub/i18n'
 
 const LOCALE_STORAGE_KEY = 'kc_locale'
@@ -20,10 +32,22 @@ const translations: Record<Locale, Record<string, unknown>> = {
   nl: {
     common: messagesNlCommon,
     profile: messagesNlProfile,
+    auth: messagesNlAuth,
+    nav: messagesNlNav,
+    browse: messagesNlBrowse,
+    dish: messagesNlDish,
+    messages: messagesNlMessages,
+    reservations: messagesNlReservations,
   },
   en: {
     common: messagesEnCommon,
     profile: messagesEnProfile,
+    auth: messagesEnAuth,
+    nav: messagesEnNav,
+    browse: messagesEnBrowse,
+    dish: messagesEnDish,
+    messages: messagesEnMessages,
+    reservations: messagesEnReservations,
   },
 }
 

@@ -15,10 +15,12 @@ import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av'
 import * as WebBrowser from 'expo-web-browser'
 import { makeRedirectUri } from 'expo-auth-session'
 import { supabase } from '../../lib/supabase'
+import { useTranslation } from '../../lib/i18n'
 
 WebBrowser.maybeCompleteAuthSession()
 
 export default function LoginScreen() {
+  const { t } = useTranslation()
   const videoRef = useRef<Video>(null)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -28,7 +30,7 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError('Vul je e-mailadres en wachtwoord in.')
+      setError(t('auth.mobile.errors.fillInFields'))
       return
     }
 
@@ -44,11 +46,11 @@ export default function LoginScreen() {
 
     if (signInError) {
       if (signInError.message.includes('Invalid login credentials')) {
-        setError('Onjuist e-mailadres of wachtwoord.')
+        setError(t('auth.login.errors.invalidCredentials'))
       } else if (signInError.message.includes('Email not confirmed')) {
-        setError('Je e-mailadres is nog niet bevestigd. Controleer je inbox.')
+        setError(t('auth.mobile.errors.emailNotConfirmedMobile'))
       } else {
-        setError('Er is iets misgegaan. Probeer het opnieuw.')
+        setError(t('auth.login.errors.generic'))
       }
       return
     }
@@ -72,7 +74,7 @@ export default function LoginScreen() {
       })
 
       if (oauthError || !data.url) {
-        setError('Kon Google-login niet starten. Probeer het opnieuw.')
+        setError(t('auth.mobile.errors.googleStartFailed'))
         setGoogleLoading(false)
         return
       }
@@ -101,10 +103,10 @@ export default function LoginScreen() {
           }
         }
 
-        setError('Kon sessie niet instellen. Probeer het opnieuw.')
+        setError(t('auth.mobile.errors.sessionFailed'))
       }
     } catch {
-      setError('Er is iets misgegaan met Google-login.')
+      setError(t('auth.mobile.errors.googleGeneric'))
     } finally {
       setGoogleLoading(false)
     }
@@ -139,7 +141,7 @@ export default function LoginScreen() {
               resizeMode="contain"
             />
             <Text className="text-lg text-white/80 mt-2">
-              Red eten, bespaar geld
+              {t('auth.mobile.tagline')}
             </Text>
           </View>
 
@@ -162,7 +164,7 @@ export default function LoginScreen() {
               <>
                 <GoogleIcon />
                 <Text className="text-warm-800 font-bold text-base ml-3">
-                  Doorgaan met Google
+                  {t('auth.mobile.continueWithGoogle')}
                 </Text>
               </>
             )}
@@ -171,7 +173,7 @@ export default function LoginScreen() {
           {/* Divider */}
           <View className="flex-row items-center my-4">
             <View className="flex-1 h-px bg-white/20" />
-            <Text className="text-white/50 text-xs mx-4 font-semibold">OF</Text>
+            <Text className="text-white/50 text-xs mx-4 font-semibold">{t('auth.mobile.dividerOr')}</Text>
             <View className="flex-1 h-px bg-white/20" />
           </View>
 
@@ -179,7 +181,7 @@ export default function LoginScreen() {
           <View className="gap-3 mb-4">
             <TextInput
               className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-[16px]"
-              placeholder="E-mailadres"
+              placeholder={t('auth.fields.emailLabel')}
               placeholderTextColor="#b0a89e"
               value={email}
               onChangeText={setEmail}
@@ -189,7 +191,7 @@ export default function LoginScreen() {
             />
             <TextInput
               className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-[16px]"
-              placeholder="Wachtwoord"
+              placeholder={t('auth.fields.passwordLabel')}
               placeholderTextColor="#b0a89e"
               value={password}
               onChangeText={setPassword}
@@ -206,7 +208,7 @@ export default function LoginScreen() {
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text className="text-white font-bold text-base">Inloggen</Text>
+              <Text className="text-white font-bold text-base">{t('auth.login.submit')}</Text>
             )}
           </Pressable>
 
@@ -214,15 +216,15 @@ export default function LoginScreen() {
             <Link href={'/(auth)/forgot-password' as any} asChild>
               <Pressable>
                 <Text className="text-white/70 text-sm font-semibold">
-                  Wachtwoord vergeten?
+                  {t('auth.login.forgotPassword')}
                 </Text>
               </Pressable>
             </Link>
             <Link href="/(auth)/signup" asChild>
               <Pressable>
                 <Text className="text-white/70 text-sm">
-                  Nog geen account?{' '}
-                  <Text className="text-white font-semibold">Aanmelden</Text>
+                  {t('auth.login.noAccount')}{' '}
+                  <Text className="text-white font-semibold">{t('auth.login.signUpLink')}</Text>
                 </Text>
               </Pressable>
             </Link>
