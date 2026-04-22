@@ -7,5 +7,40 @@
   "chat": {
     "empty": "Send the first message",
     "inputPlaceholder": "Write a message…"
+  },
+  "web": {
+    "metadataTitle": "Messages",
+    "selectConversation": "Select a conversation to get started",
+    "emptyList": "No conversations yet",
+    "dish": "Dish:",
+    "you": "You:",
+    "sending": "Sending…",
+    "inputPlaceholder": "Write a message…",
+    "sendButton": "Send",
+    "conversationMetadataNotFound": "Conversation not found - Kliekjesclub",
+    "conversationMetadataTitle": "Chat with {name} - Kliekjesclub",
+    "unknownUser": "Unknown user",
+    "backAria": "Back to messages",
+    "messageToPlaceholder": "Message {name}…",
+    "sendAria": "Send message"
+  },
+  "conversationList": {
+    "deleteTitle": "Delete conversation?",
+    "deleteBody": "All messages in this conversation will be permanently deleted.",
+    "deleteAction": "Delete conversation",
+    "confirmDelete": "Delete",
+    "cancel": "Cancel"
+  },
+  "reserveBanner": {
+    "mustLogin": "You must be signed in.",
+    "reserveFailed": "Couldn't place reservation.",
+    "success": "Reservation placed!",
+    "view": "View",
+    "remaining": "{count} left",
+    "close": "Close",
+    "reserve": "Reserve",
+    "quantityLabel": "Quantity:",
+    "loading": "Working…",
+    "confirm": "Confirm"
   }
 }

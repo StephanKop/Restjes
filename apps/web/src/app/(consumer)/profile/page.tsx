@@ -1,13 +1,16 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { ProfileForm } from './ProfileForm'
 
-export const metadata: Metadata = {
-  title: 'Mijn profiel',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('profile.web')
+  return { title: t('metadataTitle') }
 }
 
 export default async function ProfilePage() {
+  const t = await getTranslations('profile.web')
   const user = await getUser()
 
   if (!user) {
@@ -33,8 +36,8 @@ export default async function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="mb-2 text-3xl font-extrabold text-warm-900">Mijn profiel</h1>
-      <p className="mb-8 text-warm-500">Beheer je persoonlijke gegevens</p>
+      <h1 className="mb-2 text-3xl font-extrabold text-warm-900">{t('heading')}</h1>
+      <p className="mb-8 text-warm-500">{t('subheading')}</p>
 
       <ProfileForm
         userId={user.id}

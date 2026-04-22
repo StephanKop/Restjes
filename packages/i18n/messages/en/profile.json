@@ -28,5 +28,10 @@
     "settings": "Settings",
     "help": "Help & support",
     "about": "About Kliekjesclub"
+  },
+  "web": {
+    "metadataTitle": "My profile",
+    "heading": "My profile",
+    "subheading": "Manage your personal information"
   }
 }

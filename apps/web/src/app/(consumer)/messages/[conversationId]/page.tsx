@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound, redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { ChatThread } from '@/components/ChatThread'
 import { ChatReserveBanner } from '@/components/ChatReserveBanner'
@@ -15,6 +16,7 @@ export async function generateMetadata({
 }: ConversationPageProps): Promise<Metadata> {
   const { conversationId } = await params
   const supabase = await createServerComponentClient()
+  const t = await getTranslations('messages.web')
 
   const { data: conversation } = await supabase
     .from('conversations')
@@ -26,12 +28,12 @@ export async function generateMetadata({
     .single()
 
   if (!conversation) {
-    return { title: 'Gesprek niet gevonden - Kliekjesclub' }
+    return { title: t('conversationMetadataNotFound') }
   }
 
   const merchant = conversation.merchant as unknown as { business_name: string }
   return {
-    title: `Chat met ${merchant.business_name} - Kliekjesclub`,
+    title: t('conversationMetadataTitle', { name: merchant.business_name }),
   }
 }
 
@@ -39,6 +41,7 @@ export default async function ConsumerConversationPage({
   params,
 }: ConversationPageProps) {
   const { conversationId } = await params
+  const t = await getTranslations('messages.web')
   const supabase = await createServerComponentClient()
 
   const user = await getUser()
@@ -96,7 +99,7 @@ export default async function ConsumerConversationPage({
   // The "other party" is whoever the user is NOT
   const otherName = isConsumer
     ? merchant.business_name
-    : (consumer?.display_name ?? 'Onbekende gebruiker')
+    : (consumer?.display_name ?? t('unknownUser'))
   const otherAvatar = isConsumer ? merchant.logo_url : (consumer?.avatar_url ?? null)
 
   const initials = otherName
@@ -134,7 +137,7 @@ export default async function ConsumerConversationPage({
         <Link
           href="/messages"
           className="flex h-9 w-9 items-center justify-center rounded-xl text-warm-500 transition-colors hover:bg-warm-50 hover:text-warm-700 lg:hidden"
-          aria-label="Terug naar berichten"
+          aria-label={t('backAria')}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

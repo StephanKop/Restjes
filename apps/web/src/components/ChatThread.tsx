@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
+import { useTranslations } from 'next-intl'
 import { formatRelativeDate } from '@/lib/format'
 
 interface Message {
@@ -25,6 +26,7 @@ export function ChatThread({
   otherPartyName,
   initialMessages,
 }: ChatThreadProps) {
+  const t = useTranslations('messages.web')
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [newMessage, setNewMessage] = useState('')
   const [sending, setSending] = useState(false)
@@ -232,14 +234,14 @@ export function ChatThread({
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={`Bericht aan ${otherPartyName}...`}
+            placeholder={t('messageToPlaceholder', { name: otherPartyName })}
             className="flex-1 rounded-xl border border-warm-200 bg-offwhite px-4 py-2.5 text-base sm:text-sm text-warm-800 placeholder:text-warm-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
           />
           <button
             onClick={handleSend}
             disabled={!newMessage.trim() || sending}
             className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-500 text-white transition-colors hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60"
-            aria-label="Verstuur bericht"
+            aria-label={t('sendAria')}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

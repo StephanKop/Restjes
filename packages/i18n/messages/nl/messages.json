@@ -7,5 +7,40 @@
   "chat": {
     "empty": "Stuur het eerste bericht",
     "inputPlaceholder": "Schrijf een bericht..."
+  },
+  "web": {
+    "metadataTitle": "Berichten",
+    "selectConversation": "Selecteer een gesprek om te beginnen",
+    "emptyList": "Nog geen gesprekken",
+    "dish": "Gerecht:",
+    "you": "Jij:",
+    "sending": "Verzenden...",
+    "inputPlaceholder": "Schrijf een bericht...",
+    "sendButton": "Verzenden",
+    "conversationMetadataNotFound": "Gesprek niet gevonden - Kliekjesclub",
+    "conversationMetadataTitle": "Chat met {name} - Kliekjesclub",
+    "unknownUser": "Onbekende gebruiker",
+    "backAria": "Terug naar berichten",
+    "messageToPlaceholder": "Bericht aan {name}...",
+    "sendAria": "Verstuur bericht"
+  },
+  "conversationList": {
+    "deleteTitle": "Gesprek verwijderen?",
+    "deleteBody": "Alle berichten in dit gesprek worden permanent verwijderd.",
+    "deleteAction": "Gesprek verwijderen",
+    "confirmDelete": "Verwijderen",
+    "cancel": "Annuleren"
+  },
+  "reserveBanner": {
+    "mustLogin": "Je moet ingelogd zijn.",
+    "reserveFailed": "Kon reservering niet plaatsen.",
+    "success": "Reservering geplaatst!",
+    "view": "Bekijken",
+    "remaining": "Nog {count} beschikbaar",
+    "close": "Sluiten",
+    "reserve": "Reserveren",
+    "quantityLabel": "Aantal:",
+    "loading": "Bezig...",
+    "confirm": "Bevestigen"
   }
 }

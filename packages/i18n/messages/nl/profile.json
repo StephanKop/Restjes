@@ -28,5 +28,10 @@
     "settings": "Instellingen",
     "help": "Hulp en ondersteuning",
     "about": "Over Kliekjesclub"
+  },
+  "web": {
+    "metadataTitle": "Mijn profiel",
+    "heading": "Mijn profiel",
+    "subheading": "Beheer je persoonlijke gegevens"
   }
 }
