@@ -34,5 +34,35 @@
     "confirmYes": "Ja, annuleren",
     "errorTitle": "Fout",
     "errorMessage": "Kon de reservering niet annuleren."
+  },
+  "webActions": {
+    "consumerCancelTitle": "Reservering annuleren?",
+    "consumerCancelBody": "De aanbieder wordt hiervan op de hoogte gesteld.",
+    "merchantDeclineTitle": "Reservering afwijzen?",
+    "merchantDeclineBody": "De klant wordt hiervan op de hoogte gesteld.",
+    "noShowTitle": "Niet opgehaald?",
+    "noShowBody": "De klant wordt als niet opgehaald gemarkeerd.",
+    "cancel": "Annuleren",
+    "decline": "Afwijzen",
+    "confirm": "Bevestigen",
+    "markCollected": "Markeer als opgehaald",
+    "noShow": "Niet opgehaald"
+  },
+  "web": {
+    "metadataTitle": "Mijn reserveringen",
+    "heading": "Mijn reserveringen",
+    "tabs": {
+      "all": "Alle",
+      "active": "Actief",
+      "completed": "Afgerond",
+      "cancelled": "Geannuleerd"
+    },
+    "emptyHeadingAll": "Je hebt nog geen reserveringen",
+    "emptyHeadingOther": "Geen reserveringen in deze categorie",
+    "emptyBodyAll": "Bekijk het aanbod en reserveer je eerste gerecht.",
+    "emptyBodyOther": "Er zijn geen reserveringen die aan dit filter voldoen.",
+    "discoverCta": "Ontdekken",
+    "quantityLabel": "Aantal: {count}",
+    "pickupLabel": "Ophalen: {time}"
   }
 }

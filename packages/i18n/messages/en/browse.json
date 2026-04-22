@@ -30,6 +30,26 @@
   "merchantCard": {
     "rating": "{rating} · {count} reviews"
   },
+  "webPage": {
+    "metadataTitle": "Discover",
+    "metadataDescription": "See leftover meals available near you. Filter by diet, allergens, and location.",
+    "ogTitle": "Discover - Kliekjesclub",
+    "ogDescription": "See leftover meals available near you.",
+    "heading": "Discover",
+    "subheading": "See what's available near you",
+    "filtersLabel": "Filters",
+    "merchantsHeading": "Merchants",
+    "availableDishesLd": "Available dishes"
+  },
+  "results": {
+    "emptyTitle": "No dishes found",
+    "emptyBody": "Try different filters or search terms.",
+    "countSingular": "{count} dish",
+    "countPlural": "{count} dishes",
+    "gridView": "Grid view",
+    "listView": "List view",
+    "mapView": "Map view"
+  },
   "web": {
     "searchLabel": "Search",
     "searchPlaceholderWeb": "Dish or merchant…",

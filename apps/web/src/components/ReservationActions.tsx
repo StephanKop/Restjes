@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/Button'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
@@ -23,6 +24,7 @@ export function ReservationActions({
   view,
 }: ReservationActionsProps) {
   const router = useRouter()
+  const t = useTranslations('reservations.webActions')
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [confirm, setConfirm] = useState<{
     action: string
@@ -92,20 +94,20 @@ export function ReservationActions({
               requestConfirm(
                 'cancel',
                 'cancelled',
-                'Reservering annuleren?',
-                'De aanbieder wordt hiervan op de hoogte gesteld.',
-                'Annuleren',
+                t('consumerCancelTitle'),
+                t('consumerCancelBody'),
+                t('cancel'),
                 'consumer',
               )
             }
           >
-            Annuleren
+            {t('cancel')}
           </Button>
           <ConfirmModal
             open={confirm !== null}
             title={confirm?.title ?? ''}
             description={confirm?.description}
-            confirmLabel={confirm?.label ?? 'Bevestigen'}
+            confirmLabel={confirm?.label ?? t('confirm')}
             variant="danger"
             loading={loadingAction !== null}
             onConfirm={() => confirm && updateStatus(confirm.newStatus, confirm.action, confirm.cancelledBy)}
@@ -128,7 +130,7 @@ export function ReservationActions({
             loading={loadingAction === 'confirm'}
             onClick={() => updateStatus('confirmed', 'confirm')}
           >
-            Bevestigen
+            {t('confirm')}
           </Button>
           <Button
             variant="outline"
@@ -138,21 +140,21 @@ export function ReservationActions({
               requestConfirm(
                 'decline',
                 'cancelled',
-                'Reservering afwijzen?',
-                'De klant wordt hiervan op de hoogte gesteld.',
-                'Afwijzen',
+                t('merchantDeclineTitle'),
+                t('merchantDeclineBody'),
+                t('decline'),
                 'merchant',
               )
             }
           >
-            Afwijzen
+            {t('decline')}
           </Button>
         </div>
         <ConfirmModal
           open={confirm !== null}
           title={confirm?.title ?? ''}
           description={confirm?.description}
-          confirmLabel={confirm?.label ?? 'Bevestigen'}
+          confirmLabel={confirm?.label ?? t('confirm')}
           variant="danger"
           loading={loadingAction !== null}
           onConfirm={() => confirm && updateStatus(confirm.newStatus, confirm.action, confirm.cancelledBy)}
@@ -172,7 +174,7 @@ export function ReservationActions({
             loading={loadingAction === 'collected'}
             onClick={() => updateStatus('collected', 'collected')}
           >
-            Markeer als opgehaald
+            {t('markCollected')}
           </Button>
           <Button
             variant="outline"
@@ -182,20 +184,20 @@ export function ReservationActions({
               requestConfirm(
                 'no_show',
                 'no_show',
-                'Niet opgehaald?',
-                'De klant wordt als niet opgehaald gemarkeerd.',
-                'Bevestigen',
+                t('noShowTitle'),
+                t('noShowBody'),
+                t('confirm'),
               )
             }
           >
-            Niet opgehaald
+            {t('noShow')}
           </Button>
         </div>
         <ConfirmModal
           open={confirm !== null}
           title={confirm?.title ?? ''}
           description={confirm?.description}
-          confirmLabel={confirm?.label ?? 'Bevestigen'}
+          confirmLabel={confirm?.label ?? t('confirm')}
           variant="danger"
           loading={loadingAction !== null}
           onConfirm={() => confirm && updateStatus(confirm.newStatus, confirm.action, confirm.cancelledBy)}

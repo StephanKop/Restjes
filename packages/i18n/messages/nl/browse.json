@@ -30,6 +30,26 @@
   "merchantCard": {
     "rating": "{rating} · {count} beoordelingen"
   },
+  "webPage": {
+    "metadataTitle": "Ontdekken",
+    "metadataDescription": "Bekijk beschikbare kliekjes bij jou in de buurt. Filter op dieet, allergenen en locatie.",
+    "ogTitle": "Ontdekken - Kliekjesclub",
+    "ogDescription": "Bekijk beschikbare kliekjes bij jou in de buurt.",
+    "heading": "Ontdekken",
+    "subheading": "Bekijk wat er bij jou in de buurt beschikbaar is",
+    "filtersLabel": "Filters",
+    "merchantsHeading": "Aanbieders",
+    "availableDishesLd": "Beschikbare gerechten"
+  },
+  "results": {
+    "emptyTitle": "Geen gerechten gevonden",
+    "emptyBody": "Probeer andere filters of zoekterm.",
+    "countSingular": "{count} gerecht",
+    "countPlural": "{count} gerechten",
+    "gridView": "Rasterweergave",
+    "listView": "Lijstweergave",
+    "mapView": "Kaartweergave"
+  },
   "web": {
     "searchLabel": "Zoeken",
     "searchPlaceholderWeb": "Gerecht of aanbieder...",

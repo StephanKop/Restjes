@@ -34,5 +34,35 @@
     "confirmYes": "Yes, cancel",
     "errorTitle": "Error",
     "errorMessage": "Couldn't cancel the reservation."
+  },
+  "webActions": {
+    "consumerCancelTitle": "Cancel reservation?",
+    "consumerCancelBody": "The merchant will be notified.",
+    "merchantDeclineTitle": "Decline reservation?",
+    "merchantDeclineBody": "The customer will be notified.",
+    "noShowTitle": "Mark as no-show?",
+    "noShowBody": "The customer will be marked as a no-show.",
+    "cancel": "Cancel",
+    "decline": "Decline",
+    "confirm": "Confirm",
+    "markCollected": "Mark as picked up",
+    "noShow": "No-show"
+  },
+  "web": {
+    "metadataTitle": "My reservations",
+    "heading": "My reservations",
+    "tabs": {
+      "all": "All",
+      "active": "Active",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "emptyHeadingAll": "You don't have any reservations yet",
+    "emptyHeadingOther": "No reservations in this category",
+    "emptyBodyAll": "Browse available dishes and reserve your first one.",
+    "emptyBodyOther": "There are no reservations matching this filter.",
+    "discoverCta": "Discover",
+    "quantityLabel": "Quantity: {count}",
+    "pickupLabel": "Pickup: {time}"
   }
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
+import { getTranslations } from 'next-intl/server'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { getCachedBrowseDishes, getCachedBrowseMerchants } from '@/lib/cached-queries'
 import { BrowseFilters } from '@/components/BrowseFilters'
@@ -8,14 +9,17 @@ import { BrowseResults } from '@/components/BrowseResults'
 import type { DishCardData } from '@/components/DishCard'
 import { JsonLd } from '@/components/JsonLd'
 
-export const metadata: Metadata = {
-  title: 'Ontdekken',
-  description: 'Bekijk beschikbare kliekjes bij jou in de buurt. Filter op dieet, allergenen en locatie.',
-  openGraph: {
-    title: 'Ontdekken - Kliekjesclub',
-    description: 'Bekijk beschikbare kliekjes bij jou in de buurt.',
-  },
-  alternates: { canonical: '/browse' },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('browse.webPage')
+  return {
+    title: t('metadataTitle'),
+    description: t('metadataDescription'),
+    openGraph: {
+      title: t('ogTitle'),
+      description: t('ogDescription'),
+    },
+    alternates: { canonical: '/browse' },
+  }
 }
 
 interface BrowsePageProps {
@@ -23,6 +27,7 @@ interface BrowsePageProps {
 }
 
 export default async function BrowsePage({ searchParams }: BrowsePageProps) {
+  const t = await getTranslations('browse.webPage')
   const t0 = Date.now()
   const mark = (label: string) => {
     console.log(`[browse] ${label}: ${Date.now() - t0}ms`)
@@ -136,8 +141,8 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   const itemListJsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: 'Beschikbare gerechten',
-    description: 'Bekijk beschikbare kliekjes bij jou in de buurt.',
+    name: t('availableDishesLd'),
+    description: t('ogDescription'),
     numberOfItems: cards.length,
     itemListElement: cards.slice(0, 20).map((dish, i) => ({
       '@type': 'ListItem',
@@ -151,8 +156,8 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
     <div>
       <JsonLd data={itemListJsonLd} />
       <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-extrabold text-warm-900">Ontdekken</h1>
-        <p className="text-warm-500">Bekijk wat er bij jou in de buurt beschikbaar is</p>
+        <h1 className="mb-2 text-3xl font-extrabold text-warm-900">{t('heading')}</h1>
+        <p className="text-warm-500">{t('subheading')}</p>
       </div>
 
       <div className="flex gap-8">
@@ -172,7 +177,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4 text-warm-400">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
                 </svg>
-                Filters
+                {t('filtersLabel')}
                 {(filterCity || hasLocation || vegetarian || vegan || frozen || fresh || excludeAllergens.length > 0) && (
                   <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-100 px-1.5 text-[10px] font-bold text-brand-700">
                     !
@@ -191,7 +196,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
           {merchantMatches.length > 0 && (
             <section className="mb-8">
               <h2 className="mb-3 text-xs font-bold uppercase tracking-wide text-warm-500">
-                Aanbieders
+                {t('merchantsHeading')}
               </h2>
               <div className="grid gap-3 sm:grid-cols-2">
                 {merchantMatches.map((m) => (

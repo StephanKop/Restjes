@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getLocale, getTranslations } from 'next-intl/server'
+import { localeMeta, type Locale } from '@kliekjesclub/i18n'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
 import { formatRelativeDate } from '@/lib/format'
@@ -10,18 +12,12 @@ import { ReservationReviewSection } from '@/components/ReservationReviewSection'
 import { ClipboardIcon, CookingPotIcon } from '@/components/icons'
 import { RealtimeRefresh } from '@/components/RealtimeRefresh'
 
-export const metadata: Metadata = {
-  title: 'Mijn reserveringen',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('reservations.web')
+  return { title: t('metadataTitle') }
 }
 
 type TabFilter = 'alle' | 'actief' | 'afgerond' | 'geannuleerd'
-
-const TABS: { key: TabFilter; label: string }[] = [
-  { key: 'alle', label: 'Alle' },
-  { key: 'actief', label: 'Actief' },
-  { key: 'afgerond', label: 'Afgerond' },
-  { key: 'geannuleerd', label: 'Geannuleerd' },
-]
 
 function matchesTab(status: string, tab: TabFilter): boolean {
   switch (tab) {
@@ -44,8 +40,18 @@ interface ConsumerReservationsPageProps {
 export default async function ConsumerReservationsPage({
   searchParams,
 }: ConsumerReservationsPageProps) {
+  const t = await getTranslations('reservations.web')
+  const locale = (await getLocale()) as Locale
+  const dateLocale = localeMeta[locale]?.htmlLang ?? 'nl-NL'
   const params = await searchParams
   const activeTab = (typeof params.tab === 'string' ? params.tab : 'alle') as TabFilter
+
+  const TABS: { key: TabFilter; label: string }[] = [
+    { key: 'alle', label: t('tabs.all') },
+    { key: 'actief', label: t('tabs.active') },
+    { key: 'afgerond', label: t('tabs.completed') },
+    { key: 'geannuleerd', label: t('tabs.cancelled') },
+  ]
 
   const user = await getUser()
 
@@ -104,7 +110,7 @@ export default async function ConsumerReservationsPage({
     <div>
       <RealtimeRefresh table="reservations" filter={`consumer_id=eq.${user.id}`} />
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-warm-900">Mijn reserveringen</h1>
+        <h1 className="text-3xl font-extrabold text-warm-900">{t('heading')}</h1>
       </div>
 
       {/* Tab filters */}
@@ -133,21 +139,17 @@ export default async function ConsumerReservationsPage({
             <ClipboardIcon className="h-7 w-7" />
           </div>
           <h2 className="mb-2 text-xl font-bold text-warm-900">
-            {activeTab === 'alle'
-              ? 'Je hebt nog geen reserveringen'
-              : 'Geen reserveringen in deze categorie'}
+            {activeTab === 'alle' ? t('emptyHeadingAll') : t('emptyHeadingOther')}
           </h2>
           <p className="text-warm-500">
-            {activeTab === 'alle'
-              ? 'Bekijk het aanbod en reserveer je eerste gerecht.'
-              : 'Er zijn geen reserveringen die aan dit filter voldoen.'}
+            {activeTab === 'alle' ? t('emptyBodyAll') : t('emptyBodyOther')}
           </p>
           {activeTab === 'alle' && (
             <Link
               href="/browse"
               className="mt-4 inline-block rounded-xl bg-brand-500 px-6 py-3 font-bold text-white transition-colors hover:bg-brand-600"
             >
-              Ontdekken
+              {t('discoverCta')}
             </Link>
           )}
         </div>
@@ -205,16 +207,17 @@ export default async function ConsumerReservationsPage({
                     </div>
                     <p className="text-sm text-warm-500">{merchant.business_name} - {merchant.city}</p>
                     <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-warm-600">
-                      <span>Aantal: {reservation.quantity}</span>
+                      <span>{t('quantityLabel', { count: reservation.quantity })}</span>
                       <span>{formatRelativeDate(reservation.created_at)}</span>
                       {reservation.pickup_time && (
                         <span>
-                          Ophalen:{' '}
-                          {new Date(reservation.pickup_time).toLocaleString('nl-NL', {
-                            day: 'numeric',
-                            month: 'short',
-                            hour: '2-digit',
-                            minute: '2-digit',
+                          {t('pickupLabel', {
+                            time: new Date(reservation.pickup_time).toLocaleString(dateLocale, {
+                              day: 'numeric',
+                              month: 'short',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            }),
                           })}
                         </span>
                       )}
