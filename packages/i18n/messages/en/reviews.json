@@ -41,5 +41,29 @@
       "backToReservations": "Back to reservations",
       "close": "Close"
     }
+  },
+  "webPage": {
+    "metadataTitle": "Write a review",
+    "backLink": "Back to reservations",
+    "existingHeader": "Thanks for your review!",
+    "existingSubtext": "You posted this review {date}",
+    "viewMerchant": "View {name} →",
+    "form": {
+      "howWasDish": "How was {dishTitle}?",
+      "tellMore": "Tell us more (optional)",
+      "fallbackPlaceholder": "Share your experience…",
+      "submit": "Submit review",
+      "successTitle": "Thanks for your review!",
+      "successBody": "You're helping {merchantName} and other users with your feedback.",
+      "backToReservations": "Back to reservations",
+      "viewReview": "View your review",
+      "errors": {
+        "needRating": "Select a rating from 1 to 5 stars.",
+        "notSignedIn": "You must be signed in to post a review.",
+        "duplicate": "You already posted a review for this reservation.",
+        "generic": "Something went wrong. Please try again.",
+        "network": "Something went wrong. Check your internet connection."
+      }
+    }
   }
 }

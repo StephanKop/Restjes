@@ -20,5 +20,20 @@
     "title": "Beoordelingen",
     "loadMore": "Meer laden",
     "empty": "Nog geen beoordelingen."
+  },
+  "web": {
+    "metadataNotFound": "Aanbieder niet gevonden - Kliekjesclub",
+    "metadataTitle": "{name} - Kliekjesclub",
+    "metadataDescriptionFallback": "Bekijk het profiel van {name} op Kliekjesclub.",
+    "bannerAlt": "{name} banner",
+    "reviewCountParens": "({count} beoordelingen)",
+    "about": "Over ons",
+    "availableDishes": "Beschikbare gerechten",
+    "noDishesTitle": "Geen gerechten beschikbaar",
+    "noDishesBody": "Deze aanbieder heeft momenteel geen gerechten beschikbaar.",
+    "reviewsHeading": "Beoordelingen",
+    "seeAllReviews": "Alle beoordelingen bekijken →",
+    "seeAllCount": "Alle {count} beoordelingen bekijken",
+    "noReviews": "Nog geen beoordelingen"
   }
 }

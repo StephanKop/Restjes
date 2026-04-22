@@ -20,5 +20,20 @@
     "title": "Reviews",
     "loadMore": "Load more",
     "empty": "No reviews yet."
+  },
+  "web": {
+    "metadataNotFound": "Merchant not found - Kliekjesclub",
+    "metadataTitle": "{name} - Kliekjesclub",
+    "metadataDescriptionFallback": "View {name}'s profile on Kliekjesclub.",
+    "bannerAlt": "{name} banner",
+    "reviewCountParens": "({count} reviews)",
+    "about": "About us",
+    "availableDishes": "Available dishes",
+    "noDishesTitle": "No dishes available",
+    "noDishesBody": "This merchant doesn't have any dishes available right now.",
+    "reviewsHeading": "Reviews",
+    "seeAllReviews": "See all reviews →",
+    "seeAllCount": "See all {count} reviews",
+    "noReviews": "No reviews yet"
   }
 }

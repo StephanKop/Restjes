@@ -2,14 +2,16 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
 import { ReviewPageForm } from '@/components/ReviewPageForm'
 import { StarRating } from '@/components/StarRating'
 import { CookingPotIcon, StorefrontIcon, CheckBadgeIcon } from '@/components/icons'
 import { formatRelativeDate } from '@/lib/format'
 
-export const metadata: Metadata = {
-  title: 'Beoordeling schrijven',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('reviews.webPage')
+  return { title: t('metadataTitle') }
 }
 
 interface ReviewPageProps {
@@ -18,6 +20,7 @@ interface ReviewPageProps {
 
 export default async function ReviewPage({ params }: ReviewPageProps) {
   const { reservationId } = await params
+  const t = await getTranslations('reviews.webPage')
   const user = await getUser()
 
   if (!user) {
@@ -89,7 +92,7 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
         href="/reservations"
         className="mb-6 inline-flex items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700"
       >
-        <span aria-hidden="true">&larr;</span> Terug naar reserveringen
+        <span aria-hidden="true">&larr;</span> {t('backLink')}
       </Link>
 
       {/* Dish context card */}
@@ -149,10 +152,10 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
             <div className="space-y-4">
               <div className="rounded-xl bg-brand-50 p-5 text-center">
                 <p className="mb-1 text-lg font-bold text-brand-700">
-                  Bedankt voor je beoordeling!
+                  {t('existingHeader')}
                 </p>
                 <p className="text-sm text-brand-600">
-                  Je hebt deze review {formatRelativeDate(existingReview.created_at)} geplaatst
+                  {t('existingSubtext', { date: formatRelativeDate(existingReview.created_at) })}
                 </p>
               </div>
 
@@ -170,7 +173,7 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
                   href={`/aanbieder/${merchant.id}`}
                   className="text-sm font-semibold text-brand-600 hover:text-brand-700"
                 >
-                  Bekijk {merchant.business_name} &rarr;
+                  {t('viewMerchant', { name: merchant.business_name })}
                 </Link>
               </div>
             </div>

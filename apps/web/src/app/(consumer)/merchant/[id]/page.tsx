@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { createServerComponentClient } from '@/lib/supabase-server'
 import { getCachedMerchant, getCachedMerchantDishes, getCachedMerchantReviews } from '@/lib/cached-queries'
 import { DishCard, type DishCardData } from '@/components/DishCard'
@@ -17,6 +18,7 @@ interface MerchantPageProps {
 export async function generateMetadata({ params }: MerchantPageProps): Promise<Metadata> {
   const { id } = await params
   const supabase = await createServerComponentClient()
+  const t = await getTranslations('merchant.web')
 
   const { data: merchant } = await supabase
     .from('merchants')
@@ -25,12 +27,12 @@ export async function generateMetadata({ params }: MerchantPageProps): Promise<M
     .single()
 
   if (!merchant) {
-    return { title: 'Aanbieder niet gevonden - Kliekjesclub' }
+    return { title: t('metadataNotFound') }
   }
 
   return {
-    title: `${merchant.business_name} - Kliekjesclub`,
-    description: merchant.description ?? `Bekijk het profiel van ${merchant.business_name} op Kliekjesclub.`,
+    title: t('metadataTitle', { name: merchant.business_name }),
+    description: merchant.description ?? t('metadataDescriptionFallback', { name: merchant.business_name }),
     openGraph: {
       title: merchant.business_name,
       description: merchant.description ?? undefined,
@@ -42,6 +44,7 @@ export async function generateMetadata({ params }: MerchantPageProps): Promise<M
 
 export default async function MerchantPage({ params }: MerchantPageProps) {
   const { id } = await params
+  const t = await getTranslations('merchant.web')
 
   const [merchant, dishes, latestReviews] = await Promise.all([
     getCachedMerchant(id),
@@ -117,7 +120,7 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
         {merchant.banner_url ? (
           <Image
             src={merchant.banner_url}
-            alt={`${merchant.business_name} banner`}
+            alt={t('bannerAlt', { name: merchant.business_name })}
             fill
             className="object-cover"
             priority
@@ -168,7 +171,7 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
                 {(merchant.avg_rating ?? 0).toFixed(1)}
               </span>
               <span className="text-warm-400">
-                ({merchant.review_count} beoordelingen)
+                {t('reviewCountParens', { count: merchant.review_count })}
               </span>
             </div>
           )}
@@ -178,7 +181,7 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
       {/* Description */}
       {merchant.description && (
         <div className="mb-10 rounded-2xl bg-white p-6 shadow-card">
-          <h2 className="mb-3 text-xl font-bold text-warm-900">Over ons</h2>
+          <h2 className="mb-3 text-xl font-bold text-warm-900">{t('about')}</h2>
           <p className="text-warm-600 leading-relaxed">{merchant.description}</p>
         </div>
       )}
@@ -186,7 +189,7 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
       {/* Available dishes */}
       <div>
         <h2 className="mb-6 text-2xl font-extrabold text-warm-900">
-          Beschikbare gerechten
+          {t('availableDishes')}
         </h2>
 
         {dishCards.length > 0 ? (
@@ -201,10 +204,10 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
               <DishIcon className="h-7 w-7" />
             </div>
             <h3 className="mb-2 text-xl font-bold text-warm-900">
-              Geen gerechten beschikbaar
+              {t('noDishesTitle')}
             </h3>
             <p className="text-warm-500">
-              Deze aanbieder heeft momenteel geen gerechten beschikbaar.
+              {t('noDishesBody')}
             </p>
           </div>
         )}
@@ -213,13 +216,13 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
       {/* Reviews section */}
       <div className="mt-12">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-extrabold text-warm-900">Beoordelingen</h2>
+          <h2 className="text-2xl font-extrabold text-warm-900">{t('reviewsHeading')}</h2>
           {reviewList.length > 0 && (
             <Link
               href={`/aanbieder/${id}/reviews`}
               className="text-sm font-semibold text-brand-600 hover:text-brand-700"
             >
-              Alle beoordelingen bekijken &rarr;
+              {t('seeAllReviews')}
             </Link>
           )}
         </div>
@@ -233,14 +236,14 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
                   href={`/aanbieder/${id}/reviews`}
                   className="inline-block rounded-xl bg-white px-6 py-3 font-bold text-brand-600 shadow-card transition-colors hover:bg-brand-50"
                 >
-                  Alle {merchant.review_count} beoordelingen bekijken
+                  {t('seeAllCount', { count: merchant.review_count })}
                 </Link>
               </div>
             )}
           </>
         ) : (
           <div className="rounded-2xl bg-white p-8 text-center shadow-card">
-            <p className="text-warm-500">Nog geen beoordelingen</p>
+            <p className="text-warm-500">{t('noReviews')}</p>
           </div>
         )}
       </div>

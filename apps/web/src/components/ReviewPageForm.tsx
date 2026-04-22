@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
+import { useTranslations } from 'next-intl'
 import { StarRating } from '@/components/StarRating'
 import { Button } from '@/components/ui/Button'
 
@@ -13,22 +14,6 @@ interface ReviewPageFormProps {
   merchantName: string
 }
 
-const RATING_LABELS: Record<number, string> = {
-  1: 'Slecht',
-  2: 'Matig',
-  3: 'Oké',
-  4: 'Goed',
-  5: 'Uitstekend',
-}
-
-const PLACEHOLDERS: Record<number, string> = {
-  1: 'Wat ging er mis? Je feedback helpt de aanbieder verbeteren.',
-  2: 'Wat kan er beter? Deel je ervaring zodat de aanbieder kan verbeteren.',
-  3: 'Vertel meer over je ervaring. Was er iets dat opviel?',
-  4: 'Leuk dat je het goed vond! Wat vond je het beste?',
-  5: 'Geweldig! Vertel anderen waarom je zo tevreden bent.',
-}
-
 export function ReviewPageForm({
   merchantId,
   reservationId,
@@ -36,6 +21,7 @@ export function ReviewPageForm({
   merchantName,
 }: ReviewPageFormProps) {
   const router = useRouter()
+  const t = useTranslations('reviews')
   const [rating, setRating] = useState(0)
   const [comment, setComment] = useState('')
   const [loading, setLoading] = useState(false)
@@ -49,7 +35,7 @@ export function ReviewPageForm({
     setError(null)
 
     if (rating < 1 || rating > 5) {
-      setError('Selecteer een beoordeling van 1 tot 5 sterren.')
+      setError(t('webPage.form.errors.needRating'))
       return
     }
 
@@ -64,7 +50,7 @@ export function ReviewPageForm({
       const { data: { user } } = await supabase.auth.getUser()
 
       if (!user) {
-        setError('Je moet ingelogd zijn om een beoordeling te plaatsen.')
+        setError(t('webPage.form.errors.notSignedIn'))
         setLoading(false)
         return
       }
@@ -79,9 +65,9 @@ export function ReviewPageForm({
 
       if (insertError) {
         if (insertError.code === '23505') {
-          setError('Je hebt al een beoordeling geplaatst voor deze reservering.')
+          setError(t('webPage.form.errors.duplicate'))
         } else {
-          setError('Er ging iets mis. Probeer het opnieuw.')
+          setError(t('webPage.form.errors.generic'))
         }
         setLoading(false)
         return
@@ -89,7 +75,7 @@ export function ReviewPageForm({
 
       setSuccess(true)
     } catch {
-      setError('Er ging iets mis. Controleer je internetverbinding.')
+      setError(t('webPage.form.errors.network'))
     } finally {
       setLoading(false)
     }
@@ -104,17 +90,17 @@ export function ReviewPageForm({
           </svg>
         </div>
         <h2 className="mb-2 text-xl font-extrabold text-warm-900">
-          Bedankt voor je beoordeling!
+          {t('webPage.form.successTitle')}
         </h2>
         <p className="mb-6 text-warm-500">
-          Je helpt {merchantName} en andere gebruikers met je feedback.
+          {t('webPage.form.successBody', { merchantName })}
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Button variant="primary" onClick={() => router.push('/reservations')}>
-            Terug naar reserveringen
+            {t('webPage.form.backToReservations')}
           </Button>
           <Button variant="outline" onClick={() => router.refresh()}>
-            Bekijk je beoordeling
+            {t('webPage.form.viewReview')}
           </Button>
         </div>
       </div>
@@ -126,14 +112,14 @@ export function ReviewPageForm({
       {/* Rating section */}
       <div className="text-center">
         <p className="mb-2 text-sm font-semibold text-warm-800">
-          Hoe was {dishTitle}?
+          {t('webPage.form.howWasDish', { dishTitle })}
         </p>
         <div className="flex justify-center">
           <StarRating rating={rating} onChange={setRating} size="lg" />
         </div>
         {rating > 0 && (
           <p className="mt-2 text-sm font-medium text-amber-600">
-            {RATING_LABELS[rating]}
+            {t(`form.ratingLabels.${rating}`)}
           </p>
         )}
       </div>
@@ -145,7 +131,7 @@ export function ReviewPageForm({
             htmlFor="review-comment"
             className="block text-sm font-semibold text-warm-800"
           >
-            Vertel meer (optioneel)
+            {t('webPage.form.tellMore')}
           </label>
           <textarea
             id="review-comment"
@@ -157,7 +143,7 @@ export function ReviewPageForm({
             }}
             rows={4}
             className="w-full resize-none rounded-xl border border-warm-200 bg-white px-4 py-3 text-warm-800 placeholder:text-warm-400 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100"
-            placeholder={PLACEHOLDERS[rating] ?? 'Deel je ervaring...'}
+            placeholder={rating >= 1 && rating <= 5 ? t(`form.placeholders.${rating}`) : t('webPage.form.fallbackPlaceholder')}
           />
           <div className="flex justify-end">
             <span className={`text-xs ${comment.length > maxChars * 0.9 ? 'text-red-500' : 'text-warm-400'}`}>
@@ -181,7 +167,7 @@ export function ReviewPageForm({
         disabled={rating === 0}
         className="w-full"
       >
-        Beoordeling plaatsen
+        {t('webPage.form.submit')}
       </Button>
     </form>
   )

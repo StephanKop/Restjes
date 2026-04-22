@@ -26,6 +26,14 @@ import {
   messagesEnMessages,
   messagesNlReservations,
   messagesEnReservations,
+  messagesNlDishForm,
+  messagesEnDishForm,
+  messagesNlMerchant,
+  messagesEnMerchant,
+  messagesNlAanbieder,
+  messagesEnAanbieder,
+  messagesNlImpact,
+  messagesEnImpact,
 } from '@kliekjesclub/i18n'
 
 export const LOCALE_COOKIE = 'kc_locale'
@@ -44,6 +52,10 @@ const messagesByLocale: Record<Locale, Record<string, unknown>> = {
     dish: messagesNlDish,
     messages: messagesNlMessages,
     reservations: messagesNlReservations,
+    dishForm: messagesNlDishForm,
+    merchant: messagesNlMerchant,
+    aanbieder: messagesNlAanbieder,
+    impact: messagesNlImpact,
   },
   en: {
     common: messagesEnCommon,
@@ -57,6 +69,10 @@ const messagesByLocale: Record<Locale, Record<string, unknown>> = {
     dish: messagesEnDish,
     messages: messagesEnMessages,
     reservations: messagesEnReservations,
+    dishForm: messagesEnDishForm,
+    merchant: messagesEnMerchant,
+    aanbieder: messagesEnAanbieder,
+    impact: messagesEnImpact,
   },
 }
 

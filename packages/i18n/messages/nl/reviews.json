@@ -41,5 +41,29 @@
       "backToReservations": "Terug naar reserveringen",
       "close": "Sluiten"
     }
+  },
+  "webPage": {
+    "metadataTitle": "Beoordeling schrijven",
+    "backLink": "Terug naar reserveringen",
+    "existingHeader": "Bedankt voor je beoordeling!",
+    "existingSubtext": "Je hebt deze review {date} geplaatst",
+    "viewMerchant": "Bekijk {name} →",
+    "form": {
+      "howWasDish": "Hoe was {dishTitle}?",
+      "tellMore": "Vertel meer (optioneel)",
+      "fallbackPlaceholder": "Deel je ervaring...",
+      "submit": "Beoordeling plaatsen",
+      "successTitle": "Bedankt voor je beoordeling!",
+      "successBody": "Je helpt {merchantName} en andere gebruikers met je feedback.",
+      "backToReservations": "Terug naar reserveringen",
+      "viewReview": "Bekijk je beoordeling",
+      "errors": {
+        "needRating": "Selecteer een beoordeling van 1 tot 5 sterren.",
+        "notSignedIn": "Je moet ingelogd zijn om een beoordeling te plaatsen.",
+        "duplicate": "Je hebt al een beoordeling geplaatst voor deze reservering.",
+        "generic": "Er ging iets mis. Probeer het opnieuw.",
+        "network": "Er ging iets mis. Controleer je internetverbinding."
+      }
+    }
   }
 }
