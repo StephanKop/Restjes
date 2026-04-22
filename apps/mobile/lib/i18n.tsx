@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import * as Localization from 'expo-localization'
 import * as SecureStore from 'expo-secure-store'
 import { I18n, type TranslateOptions } from 'i18n-js'
+import { supabase } from './supabase'
 import {
   defaultLocale,
   locales,
@@ -98,14 +99,46 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   })
 
   useEffect(() => {
-    SecureStore.getItemAsync(LOCALE_STORAGE_KEY).then((stored) => {
-      if (!stored) return
-      const resolved = resolveLocale(stored)
-      if (resolved !== locale) {
-        i18n.locale = resolved
-        setLocaleState(resolved)
+    let cancelled = false
+    const bootstrap = async () => {
+      // 1. Prefer the user's saved preference if they're signed in.
+      try {
+        const { data } = await supabase.auth.getUser()
+        if (data?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('locale')
+            .eq('id', data.user.id)
+            .maybeSingle()
+          const fromProfile = profile?.locale as string | undefined
+          if (fromProfile && !cancelled) {
+            const resolved = resolveLocale(fromProfile)
+            if (resolved !== locale) {
+              i18n.locale = resolved
+              setLocaleState(resolved)
+              await SecureStore.setItemAsync(LOCALE_STORAGE_KEY, resolved)
+            }
+            return
+          }
+        }
+      } catch {
+        // Fall through to SecureStore
       }
-    })
+
+      // 2. Fallback: whatever was last saved locally.
+      const stored = await SecureStore.getItemAsync(LOCALE_STORAGE_KEY)
+      if (stored && !cancelled) {
+        const resolved = resolveLocale(stored)
+        if (resolved !== locale) {
+          i18n.locale = resolved
+          setLocaleState(resolved)
+        }
+      }
+    }
+    bootstrap()
+    return () => {
+      cancelled = true
+    }
     // Runs once on mount; we intentionally don't depend on `locale` to avoid loops.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -114,6 +147,17 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     i18n.locale = next
     setLocaleState(next)
     await SecureStore.setItemAsync(LOCALE_STORAGE_KEY, next)
+
+    // Persist to the authenticated user's profile so push notifications and
+    // web sessions see the same preference. Non-fatal if it fails.
+    try {
+      const { data } = await supabase.auth.getUser()
+      if (data?.user) {
+        await supabase.from('profiles').update({ locale: next }).eq('id', data.user.id)
+      }
+    } catch {
+      // Offline or unauthenticated — SecureStore is the primary source on mobile.
+    }
   }, [])
 
   const value = useMemo<LocaleContextValue>(() => ({

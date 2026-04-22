@@ -15,9 +15,25 @@ Notifications.setNotificationHandler({
 })
 
 export async function registerForPushNotifications(userId: string) {
-  if (!Device.isDevice) {
-    console.log('Push notifications require a physical device')
+  // iOS simulator cannot receive APNs push. Android emulators with Google Play
+  // Services *can* receive FCM push, so we only gate on iOS.
+  if (!Device.isDevice && Platform.OS === 'ios') {
+    console.log('[push] iOS simulator — skipping registration')
     return
+  }
+
+  // Android requires the default channel to exist *before* the first token
+  // request, otherwise FCM delivers silently without surfacing a heads-up.
+  if (Platform.OS === 'android') {
+    try {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'Standaard',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+      })
+    } catch (err) {
+      console.log('[push] channel setup failed:', err instanceof Error ? err.message : err)
+    }
   }
 
   try {
@@ -30,35 +46,38 @@ export async function registerForPushNotifications(userId: string) {
     }
 
     if (finalStatus !== 'granted') {
-      console.log('Push notification permission not granted')
+      console.log('[push] permission not granted:', finalStatus)
       return
     }
 
     const projectId = Constants.expoConfig?.extra?.eas?.projectId
-    const tokenData = await Notifications.getExpoPushTokenAsync(
-      projectId ? { projectId } : undefined
-    )
-    const token = tokenData.data
-
-    const platform = Platform.OS as 'ios' | 'android'
-    await supabase.from('push_tokens').upsert(
-      { profile_id: userId, token, platform },
-      { onConflict: 'profile_id,token' }
-    )
-
-    if (Platform.OS === 'android') {
-      await Notifications.setNotificationChannelAsync('default', {
-        name: 'Standaard',
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-      })
+    if (!projectId) {
+      console.warn('[push] no EAS projectId — token request will likely fail')
     }
 
+    const tokenData = await Notifications.getExpoPushTokenAsync(
+      projectId ? { projectId } : undefined,
+    )
+    const token = tokenData.data
+    console.log('[push] got token:', token)
+
+    const platform = Platform.OS as 'ios' | 'android'
+    const { error: upsertError } = await supabase.from('push_tokens').upsert(
+      { profile_id: userId, token, platform },
+      { onConflict: 'profile_id,token' },
+    )
+
+    if (upsertError) {
+      console.error('[push] failed to save token:', upsertError.message)
+      return
+    }
+
+    console.log('[push] token saved for user', userId)
     return token
   } catch (err) {
     // Builds without the aps-environment entitlement (e.g. personal dev team)
     // cannot register with APNs. Log and continue — the rest of the app works fine.
-    console.log('Push registration skipped:', err instanceof Error ? err.message : err)
+    console.log('[push] registration skipped:', err instanceof Error ? err.message : err)
   }
 }
 
