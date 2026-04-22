@@ -1,0 +1,42 @@
+{
+  "contact": {
+    "metadataTitle": "Contact",
+    "metadataDescription": "Neem contact op met het team van Kliekjesclub.",
+    "heading": "Contact",
+    "subheading": "Vragen, feedback of een idee? We horen graag van je.",
+    "emailHeading": "E-mail",
+    "emailBody": "De snelste manier om ons te bereiken is via e-mail. We proberen binnen twee werkdagen te reageren.",
+    "faqHeading": "Veelgestelde vragen",
+    "faqBody": "Veel vragen worden al beantwoord in onze FAQ. Check deze eerst — je antwoord staat er misschien tussen.",
+    "faqCta": "Naar de FAQ",
+    "aboutHeading": "Kliekjesclub",
+    "aboutBody": "We zijn een Nederlands initiatief dat voedselverspilling tegengaat door kliekjes uit huiskeukens en bedrijfskeukens beschikbaar te maken voor buurtgenoten."
+  },
+  "notFound": {
+    "heading": "Pagina niet gevonden",
+    "body": "De pagina die je zocht bestaat niet (meer).",
+    "homeLink": "Terug naar de homepagina",
+    "browseLink": "Bekijk beschikbare gerechten"
+  },
+  "impact": {
+    "metadataTitle": "Onze impact",
+    "metadataDescription": "Bekijk hoeveel voedsel Kliekjesclub de afgelopen periode heeft helpen redden.",
+    "heading": "Samen maken we impact",
+    "subheading": "Elk kliekje dat gedeeld wordt is minder voedselverspilling.",
+    "mealsSaved": "Maaltijden gered",
+    "co2Saved": "CO₂ bespaard",
+    "waterSaved": "Water bespaard",
+    "methodHeading": "Hoe we dit berekenen",
+    "methodBody": "We schatten op basis van Nederlandse gemiddelden: ≈ 1,25 kg CO₂-equivalent en 1.000 liter water per maaltijd. De cijfers worden dagelijks bijgewerkt op basis van opgehaalde reserveringen."
+  },
+  "privacy": {
+    "metadataTitle": "Privacybeleid",
+    "heading": "Privacybeleid",
+    "lastUpdatedLabel": "Laatst bijgewerkt:"
+  },
+  "terms": {
+    "metadataTitle": "Algemene voorwaarden",
+    "heading": "Algemene voorwaarden",
+    "lastUpdatedLabel": "Laatst bijgewerkt:"
+  }
+}

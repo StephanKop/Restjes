@@ -1,10 +1,13 @@
 import type { Metadata } from 'next'
+import { getLocale } from 'next-intl/server'
+import type { Locale } from '@kliekjesclub/i18n'
 import { getPageContent } from '@/lib/cms'
-import { ABOUT_DEFAULTS } from '@/lib/cms-defaults'
+import { getAboutDefaults } from '@/lib/cms-defaults'
 import { JsonLd } from '@/components/JsonLd'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const content = await getPageContent('about', ABOUT_DEFAULTS)
+  const locale = (await getLocale()) as Locale
+  const content = await getPageContent('about', getAboutDefaults(locale))
   return {
     title: content.seo.metaTitle,
     description: content.seo.metaDescription,
@@ -14,7 +17,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const content = await getPageContent('about', ABOUT_DEFAULTS)
+  const locale = (await getLocale()) as Locale
+  const content = await getPageContent('about', getAboutDefaults(locale))
 
   return (
     <div className="mx-auto max-w-3xl">

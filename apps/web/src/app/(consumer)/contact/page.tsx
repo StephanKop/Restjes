@@ -1,26 +1,30 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { JsonLd } from '@/components/JsonLd'
 
-export const metadata: Metadata = {
-  title: 'Contact',
-  description: 'Neem contact op met het team van Kliekjesclub.',
-  alternates: { canonical: '/contact' },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('staticPages.contact')
+  return {
+    title: t('metadataTitle'),
+    description: t('metadataDescription'),
+    alternates: { canonical: '/contact' },
+  }
 }
 
 const SUPPORT_EMAIL = 'info@kliekjesclub.nl'
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const t = await getTranslations('staticPages.contact')
   return (
     <div className="mx-auto max-w-3xl">
       <JsonLd
         data={{
           '@context': 'https://schema.org',
           '@type': 'ContactPage',
-          name: 'Contact - Kliekjesclub',
-          description: 'Neem contact op met het team van Kliekjesclub.',
+          name: `${t('heading')} - Kliekjesclub`,
+          description: t('metadataDescription'),
           url: 'https://kliekjesclub.nl/contact',
-          inLanguage: 'nl',
           isPartOf: {
             '@type': 'WebSite',
             name: 'Kliekjesclub',
@@ -29,16 +33,15 @@ export default function ContactPage() {
         }}
       />
 
-      <h1 className="mb-2 text-3xl font-extrabold text-warm-900">Contact</h1>
+      <h1 className="mb-2 text-3xl font-extrabold text-warm-900">{t('heading')}</h1>
       <p className="mb-8 text-warm-500">
-        Vragen, feedback of een idee? We horen graag van je.
+        {t('subheading')}
       </p>
 
       <section className="mb-6 rounded-2xl bg-white p-8 shadow-card">
-        <h2 className="mb-2 text-xl font-bold text-warm-900">E-mail</h2>
+        <h2 className="mb-2 text-xl font-bold text-warm-900">{t('emailHeading')}</h2>
         <p className="mb-4 text-warm-600">
-          De snelste manier om ons te bereiken is via e-mail. We proberen binnen twee
-          werkdagen te reageren.
+          {t('emailBody')}
         </p>
         <a
           href={`mailto:${SUPPORT_EMAIL}`}
@@ -49,25 +52,22 @@ export default function ContactPage() {
       </section>
 
       <section className="mb-6 rounded-2xl bg-white p-8 shadow-card">
-        <h2 className="mb-2 text-xl font-bold text-warm-900">Veelgestelde vragen</h2>
+        <h2 className="mb-2 text-xl font-bold text-warm-900">{t('faqHeading')}</h2>
         <p className="mb-4 text-warm-600">
-          Veel vragen worden al beantwoord in onze FAQ. Check deze eerst &mdash; je
-          antwoord staat er misschien tussen.
+          {t('faqBody')}
         </p>
         <Link
           href="/faq"
           className="inline-flex items-center rounded-xl border border-warm-200 bg-white px-5 py-3 font-bold text-warm-800 transition-colors hover:border-warm-300"
         >
-          Naar de FAQ
+          {t('faqCta')}
         </Link>
       </section>
 
       <section className="rounded-2xl bg-white p-8 shadow-card">
-        <h2 className="mb-2 text-xl font-bold text-warm-900">Kliekjesclub</h2>
+        <h2 className="mb-2 text-xl font-bold text-warm-900">{t('aboutHeading')}</h2>
         <p className="text-warm-600">
-          We zijn een Nederlands initiatief dat voedselverspilling tegengaat door
-          kliekjes uit huiskeukens en bedrijfskeukens beschikbaar te maken voor
-          buurtgenoten.
+          {t('aboutBody')}
         </p>
       </section>
     </div>

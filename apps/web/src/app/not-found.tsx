@@ -1,15 +1,20 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { MainNav } from '@/components/MainNav'
 import { Footer } from '@/components/Footer'
 
-export const metadata: Metadata = {
-  title: 'Pagina niet gevonden',
-  description: 'De pagina die je zoekt bestaat niet of is verplaatst.',
-  robots: { index: false, follow: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('staticPages.notFound')
+  return {
+    title: t('heading'),
+    description: t('body'),
+    robots: { index: false, follow: false },
+  }
 }
 
-export default function NotFound() {
+export default async function NotFound() {
+  const t = await getTranslations('staticPages.notFound')
   return (
     <div className="flex min-h-screen flex-col bg-offwhite">
       <MainNav />
@@ -19,24 +24,23 @@ export default function NotFound() {
             404
           </p>
           <h1 className="mb-3 text-4xl font-extrabold text-warm-900">
-            Deze pagina bestaat niet
+            {t('heading')}
           </h1>
           <p className="mb-8 text-warm-500">
-            De link is misschien verlopen of de pagina is verplaatst. Ga terug naar de
-            homepage of bekijk het actuele aanbod.
+            {t('body')}
           </p>
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href="/"
               className="inline-flex items-center rounded-xl bg-brand-500 px-5 py-3 font-bold text-white transition-colors hover:bg-brand-600"
             >
-              Terug naar home
+              {t('homeLink')}
             </Link>
             <Link
               href="/browse"
               className="inline-flex items-center rounded-xl border border-warm-200 bg-white px-5 py-3 font-bold text-warm-800 transition-colors hover:border-warm-300"
             >
-              Bekijk aanbod
+              {t('browseLink')}
             </Link>
           </div>
         </div>

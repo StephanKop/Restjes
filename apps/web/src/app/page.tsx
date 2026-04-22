@@ -1,14 +1,17 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getLocale } from 'next-intl/server'
+import type { Locale } from '@kliekjesclub/i18n'
 import { MainNav } from '@/components/MainNav'
 import { HowItWorks } from '@/components/HowItWorks'
 import { Footer } from '@/components/Footer'
 import { JsonLd } from '@/components/JsonLd'
 import { getPageContent } from '@/lib/cms'
-import { HOMEPAGE_DEFAULTS, HOW_IT_WORKS_DEFAULTS } from '@/lib/cms-defaults'
+import { getHomepageDefaults, getHowItWorksDefaults } from '@/lib/cms-defaults'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const content = await getPageContent('homepage', HOMEPAGE_DEFAULTS)
+  const locale = (await getLocale()) as Locale
+  const content = await getPageContent('homepage', getHomepageDefaults(locale))
   return {
     title: content.seo.metaTitle,
     description: content.seo.metaDescription,
@@ -21,9 +24,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
+  const locale = (await getLocale()) as Locale
   const [content, howItWorksContent] = await Promise.all([
-    getPageContent('homepage', HOMEPAGE_DEFAULTS),
-    getPageContent('how-it-works', HOW_IT_WORKS_DEFAULTS),
+    getPageContent('homepage', getHomepageDefaults(locale)),
+    getPageContent('how-it-works', getHowItWorksDefaults(locale)),
   ])
 
   return (

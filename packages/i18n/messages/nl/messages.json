@@ -24,6 +24,8 @@
     "merchantSidebarTitle": "Berichten - Kliekjesclub Aanbieder",
     "merchantHeading": "Berichten",
     "merchantEmpty": "Je hebt nog geen berichten ontvangen",
+    "consumerSidebarTitle": "Berichten - Kliekjesclub",
+    "consumerEmpty": "Je hebt nog geen berichten",
     "unknownUser": "Onbekende gebruiker",
     "backAria": "Terug naar berichten",
     "messageToPlaceholder": "Bericht aan {name}...",

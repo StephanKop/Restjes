@@ -10,6 +10,12 @@
   "waterSaved": "Water saved",
   "mealsPerMonth": "Meals per month",
   "footnote": "Estimates based on average values for saved food: ≈ 1.25 kg CO₂ equivalent and 1,000 liters of water per meal.",
+  "webMetadataTitle": "My impact",
+  "webMetadataDescription": "See how much food waste you've prevented and how much CO₂ and water you've saved through Kliekjesclub.",
+  "webSubtitle": "See how much food waste you've prevented and the environmental benefit you've gained.",
+  "emptyBodyDetailed": "As soon as you pick up a reservation, your impact builds up. Start by discovering what's available near you.",
+  "webCo2Equivalent": "≈ {grams} g CO₂ equivalent",
+  "webWaterLiters": "{liters} liters",
   "months": {
     "jan": "Jan",
     "feb": "Feb",

@@ -24,6 +24,8 @@
     "merchantSidebarTitle": "Messages - Kliekjesclub Merchant",
     "merchantHeading": "Messages",
     "merchantEmpty": "You haven't received any messages yet",
+    "consumerSidebarTitle": "Messages - Kliekjesclub",
+    "consumerEmpty": "You don't have any messages yet",
     "unknownUser": "Unknown user",
     "backAria": "Back to messages",
     "messageToPlaceholder": "Message {name}…",

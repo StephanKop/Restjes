@@ -1,0 +1,42 @@
+{
+  "contact": {
+    "metadataTitle": "Contact",
+    "metadataDescription": "Get in touch with the Kliekjesclub team.",
+    "heading": "Contact",
+    "subheading": "Questions, feedback, or an idea? We'd love to hear from you.",
+    "emailHeading": "Email",
+    "emailBody": "The fastest way to reach us is by email. We aim to reply within two working days.",
+    "faqHeading": "FAQ",
+    "faqBody": "A lot of questions are already answered in our FAQ. Check there first — your answer may already be there.",
+    "faqCta": "Go to the FAQ",
+    "aboutHeading": "Kliekjesclub",
+    "aboutBody": "We're a Dutch initiative fighting food waste by making leftovers from home kitchens and restaurants available to neighbours."
+  },
+  "notFound": {
+    "heading": "Page not found",
+    "body": "The page you're looking for doesn't exist (anymore).",
+    "homeLink": "Back to homepage",
+    "browseLink": "See available dishes"
+  },
+  "impact": {
+    "metadataTitle": "Our impact",
+    "metadataDescription": "See how much food Kliekjesclub has helped save over the past period.",
+    "heading": "Together we make an impact",
+    "subheading": "Every leftover shared is less food wasted.",
+    "mealsSaved": "Meals saved",
+    "co2Saved": "CO₂ saved",
+    "waterSaved": "Water saved",
+    "methodHeading": "How we calculate this",
+    "methodBody": "We estimate using Dutch averages: ≈ 1.25 kg CO₂ equivalent and 1,000 liters of water per meal. Figures are updated daily based on picked-up reservations."
+  },
+  "privacy": {
+    "metadataTitle": "Privacy policy",
+    "heading": "Privacy policy",
+    "lastUpdatedLabel": "Last updated:"
+  },
+  "terms": {
+    "metadataTitle": "Terms of service",
+    "heading": "Terms of service",
+    "lastUpdatedLabel": "Last updated:"
+  }
+}

@@ -34,6 +34,8 @@ import {
   messagesEnAanbieder,
   messagesNlImpact,
   messagesEnImpact,
+  messagesNlStaticPages,
+  messagesEnStaticPages,
 } from '@kliekjesclub/i18n'
 
 export const LOCALE_COOKIE = 'kc_locale'
@@ -56,6 +58,7 @@ const messagesByLocale: Record<Locale, Record<string, unknown>> = {
     merchant: messagesNlMerchant,
     aanbieder: messagesNlAanbieder,
     impact: messagesNlImpact,
+    staticPages: messagesNlStaticPages,
   },
   en: {
     common: messagesEnCommon,
@@ -73,6 +76,7 @@ const messagesByLocale: Record<Locale, Record<string, unknown>> = {
     merchant: messagesEnMerchant,
     aanbieder: messagesEnAanbieder,
     impact: messagesEnImpact,
+    staticPages: messagesEnStaticPages,
   },
 }
 

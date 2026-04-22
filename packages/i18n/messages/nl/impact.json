@@ -10,6 +10,12 @@
   "waterSaved": "Water bespaard",
   "mealsPerMonth": "Maaltijden per maand",
   "footnote": "Schattingen op basis van gemiddelde waarden voor gered voedsel: ≈ 1,25 kg CO₂-equivalent en 1.000 liter water per maaltijd.",
+  "webMetadataTitle": "Mijn impact",
+  "webMetadataDescription": "Bekijk hoeveel voedselverspilling je hebt voorkomen en hoeveel CO₂ en water je hebt bespaard via Kliekjesclub.",
+  "webSubtitle": "Zie hoeveel voedselverspilling je hebt voorkomen en welke milieuwinst je daarmee hebt geboekt.",
+  "emptyBodyDetailed": "Zodra je een reservering ophaalt bouwt je impact zich op. Begin met ontdekken wat er in jouw buurt beschikbaar is.",
+  "webCo2Equivalent": "≈ {grams} g CO₂-equivalent",
+  "webWaterLiters": "{liters} liter",
   "months": {
     "jan": "jan",
     "feb": "feb",
