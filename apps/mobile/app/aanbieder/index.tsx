@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
+import { useTranslation } from '../../lib/i18n'
 
 interface MerchantStats {
   dishCount: number
@@ -16,6 +17,7 @@ interface MerchantStats {
 }
 
 export default function AanbiederDashboard() {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const [merchantId, setMerchantId] = useState<string | null>(null)
   const [stats, setStats] = useState<MerchantStats | null>(null)
@@ -81,17 +83,17 @@ export default function AanbiederDashboard() {
             <Ionicons name="storefront-outline" size={28} color="#22c55e" />
           </View>
           <Text className="text-lg font-bold text-warm-800 text-center mb-2">
-            Word aanbieder
+            {t('aanbieder.dashboard.becomeMerchantTitle')}
           </Text>
           <Text className="text-sm text-warm-500 text-center mb-5">
-            Je hebt nog geen aanbiedersprofiel. Maak een gerecht aan om te beginnen, of stel je profiel in.
+            {t('aanbieder.dashboard.becomeMerchantBody')}
           </Text>
           <Pressable
             className="bg-brand-500 rounded-xl px-6 py-3 mb-3 w-full"
             onPress={() => router.push('/dish/create')}
           >
             <Text className="text-white font-bold text-base text-center">
-              Eerste gerecht plaatsen
+              {t('aanbieder.dashboard.firstDishCta')}
             </Text>
           </Pressable>
           <Pressable
@@ -99,7 +101,7 @@ export default function AanbiederDashboard() {
             onPress={() => router.push('/aanbieder/settings' as any)}
           >
             <Text className="text-warm-600 font-bold text-base text-center">
-              Profiel instellen
+              {t('aanbieder.dashboard.setupProfileCta')}
             </Text>
           </Pressable>
         </View>
@@ -110,18 +112,21 @@ export default function AanbiederDashboard() {
   const menuItems = [
     {
       icon: 'restaurant-outline' as const,
-      label: 'Mijn gerechten',
-      subtitle: `${stats?.activeDishCount ?? 0} beschikbaar van ${stats?.dishCount ?? 0}`,
+      label: t('aanbieder.dashboard.menu.dishes'),
+      subtitle: t('aanbieder.dashboard.menu.dishesSubtitle', {
+        active: stats?.activeDishCount ?? 0,
+        total: stats?.dishCount ?? 0,
+      }),
       href: '/aanbieder/dishes',
       color: '#22c55e',
       bg: 'bg-brand-100',
     },
     {
       icon: 'calendar-outline' as const,
-      label: 'Reserveringen',
+      label: t('aanbieder.dashboard.menu.reservations'),
       subtitle: stats?.pendingReservations
-        ? `${stats.pendingReservations} wachtend op bevestiging`
-        : `${stats?.totalReservations ?? 0} totaal`,
+        ? t('aanbieder.dashboard.menu.reservationsPending', { count: stats.pendingReservations })
+        : t('aanbieder.dashboard.menu.reservationsTotal', { count: stats?.totalReservations ?? 0 }),
       href: '/aanbieder/reservations',
       color: '#f59e0b',
       bg: 'bg-amber-100',
@@ -129,18 +134,18 @@ export default function AanbiederDashboard() {
     },
     {
       icon: 'star-outline' as const,
-      label: 'Beoordelingen',
+      label: t('aanbieder.dashboard.menu.reviews'),
       subtitle: stats?.avgRating
-        ? `${stats.avgRating.toFixed(1)} gemiddeld · ${stats.reviewCount} beoordelingen`
-        : 'Nog geen beoordelingen',
+        ? t('aanbieder.dashboard.menu.reviewsSubtitle', { rating: stats.avgRating.toFixed(1), count: stats.reviewCount })
+        : t('aanbieder.dashboard.menu.reviewsNone'),
       href: '/aanbieder/reviews',
       color: '#f59e0b',
       bg: 'bg-yellow-100',
     },
     {
       icon: 'settings-outline' as const,
-      label: 'Instellingen',
-      subtitle: 'Profiel en bedrijfsgegevens',
+      label: t('aanbieder.dashboard.menu.settings'),
+      subtitle: t('aanbieder.dashboard.menu.settingsSubtitle'),
       href: '/aanbieder/settings',
       color: '#8a8680',
       bg: 'bg-warm-100',
@@ -156,19 +161,19 @@ export default function AanbiederDashboard() {
             <Text className="text-2xl font-bold text-warm-800">
               {stats?.activeDishCount ?? 0}
             </Text>
-            <Text className="text-xs text-warm-500 mt-0.5">Actieve gerechten</Text>
+            <Text className="text-xs text-warm-500 mt-0.5">{t('aanbieder.dashboard.statActive')}</Text>
           </View>
           <View className="flex-1 bg-white rounded-2xl p-4">
             <Text className="text-2xl font-bold text-warm-800">
               {stats?.pendingReservations ?? 0}
             </Text>
-            <Text className="text-xs text-warm-500 mt-0.5">Nieuw</Text>
+            <Text className="text-xs text-warm-500 mt-0.5">{t('aanbieder.dashboard.statNew')}</Text>
           </View>
           <View className="flex-1 bg-white rounded-2xl p-4">
             <Text className="text-2xl font-bold text-warm-800">
               {stats?.avgRating != null ? stats.avgRating.toFixed(1) : '-'}
             </Text>
-            <Text className="text-xs text-warm-500 mt-0.5">Beoordeling</Text>
+            <Text className="text-xs text-warm-500 mt-0.5">{t('aanbieder.dashboard.statRating')}</Text>
           </View>
         </View>
 
@@ -179,7 +184,7 @@ export default function AanbiederDashboard() {
         >
           <Ionicons name="add-circle-outline" size={22} color="#ffffff" />
           <Text className="text-white font-bold text-base ml-2">
-            Nieuw gerecht plaatsen
+            {t('aanbieder.dashboard.addDishCta')}
           </Text>
         </Pressable>
 

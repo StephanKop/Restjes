@@ -17,6 +17,7 @@ import { router } from 'expo-router'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
 import { pickImage as pickImageFromLib, type ImagePickerAsset } from '../../lib/image-picker'
+import { useTranslation } from '../../lib/i18n'
 
 interface MerchantProfile {
   id: string
@@ -31,6 +32,7 @@ interface MerchantProfile {
 }
 
 export default function MerchantSettingsScreen() {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -103,7 +105,7 @@ export default function MerchantSettingsScreen() {
 
   const handleSave = async () => {
     if (!businessName.trim()) {
-      Alert.alert('Verplicht veld', 'Vul een bedrijfsnaam in.')
+      Alert.alert(t('aanbieder.settings.errors.requiredFieldTitle'), t('aanbieder.settings.errors.requiredName'))
       return
     }
     if (!user) return
@@ -142,7 +144,7 @@ export default function MerchantSettingsScreen() {
           .eq('id', merchant.id)
 
         if (error) {
-          Alert.alert('Fout', error.message)
+          Alert.alert(t('aanbieder.settings.errors.genericTitle'), error.message)
           setSaving(false)
           return
         }
@@ -164,7 +166,7 @@ export default function MerchantSettingsScreen() {
           .single()
 
         if (error || !created) {
-          Alert.alert('Fout', error?.message ?? 'Kon profiel niet aanmaken.')
+          Alert.alert(t('aanbieder.settings.errors.genericTitle'), error?.message ?? t('aanbieder.settings.errors.createFailed'))
           setSaving(false)
           return
         }
@@ -181,11 +183,11 @@ export default function MerchantSettingsScreen() {
         }
       }
 
-      Alert.alert('Opgeslagen', 'Je aanbiedersprofiel is bijgewerkt.', [
+      Alert.alert(t('aanbieder.settings.saved.title'), t('aanbieder.settings.saved.body'), [
         { text: 'OK', onPress: () => router.back() },
       ])
     } catch {
-      Alert.alert('Fout', 'Er is iets misgegaan. Probeer het opnieuw.')
+      Alert.alert(t('aanbieder.settings.errors.genericTitle'), t('aanbieder.settings.errors.genericBody'))
     } finally {
       setSaving(false)
     }
@@ -231,24 +233,24 @@ export default function MerchantSettingsScreen() {
                 <Ionicons name="camera" size={14} color="#ffffff" />
               </View>
             </Pressable>
-            <Text className="text-xs text-warm-400 mt-2">Tik om logo te wijzigen</Text>
+            <Text className="text-xs text-warm-400 mt-2">{t('aanbieder.settings.tapToChangeLogo')}</Text>
           </View>
 
           {/* Business name */}
-          <Text className="text-sm font-bold text-warm-600 mb-1.5">Bedrijfsnaam *</Text>
+          <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('aanbieder.settings.businessNameLabel')}</Text>
           <TextInput
             className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 mb-4"
-            placeholder="Naam van je bedrijf of keuken"
+            placeholder={t('aanbieder.settings.businessNamePlaceholder')}
             placeholderTextColor="#b0a89e"
             value={businessName}
             onChangeText={setBusinessName}
           />
 
           {/* Description */}
-          <Text className="text-sm font-bold text-warm-600 mb-1.5">Beschrijving</Text>
+          <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('aanbieder.settings.descriptionLabel')}</Text>
           <TextInput
             className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 mb-4"
-            placeholder="Vertel iets over je aanbod..."
+            placeholder={t('aanbieder.settings.descriptionPlaceholder')}
             placeholderTextColor="#b0a89e"
             value={description}
             onChangeText={setDescription}
@@ -258,10 +260,10 @@ export default function MerchantSettingsScreen() {
           />
 
           {/* Address */}
-          <Text className="text-sm font-bold text-warm-600 mb-1.5">Adres</Text>
+          <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('aanbieder.settings.addressLabel')}</Text>
           <TextInput
             className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 mb-3"
-            placeholder="Straatnaam en huisnummer"
+            placeholder={t('aanbieder.settings.address1Placeholder')}
             placeholderTextColor="#b0a89e"
             value={addressLine1}
             onChangeText={setAddressLine1}
@@ -269,14 +271,14 @@ export default function MerchantSettingsScreen() {
           <View className="flex-row gap-3 mb-4">
             <TextInput
               className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800"
-              placeholder="Postcode"
+              placeholder={t('aanbieder.settings.postalPlaceholder')}
               placeholderTextColor="#b0a89e"
               value={postalCode}
               onChangeText={setPostalCode}
             />
             <TextInput
               className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800"
-              placeholder="Plaats"
+              placeholder={t('aanbieder.settings.cityPlaceholder')}
               placeholderTextColor="#b0a89e"
               value={city}
               onChangeText={setCity}
@@ -284,10 +286,10 @@ export default function MerchantSettingsScreen() {
           </View>
 
           {/* Phone */}
-          <Text className="text-sm font-bold text-warm-600 mb-1.5">Telefoonnummer</Text>
+          <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('aanbieder.settings.phoneLabel')}</Text>
           <TextInput
             className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 mb-4"
-            placeholder="06-12345678"
+            placeholder={t('aanbieder.settings.phonePlaceholder')}
             placeholderTextColor="#b0a89e"
             value={phone}
             onChangeText={setPhone}
@@ -295,10 +297,10 @@ export default function MerchantSettingsScreen() {
           />
 
           {/* Website */}
-          <Text className="text-sm font-bold text-warm-600 mb-1.5">Website</Text>
+          <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('aanbieder.settings.websiteLabel')}</Text>
           <TextInput
             className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800 mb-6"
-            placeholder="https://www.voorbeeld.nl"
+            placeholder={t('aanbieder.settings.websitePlaceholder')}
             placeholderTextColor="#b0a89e"
             value={website}
             onChangeText={setWebsite}
@@ -317,7 +319,7 @@ export default function MerchantSettingsScreen() {
             {saving ? (
               <ActivityIndicator color="#ffffff" />
             ) : (
-              <Text className="text-white font-bold text-base">Opslaan</Text>
+              <Text className="text-white font-bold text-base">{t('aanbieder.settings.saveButton')}</Text>
             )}
           </Pressable>
         </ScrollView>

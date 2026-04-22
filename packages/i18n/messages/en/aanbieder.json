@@ -1,0 +1,145 @@
+{
+  "dashboard": {
+    "becomeMerchantTitle": "Become a merchant",
+    "becomeMerchantBody": "You don't have a merchant profile yet. Create a dish to get started, or set up your profile.",
+    "firstDishCta": "List your first dish",
+    "setupProfileCta": "Set up profile",
+    "statActive": "Active dishes",
+    "statNew": "New",
+    "statRating": "Rating",
+    "addDishCta": "List a new dish",
+    "menu": {
+      "dishes": "My dishes",
+      "dishesSubtitle": "{active} available out of {total}",
+      "reservations": "Reservations",
+      "reservationsPending": "{count} awaiting confirmation",
+      "reservationsTotal": "{count} total",
+      "reviews": "Reviews",
+      "reviewsSubtitle": "{rating} average · {count} reviews",
+      "reviewsNone": "No reviews yet",
+      "settings": "Settings",
+      "settingsSubtitle": "Profile and business details"
+    }
+  },
+  "dishes": {
+    "status": {
+      "available": "Available",
+      "reserved": "Reserved",
+      "collected": "Picked up",
+      "expired": "Expired"
+    },
+    "quantityLabel": "Quantity: {count}",
+    "editButton": "Edit",
+    "newDishCta": "New dish",
+    "emptyTitle": "You haven't listed any dishes yet",
+    "emptyBody": "List your first dish and help fight food waste.",
+    "delete": {
+      "title": "Delete dish",
+      "message": "Are you sure you want to delete \"{title}\"? This can't be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "errorTitle": "Error",
+      "errorBody": "Couldn't delete the dish. It may still have reservations attached."
+    }
+  },
+  "reservations": {
+    "pendingBannerSingular": "{count} new reservation awaiting confirmation",
+    "pendingBannerPlural": "{count} new reservations awaiting confirmation",
+    "tabs": {
+      "all": "All",
+      "new": "New",
+      "confirmed": "Confirmed",
+      "completed": "Completed"
+    },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "collected": "Picked up",
+      "cancelled": "Cancelled",
+      "noShow": "No-show"
+    },
+    "customerLabel": "Customer: {name}",
+    "customerUnknown": "Unknown",
+    "quantityLabel": "Quantity: {count}",
+    "pickupLabel": "Pickup: {time}",
+    "noteLabel": "Note:",
+    "actions": {
+      "confirm": "Confirm",
+      "decline": "Decline",
+      "collected": "Picked up",
+      "noShow": "No-show"
+    },
+    "declineDialog": {
+      "title": "Decline reservation?",
+      "message": "The customer will be notified.",
+      "cancel": "Cancel",
+      "confirm": "Decline"
+    },
+    "noShowDialog": {
+      "title": "Mark as no-show?",
+      "message": "The customer will be marked as a no-show.",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
+    "errors": {
+      "updateFailedTitle": "Error",
+      "updateFailedBody": "Couldn't update the status."
+    },
+    "empty": {
+      "all": "No reservations have come in yet",
+      "other": "No reservations in this category"
+    }
+  },
+  "reviews": {
+    "avgLabel": "Average",
+    "replyLabel": "Your reply",
+    "replyPlaceholder": "Reply to this review…",
+    "replyButton": "Post reply",
+    "editReply": "Edit",
+    "cancelEdit": "Cancel",
+    "saveReply": "Save",
+    "anonymous": "Anonymous",
+    "emptyTitle": "You haven't received any reviews yet",
+    "emptySubtitle": "Once customers leave reviews, they'll appear here.",
+    "unanswered": "{count} unanswered",
+    "replyCta": "Reply",
+    "updateReply": "Update",
+    "postReply": "Post",
+    "empty": "No reviews yet",
+    "stats": {
+      "totalSingular": "{count} review",
+      "totalPlural": "{count} reviews"
+    },
+    "errors": {
+      "replyFailedTitle": "Error",
+      "replyFailedBody": "Couldn't save reply. Please try again."
+    }
+  },
+  "settings": {
+    "businessNameLabel": "Business name *",
+    "businessNamePlaceholder": "Your business or kitchen name",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Tell people about your listings…",
+    "addressLabel": "Address",
+    "address1Placeholder": "Street name and number",
+    "postalPlaceholder": "Postal code",
+    "cityPlaceholder": "City",
+    "phoneLabel": "Phone number",
+    "phonePlaceholder": "+31 6 12345678",
+    "websiteLabel": "Website",
+    "websitePlaceholder": "https://www.example.com",
+    "tapToChangeLogo": "Tap to change logo",
+    "saveButton": "Save",
+    "errors": {
+      "requiredFieldTitle": "Required field",
+      "requiredName": "Please enter a business name.",
+      "genericTitle": "Error",
+      "genericBody": "Something went wrong. Please try again.",
+      "createFailed": "Couldn't create profile."
+    },
+    "saved": {
+      "title": "Saved",
+      "body": "Your merchant profile has been updated."
+    }
+  }
+}

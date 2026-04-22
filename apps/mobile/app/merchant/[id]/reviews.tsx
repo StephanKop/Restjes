@@ -11,6 +11,7 @@ import { useLocalSearchParams, useNavigation } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { supabase } from '../../../lib/supabase'
 import { formatRelativeDate } from '../../../lib/format'
+import { useTranslation } from '../../../lib/i18n'
 
 interface Review {
   id: string
@@ -48,6 +49,7 @@ function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
 }
 
 export default function MerchantReviewsScreen() {
+  const { t } = useTranslation()
   const { id } = useLocalSearchParams<{ id: string }>()
   const navigation = useNavigation()
 
@@ -81,7 +83,7 @@ export default function MerchantReviewsScreen() {
     if (merchantRes.data) {
       setMerchant(merchantRes.data as MerchantInfo)
       navigation.setOptions({
-        headerTitle: `Beoordelingen`,
+        headerTitle: t('merchant.reviewsPage.title'),
       })
     }
     if (reviewsRes.data) setReviews(reviewsRes.data as unknown as Review[])
@@ -126,7 +128,7 @@ export default function MerchantReviewsScreen() {
             )}
             <View className="flex-1">
               <Text className="text-sm font-bold text-warm-800">
-                {item.consumer?.display_name ?? 'Anoniem'}
+                {item.consumer?.display_name ?? t('merchant.anonymous')}
               </Text>
               {dishTitle && (
                 <Text className="text-xs text-warm-400" numberOfLines={1}>
@@ -151,7 +153,7 @@ export default function MerchantReviewsScreen() {
         {item.merchant_reply && (
           <View className="mt-3 rounded-xl bg-brand-50 p-3">
             <Text className="text-xs font-bold text-brand-700 mb-1">
-              Reactie van aanbieder
+              {t('merchant.merchantReply')}
             </Text>
             <Text className="text-sm text-brand-800">{item.merchant_reply}</Text>
           </View>
@@ -190,8 +192,7 @@ export default function MerchantReviewsScreen() {
                   </Text>
                   <StarRating rating={Math.round(merchant.avg_rating ?? 0)} size={16} />
                   <Text className="text-xs text-warm-400 mt-1">
-                    {merchant.review_count}{' '}
-                    {merchant.review_count === 1 ? 'beoordeling' : 'beoordelingen'}
+                    {t(merchant.review_count === 1 ? 'merchant.reviewCount.singular' : 'merchant.reviewCount.plural', { count: merchant.review_count })}
                   </Text>
                 </View>
                 <View className="flex-1 gap-1.5">
@@ -221,7 +222,7 @@ export default function MerchantReviewsScreen() {
         <View className="items-center justify-center py-20 px-5">
           <Ionicons name="star-outline" size={48} color="#d1cbc4" />
           <Text className="text-warm-400 text-base text-center mt-4">
-            Nog geen beoordelingen
+            {t('merchant.reviewsPage.empty')}
           </Text>
         </View>
       }

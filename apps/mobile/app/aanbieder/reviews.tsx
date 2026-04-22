@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
 import { formatRelativeDate } from '../../lib/format'
+import { useTranslation } from '../../lib/i18n'
 
 interface ReviewItem {
   id: string
@@ -54,6 +55,7 @@ function StarRow({ rating, size = 14 }: { rating: number; size?: number }) {
 }
 
 export default function MerchantReviewsScreen() {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const [merchant, setMerchant] = useState<MerchantInfo | null>(null)
   const [reviews, setReviews] = useState<ReviewItem[]>([])
@@ -122,7 +124,7 @@ export default function MerchantReviewsScreen() {
     setSubmittingReply(false)
 
     if (error) {
-      Alert.alert('Fout', 'Kon reactie niet opslaan. Probeer het opnieuw.')
+      Alert.alert(t('aanbieder.reviews.errors.replyFailedTitle'), t('aanbieder.reviews.errors.replyFailedBody'))
       return
     }
 
@@ -161,7 +163,7 @@ export default function MerchantReviewsScreen() {
             )}
             <View className="flex-1">
               <Text className="text-sm font-bold text-warm-800">
-                {item.consumer?.display_name ?? 'Anoniem'}
+                {item.consumer?.display_name ?? t('aanbieder.reviews.anonymous')}
               </Text>
               {item.reservation?.dish?.title && (
                 <Text className="text-xs text-warm-400" numberOfLines={1}>
@@ -189,14 +191,14 @@ export default function MerchantReviewsScreen() {
         {item.merchant_reply && !isReplying && (
           <View className="mt-3 rounded-xl bg-brand-50 p-3">
             <View className="flex-row items-center justify-between mb-1">
-              <Text className="text-xs font-bold text-brand-700">Jouw reactie</Text>
+              <Text className="text-xs font-bold text-brand-700">{t('aanbieder.reviews.replyLabel')}</Text>
               <Pressable
                 onPress={() => {
                   setReplyingTo(item.id)
                   setReplyText(item.merchant_reply ?? '')
                 }}
               >
-                <Text className="text-xs font-bold text-brand-600">Bewerken</Text>
+                <Text className="text-xs font-bold text-brand-600">{t('aanbieder.reviews.editReply')}</Text>
               </Pressable>
             </View>
             <Text className="text-sm text-brand-800">{item.merchant_reply}</Text>
@@ -212,7 +214,7 @@ export default function MerchantReviewsScreen() {
               setReplyText('')
             }}
           >
-            <Text className="text-sm font-bold text-brand-600">Reageren</Text>
+            <Text className="text-sm font-bold text-brand-600">{t('aanbieder.reviews.replyCta')}</Text>
           </Pressable>
         )}
 
@@ -220,7 +222,7 @@ export default function MerchantReviewsScreen() {
           <View className="mt-3">
             <TextInput
               className="bg-warm-50 border border-warm-200 rounded-xl px-4 py-3 text-[14px] text-warm-800 min-h-[80px]"
-              placeholder="Reageer op deze beoordeling..."
+              placeholder={t('aanbieder.reviews.replyPlaceholder')}
               placeholderTextColor="#b0a89e"
               value={replyText}
               onChangeText={(text) => {
@@ -246,7 +248,7 @@ export default function MerchantReviewsScreen() {
                     setReplyText('')
                   }}
                 >
-                  <Text className="text-sm font-bold text-warm-600">Annuleren</Text>
+                  <Text className="text-sm font-bold text-warm-600">{t('aanbieder.reviews.cancelEdit')}</Text>
                 </Pressable>
                 <Pressable
                   className={`rounded-xl px-4 py-2 ${
@@ -265,7 +267,7 @@ export default function MerchantReviewsScreen() {
                         replyText.trim() ? 'text-white' : 'text-warm-400'
                       }`}
                     >
-                      {item.merchant_reply ? 'Bijwerken' : 'Plaatsen'}
+                      {item.merchant_reply ? t('aanbieder.reviews.updateReply') : t('aanbieder.reviews.postReply')}
                     </Text>
                   )}
                 </Pressable>
@@ -306,7 +308,7 @@ export default function MerchantReviewsScreen() {
               {unreplied > 0 && (
                 <View className="bg-amber-100 rounded-xl px-4 py-2 mb-4 self-start">
                   <Text className="text-sm font-bold text-amber-800">
-                    {unreplied} onbeantwoord
+                    {t('aanbieder.reviews.unanswered', { count: unreplied })}
                   </Text>
                 </View>
               )}
@@ -322,8 +324,7 @@ export default function MerchantReviewsScreen() {
                     </Text>
                     <StarRow rating={Math.round(merchant?.avg_rating ?? 0)} size={16} />
                     <Text className="text-xs text-warm-400 mt-1">
-                      {merchant?.review_count ?? 0}{' '}
-                      {(merchant?.review_count ?? 0) === 1 ? 'beoordeling' : 'beoordelingen'}
+                      {t((merchant?.review_count ?? 0) === 1 ? 'aanbieder.reviews.stats.totalSingular' : 'aanbieder.reviews.stats.totalPlural', { count: merchant?.review_count ?? 0 })}
                     </Text>
                   </View>
 
@@ -355,10 +356,10 @@ export default function MerchantReviewsScreen() {
           <View className="items-center justify-center py-20">
             <Ionicons name="star-outline" size={48} color="#d1cbc4" />
             <Text className="text-warm-400 text-base text-center mt-4">
-              Je hebt nog geen beoordelingen ontvangen
+              {t('aanbieder.reviews.emptyTitle')}
             </Text>
             <Text className="text-warm-400 text-sm text-center mt-1">
-              Zodra klanten een beoordeling achterlaten, verschijnen ze hier.
+              {t('aanbieder.reviews.emptySubtitle')}
             </Text>
           </View>
         }

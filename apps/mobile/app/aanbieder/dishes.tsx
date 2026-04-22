@@ -15,6 +15,7 @@ import { router } from 'expo-router'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
 import { formatPickupTime } from '../../lib/format'
+import { useTranslation } from '../../lib/i18n'
 
 type DishStatus = 'available' | 'reserved' | 'collected' | 'expired'
 
@@ -29,14 +30,15 @@ interface MerchantDish {
   pickup_end: string | null
 }
 
-const STATUS_CONFIG: Record<DishStatus, { label: string; bgClass: string; textClass: string }> = {
-  available: { label: 'Beschikbaar', bgClass: 'bg-green-100', textClass: 'text-green-800' },
-  reserved: { label: 'Gereserveerd', bgClass: 'bg-amber-100', textClass: 'text-amber-800' },
-  collected: { label: 'Opgehaald', bgClass: 'bg-warm-100', textClass: 'text-warm-600' },
-  expired: { label: 'Verlopen', bgClass: 'bg-red-100', textClass: 'text-red-800' },
+const STATUS_STYLE: Record<DishStatus, { bgClass: string; textClass: string; key: string }> = {
+  available: { bgClass: 'bg-green-100', textClass: 'text-green-800', key: 'available' },
+  reserved: { bgClass: 'bg-amber-100', textClass: 'text-amber-800', key: 'reserved' },
+  collected: { bgClass: 'bg-warm-100', textClass: 'text-warm-600', key: 'collected' },
+  expired: { bgClass: 'bg-red-100', textClass: 'text-red-800', key: 'expired' },
 }
 
 export default function MerchantDishesScreen() {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const [merchantId, setMerchantId] = useState<string | null>(null)
   const [dishes, setDishes] = useState<MerchantDish[]>([])
@@ -77,12 +79,12 @@ export default function MerchantDishesScreen() {
 
   const handleDelete = (dish: MerchantDish) => {
     Alert.alert(
-      'Gerecht verwijderen',
-      `Weet je zeker dat je "${dish.title}" wilt verwijderen? Dit kan niet ongedaan worden gemaakt.`,
+      t('aanbieder.dishes.delete.title'),
+      t('aanbieder.dishes.delete.message', { title: dish.title }),
       [
-        { text: 'Annuleren', style: 'cancel' },
+        { text: t('aanbieder.dishes.delete.cancel'), style: 'cancel' },
         {
-          text: 'Verwijderen',
+          text: t('aanbieder.dishes.delete.confirm'),
           style: 'destructive',
           onPress: async () => {
             // Delete image from storage if exists
@@ -99,7 +101,7 @@ export default function MerchantDishesScreen() {
             const { error } = await supabase.from('dishes').delete().eq('id', dish.id)
 
             if (error) {
-              Alert.alert('Fout', 'Kon het gerecht niet verwijderen. Mogelijk zijn er nog reserveringen aan gekoppeld.')
+              Alert.alert(t('aanbieder.dishes.delete.errorTitle'), t('aanbieder.dishes.delete.errorBody'))
             } else {
               fetchDishes()
             }
@@ -110,7 +112,7 @@ export default function MerchantDishesScreen() {
   }
 
   const renderDish = ({ item }: { item: MerchantDish }) => {
-    const status = STATUS_CONFIG[item.status] ?? STATUS_CONFIG.available
+    const status = STATUS_STYLE[item.status] ?? STATUS_STYLE.available
 
     return (
       <View className="bg-white rounded-2xl overflow-hidden mb-4">
@@ -131,7 +133,7 @@ export default function MerchantDishesScreen() {
         <View className="absolute top-3 right-3">
           <View className={`${status.bgClass} rounded-xl px-3 py-1`}>
             <Text className={`text-xs font-bold ${status.textClass}`}>
-              {status.label}
+              {t(`aanbieder.dishes.status.${status.key}`)}
             </Text>
           </View>
         </View>
@@ -149,7 +151,7 @@ export default function MerchantDishesScreen() {
           <View className="flex-row flex-wrap gap-2 mb-4">
             <View className="bg-warm-50 rounded-lg px-2.5 py-1">
               <Text className="text-xs text-warm-600">
-                Aantal: {item.quantity_available}
+                {t('aanbieder.dishes.quantityLabel', { count: item.quantity_available })}
               </Text>
             </View>
             <View className="bg-warm-50 rounded-lg px-2.5 py-1">
@@ -164,7 +166,7 @@ export default function MerchantDishesScreen() {
               className="flex-1 border border-warm-200 rounded-xl py-2.5 items-center active:bg-warm-50"
               onPress={() => router.push(`/dish/${item.id}/edit`)}
             >
-              <Text className="text-sm font-bold text-warm-700">Bewerken</Text>
+              <Text className="text-sm font-bold text-warm-700">{t('aanbieder.dishes.editButton')}</Text>
             </Pressable>
             <Pressable
               className="border border-red-200 rounded-xl px-4 py-2.5 items-center active:bg-red-50"
@@ -195,7 +197,7 @@ export default function MerchantDishesScreen() {
           onPress={() => router.push('/dish/create')}
         >
           <Ionicons name="add" size={20} color="#ffffff" />
-          <Text className="text-white font-bold text-sm ml-1">Nieuw gerecht</Text>
+          <Text className="text-white font-bold text-sm ml-1">{t('aanbieder.dishes.newDishCta')}</Text>
         </Pressable>
 
         <FlatList
@@ -215,10 +217,10 @@ export default function MerchantDishesScreen() {
             <View className="items-center justify-center py-20">
               <Ionicons name="restaurant-outline" size={48} color="#d1cbc4" />
               <Text className="text-warm-400 text-base text-center mt-4 mb-2">
-                Je hebt nog geen gerechten geplaatst
+                {t('aanbieder.dishes.emptyTitle')}
               </Text>
               <Text className="text-warm-400 text-sm text-center">
-                Plaats je eerste gerecht en help voedselverspilling tegen te gaan.
+                {t('aanbieder.dishes.emptyBody')}
               </Text>
             </View>
           }

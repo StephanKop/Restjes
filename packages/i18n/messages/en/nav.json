@@ -24,5 +24,16 @@
   "mobileMenu": {
     "reservationsMerchant": "Reservations (merchant)",
     "myProfile": "My profile"
+  },
+  "stackTitles": {
+    "back": "Back",
+    "newDish": "New dish",
+    "editDish": "Edit dish",
+    "reviews": "Reviews",
+    "review": "Review",
+    "myOffer": "My listings",
+    "myDishes": "My dishes",
+    "reservations": "Reservations",
+    "settings": "Settings"
   }
 }

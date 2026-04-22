@@ -1,0 +1,24 @@
+{
+  "notFound": "Aanbieder niet gevonden.",
+  "anonymous": "Anoniem",
+  "reviewCount": {
+    "singular": "{count} beoordeling",
+    "plural": "{count} beoordelingen"
+  },
+  "merchantReply": "Reactie van aanbieder",
+  "availableDishes": "Beschikbare gerechten",
+  "noDishesNow": "Geen gerechten beschikbaar op dit moment.",
+  "reviewsHeading": "Beoordelingen",
+  "seeAll": "Alles bekijken",
+  "seeAllCount": "Alle {count} beoordelingen bekijken",
+  "noReviews": "Nog geen beoordelingen.",
+  "dishTags": {
+    "vegan": "Vegan",
+    "vegetarianShort": "Vega"
+  },
+  "reviewsPage": {
+    "title": "Beoordelingen",
+    "loadMore": "Meer laden",
+    "empty": "Nog geen beoordelingen."
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "dashboard": {
+    "becomeMerchantTitle": "Word aanbieder",
+    "becomeMerchantBody": "Je hebt nog geen aanbiedersprofiel. Maak een gerecht aan om te beginnen, of stel je profiel in.",
+    "firstDishCta": "Eerste gerecht plaatsen",
+    "setupProfileCta": "Profiel instellen",
+    "statActive": "Actieve gerechten",
+    "statNew": "Nieuw",
+    "statRating": "Beoordeling",
+    "addDishCta": "Nieuw gerecht plaatsen",
+    "menu": {
+      "dishes": "Mijn gerechten",
+      "dishesSubtitle": "{active} beschikbaar van {total}",
+      "reservations": "Reserveringen",
+      "reservationsPending": "{count} wachtend op bevestiging",
+      "reservationsTotal": "{count} totaal",
+      "reviews": "Beoordelingen",
+      "reviewsSubtitle": "{rating} gemiddeld · {count} beoordelingen",
+      "reviewsNone": "Nog geen beoordelingen",
+      "settings": "Instellingen",
+      "settingsSubtitle": "Profiel en bedrijfsgegevens"
+    }
+  },
+  "dishes": {
+    "status": {
+      "available": "Beschikbaar",
+      "reserved": "Gereserveerd",
+      "collected": "Opgehaald",
+      "expired": "Verlopen"
+    },
+    "quantityLabel": "Aantal: {count}",
+    "editButton": "Bewerken",
+    "newDishCta": "Nieuw gerecht",
+    "emptyTitle": "Je hebt nog geen gerechten geplaatst",
+    "emptyBody": "Plaats je eerste gerecht en help voedselverspilling tegen te gaan.",
+    "delete": {
+      "title": "Gerecht verwijderen",
+      "message": "Weet je zeker dat je \"{title}\" wilt verwijderen? Dit kan niet ongedaan worden gemaakt.",
+      "cancel": "Annuleren",
+      "confirm": "Verwijderen",
+      "errorTitle": "Fout",
+      "errorBody": "Kon het gerecht niet verwijderen. Mogelijk zijn er nog reserveringen aan gekoppeld."
+    }
+  },
+  "reservations": {
+    "pendingBannerSingular": "{count} nieuwe reservering wachtend op bevestiging",
+    "pendingBannerPlural": "{count} nieuwe reserveringen wachtend op bevestiging",
+    "tabs": {
+      "all": "Alle",
+      "new": "Nieuw",
+      "confirmed": "Bevestigd",
+      "completed": "Afgerond"
+    },
+    "status": {
+      "pending": "In afwachting",
+      "confirmed": "Bevestigd",
+      "collected": "Opgehaald",
+      "cancelled": "Geannuleerd",
+      "noShow": "Niet opgehaald"
+    },
+    "customerLabel": "Klant: {name}",
+    "customerUnknown": "Onbekend",
+    "quantityLabel": "Aantal: {count}",
+    "pickupLabel": "Ophalen: {time}",
+    "noteLabel": "Opmerking:",
+    "actions": {
+      "confirm": "Bevestigen",
+      "decline": "Afwijzen",
+      "collected": "Opgehaald",
+      "noShow": "Niet opgehaald"
+    },
+    "declineDialog": {
+      "title": "Reservering afwijzen?",
+      "message": "De klant wordt hiervan op de hoogte gesteld.",
+      "cancel": "Annuleren",
+      "confirm": "Afwijzen"
+    },
+    "noShowDialog": {
+      "title": "Niet opgehaald?",
+      "message": "De klant wordt als niet opgehaald gemarkeerd.",
+      "cancel": "Annuleren",
+      "confirm": "Bevestigen"
+    },
+    "errors": {
+      "updateFailedTitle": "Fout",
+      "updateFailedBody": "Kon de status niet bijwerken."
+    },
+    "empty": {
+      "all": "Er zijn nog geen reserveringen binnengekomen",
+      "other": "Geen reserveringen in deze categorie"
+    }
+  },
+  "reviews": {
+    "avgLabel": "Gemiddeld",
+    "replyLabel": "Jouw reactie",
+    "replyPlaceholder": "Reageer op deze beoordeling...",
+    "replyButton": "Plaats reactie",
+    "editReply": "Bewerken",
+    "cancelEdit": "Annuleren",
+    "saveReply": "Opslaan",
+    "anonymous": "Anoniem",
+    "emptyTitle": "Je hebt nog geen beoordelingen ontvangen",
+    "emptySubtitle": "Zodra klanten een beoordeling achterlaten, verschijnen ze hier.",
+    "unanswered": "{count} onbeantwoord",
+    "replyCta": "Reageren",
+    "updateReply": "Bijwerken",
+    "postReply": "Plaatsen",
+    "empty": "Nog geen beoordelingen",
+    "stats": {
+      "totalSingular": "{count} beoordeling",
+      "totalPlural": "{count} beoordelingen"
+    },
+    "errors": {
+      "replyFailedTitle": "Fout",
+      "replyFailedBody": "Kon reactie niet opslaan. Probeer het opnieuw."
+    }
+  },
+  "settings": {
+    "businessNameLabel": "Bedrijfsnaam *",
+    "businessNamePlaceholder": "Naam van je bedrijf of keuken",
+    "descriptionLabel": "Beschrijving",
+    "descriptionPlaceholder": "Vertel iets over je aanbod...",
+    "addressLabel": "Adres",
+    "address1Placeholder": "Straatnaam en huisnummer",
+    "postalPlaceholder": "Postcode",
+    "cityPlaceholder": "Plaats",
+    "phoneLabel": "Telefoonnummer",
+    "phonePlaceholder": "06-12345678",
+    "websiteLabel": "Website",
+    "websitePlaceholder": "https://www.voorbeeld.nl",
+    "tapToChangeLogo": "Tik om logo te wijzigen",
+    "saveButton": "Opslaan",
+    "errors": {
+      "requiredFieldTitle": "Verplicht veld",
+      "requiredName": "Vul een bedrijfsnaam in.",
+      "genericTitle": "Fout",
+      "genericBody": "Er is iets misgegaan. Probeer het opnieuw.",
+      "createFailed": "Kon profiel niet aanmaken."
+    },
+    "saved": {
+      "title": "Opgeslagen",
+      "body": "Je aanbiedersprofiel is bijgewerkt."
+    }
+  }
+}

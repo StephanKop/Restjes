@@ -1,0 +1,24 @@
+{
+  "notFound": "Merchant not found.",
+  "anonymous": "Anonymous",
+  "reviewCount": {
+    "singular": "{count} review",
+    "plural": "{count} reviews"
+  },
+  "merchantReply": "Merchant reply",
+  "availableDishes": "Available dishes",
+  "noDishesNow": "No dishes available right now.",
+  "reviewsHeading": "Reviews",
+  "seeAll": "See all",
+  "seeAllCount": "See all {count} reviews",
+  "noReviews": "No reviews yet.",
+  "dishTags": {
+    "vegan": "Vegan",
+    "vegetarianShort": "Veg"
+  },
+  "reviewsPage": {
+    "title": "Reviews",
+    "loadMore": "Load more",
+    "empty": "No reviews yet."
+  }
+}

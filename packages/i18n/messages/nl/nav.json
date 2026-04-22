@@ -24,5 +24,16 @@
   "mobileMenu": {
     "reservationsMerchant": "Reserveringen (aanbieder)",
     "myProfile": "Mijn profiel"
+  },
+  "stackTitles": {
+    "back": "Terug",
+    "newDish": "Nieuw gerecht",
+    "editDish": "Gerecht bewerken",
+    "reviews": "Beoordelingen",
+    "review": "Beoordeling",
+    "myOffer": "Mijn aanbod",
+    "myDishes": "Mijn gerechten",
+    "reservations": "Reserveringen",
+    "settings": "Instellingen"
   }
 }

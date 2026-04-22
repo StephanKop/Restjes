@@ -13,6 +13,8 @@ import { Ionicons } from '@expo/vector-icons'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
 import { formatRelativeDate } from '../../lib/format'
+import { useTranslation } from '../../lib/i18n'
+import { localeMeta, type Locale } from '@kliekjesclub/i18n'
 
 type ReservationStatus = 'pending' | 'confirmed' | 'collected' | 'cancelled' | 'no_show'
 type TabKey = 'alle' | 'nieuw' | 'bevestigd' | 'afgerond'
@@ -33,12 +35,12 @@ interface MerchantReservation {
   }
 }
 
-const STATUS_CONFIG: Record<ReservationStatus, { label: string; bgClass: string; textClass: string }> = {
-  pending: { label: 'In afwachting', bgClass: 'bg-amber-100', textClass: 'text-amber-700' },
-  confirmed: { label: 'Bevestigd', bgClass: 'bg-brand-100', textClass: 'text-brand-700' },
-  collected: { label: 'Opgehaald', bgClass: 'bg-warm-100', textClass: 'text-warm-600' },
-  cancelled: { label: 'Geannuleerd', bgClass: 'bg-red-100', textClass: 'text-red-700' },
-  no_show: { label: 'Niet opgehaald', bgClass: 'bg-red-100', textClass: 'text-red-700' },
+const STATUS_STYLE: Record<ReservationStatus, { bgClass: string; textClass: string; key: string }> = {
+  pending: { bgClass: 'bg-amber-100', textClass: 'text-amber-700', key: 'pending' },
+  confirmed: { bgClass: 'bg-brand-100', textClass: 'text-brand-700', key: 'confirmed' },
+  collected: { bgClass: 'bg-warm-100', textClass: 'text-warm-600', key: 'collected' },
+  cancelled: { bgClass: 'bg-red-100', textClass: 'text-red-700', key: 'cancelled' },
+  no_show: { bgClass: 'bg-red-100', textClass: 'text-red-700', key: 'noShow' },
 }
 
 const TAB_FILTERS: Record<TabKey, (status: ReservationStatus) => boolean> = {
@@ -49,6 +51,7 @@ const TAB_FILTERS: Record<TabKey, (status: ReservationStatus) => boolean> = {
 }
 
 export default function MerchantReservationsScreen() {
+  const { t, locale } = useTranslation()
   const { user } = useAuth()
   const [reservations, setReservations] = useState<MerchantReservation[]>([])
   const [loading, setLoading] = useState(true)
@@ -110,7 +113,7 @@ export default function MerchantReservationsScreen() {
     }
 
     if (error) {
-      Alert.alert('Fout', 'Kon de status niet bijwerken.')
+      Alert.alert(t('aanbieder.reservations.errors.updateFailedTitle'), t('aanbieder.reservations.errors.updateFailedBody'))
     } else {
       // Update dish status via RPC (bypasses RLS)
       if (newStatus === 'collected') {
@@ -128,12 +131,12 @@ export default function MerchantReservationsScreen() {
 
   const handleDecline = (item: MerchantReservation) => {
     Alert.alert(
-      'Reservering afwijzen?',
-      'De klant wordt hiervan op de hoogte gesteld.',
+      t('aanbieder.reservations.declineDialog.title'),
+      t('aanbieder.reservations.declineDialog.message'),
       [
-        { text: 'Annuleren', style: 'cancel' },
+        { text: t('aanbieder.reservations.declineDialog.cancel'), style: 'cancel' },
         {
-          text: 'Afwijzen',
+          text: t('aanbieder.reservations.declineDialog.confirm'),
           style: 'destructive',
           onPress: () => updateStatus(item.id, 'cancelled', 'merchant'),
         },
@@ -145,12 +148,12 @@ export default function MerchantReservationsScreen() {
 
   const handleNoShow = (item: MerchantReservation) => {
     Alert.alert(
-      'Niet opgehaald?',
-      'De klant wordt als niet opgehaald gemarkeerd.',
+      t('aanbieder.reservations.noShowDialog.title'),
+      t('aanbieder.reservations.noShowDialog.message'),
       [
-        { text: 'Annuleren', style: 'cancel' },
+        { text: t('aanbieder.reservations.noShowDialog.cancel'), style: 'cancel' },
         {
-          text: 'Bevestigen',
+          text: t('aanbieder.reservations.noShowDialog.confirm'),
           style: 'destructive',
           onPress: () => updateStatus(item.id, 'no_show'),
         },
@@ -199,7 +202,7 @@ export default function MerchantReservationsScreen() {
   )
 
   const renderReservation = ({ item }: { item: MerchantReservation }) => {
-    const status = STATUS_CONFIG[item.status]
+    const status = STATUS_STYLE[item.status]
     const isUpdating = updatingId === item.id
 
     return (
@@ -210,27 +213,28 @@ export default function MerchantReservationsScreen() {
               {item.dish.title}
             </Text>
             <Text className="text-sm text-warm-500 mt-0.5">
-              Klant: {item.consumer?.display_name ?? 'Onbekend'}
+              {t('aanbieder.reservations.customerLabel', { name: item.consumer?.display_name ?? t('aanbieder.reservations.customerUnknown') })}
             </Text>
           </View>
           <View className={`${status.bgClass} rounded-lg px-2.5 py-1`}>
             <Text className={`text-xs font-bold ${status.textClass}`}>
-              {status.label}
+              {t(`aanbieder.reservations.status.${status.key}`)}
             </Text>
           </View>
         </View>
 
         <View className="flex-row flex-wrap gap-x-4 gap-y-1 mb-2">
-          <Text className="text-sm text-warm-500">Aantal: {item.quantity}</Text>
+          <Text className="text-sm text-warm-500">{t('aanbieder.reservations.quantityLabel', { count: item.quantity })}</Text>
           <Text className="text-sm text-warm-500">{formatRelativeDate(item.created_at)}</Text>
           {item.pickup_time && (
             <Text className="text-sm text-warm-500">
-              Ophalen:{' '}
-              {new Date(item.pickup_time).toLocaleString('nl-NL', {
-                day: 'numeric',
-                month: 'short',
-                hour: '2-digit',
-                minute: '2-digit',
+              {t('aanbieder.reservations.pickupLabel', {
+                time: new Date(item.pickup_time).toLocaleString(localeMeta[locale as Locale]?.htmlLang ?? 'nl-NL', {
+                  day: 'numeric',
+                  month: 'short',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                }),
               })}
             </Text>
           )}
@@ -239,7 +243,7 @@ export default function MerchantReservationsScreen() {
         {item.notes && (
           <View className="bg-warm-50 rounded-lg px-3 py-2 mb-3">
             <Text className="text-sm text-warm-700">
-              <Text className="font-bold">Opmerking: </Text>
+              <Text className="font-bold">{t('aanbieder.reservations.noteLabel')} </Text>
               {item.notes}
             </Text>
           </View>
@@ -256,7 +260,7 @@ export default function MerchantReservationsScreen() {
               {isUpdating ? (
                 <ActivityIndicator size="small" color="#ffffff" />
               ) : (
-                <Text className="text-white font-bold text-sm">Bevestigen</Text>
+                <Text className="text-white font-bold text-sm">{t('aanbieder.reservations.actions.confirm')}</Text>
               )}
             </Pressable>
             <Pressable
@@ -264,7 +268,7 @@ export default function MerchantReservationsScreen() {
               onPress={() => handleDecline(item)}
               disabled={isUpdating}
             >
-              <Text className="text-red-600 font-bold text-sm">Afwijzen</Text>
+              <Text className="text-red-600 font-bold text-sm">{t('aanbieder.reservations.actions.decline')}</Text>
             </Pressable>
           </View>
         )}
@@ -279,7 +283,7 @@ export default function MerchantReservationsScreen() {
               {isUpdating ? (
                 <ActivityIndicator size="small" color="#ffffff" />
               ) : (
-                <Text className="text-white font-bold text-sm">Opgehaald</Text>
+                <Text className="text-white font-bold text-sm">{t('aanbieder.reservations.actions.collected')}</Text>
               )}
             </Pressable>
             <Pressable
@@ -287,7 +291,7 @@ export default function MerchantReservationsScreen() {
               onPress={() => handleNoShow(item)}
               disabled={isUpdating}
             >
-              <Text className="text-red-600 font-bold text-sm">Niet opgehaald</Text>
+              <Text className="text-red-600 font-bold text-sm">{t('aanbieder.reservations.actions.noShow')}</Text>
             </Pressable>
           </View>
         )}
@@ -308,16 +312,16 @@ export default function MerchantReservationsScreen() {
       <View className="flex-1 px-5 pt-4">
         {pendingCount > 0 && (
           <Text className="text-sm text-warm-500 mb-3">
-            {pendingCount} {pendingCount === 1 ? 'nieuwe reservering' : 'nieuwe reserveringen'} wachtend op bevestiging
+            {t(pendingCount === 1 ? 'aanbieder.reservations.pendingBannerSingular' : 'aanbieder.reservations.pendingBannerPlural', { count: pendingCount })}
           </Text>
         )}
 
         {/* Tabs */}
         <View className="flex-row mb-4">
-          {renderTab('alle', 'Alle')}
-          {renderTab('nieuw', 'Nieuw', pendingCount)}
-          {renderTab('bevestigd', 'Bevestigd')}
-          {renderTab('afgerond', 'Afgerond')}
+          {renderTab('alle', t('aanbieder.reservations.tabs.all'))}
+          {renderTab('nieuw', t('aanbieder.reservations.tabs.new'), pendingCount)}
+          {renderTab('bevestigd', t('aanbieder.reservations.tabs.confirmed'))}
+          {renderTab('afgerond', t('aanbieder.reservations.tabs.completed'))}
         </View>
 
         <FlatList
@@ -338,8 +342,8 @@ export default function MerchantReservationsScreen() {
               <Ionicons name="calendar-outline" size={48} color="#d1cbc4" />
               <Text className="text-warm-400 text-base text-center mt-4">
                 {activeTab === 'alle'
-                  ? 'Er zijn nog geen reserveringen binnengekomen'
-                  : 'Geen reserveringen in deze categorie'}
+                  ? t('aanbieder.reservations.empty.all')
+                  : t('aanbieder.reservations.empty.other')}
               </Text>
             </View>
           }

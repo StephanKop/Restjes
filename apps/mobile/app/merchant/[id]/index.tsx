@@ -11,6 +11,7 @@ import { useLocalSearchParams, useNavigation, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { supabase } from '../../../lib/supabase'
 import { formatPickupTime, formatRelativeDate } from '../../../lib/format'
+import { useTranslation } from '../../../lib/i18n'
 
 interface Merchant {
   id: string
@@ -62,6 +63,7 @@ function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
 }
 
 export default function MerchantDetailScreen() {
+  const { t } = useTranslation()
   const { id } = useLocalSearchParams<{ id: string }>()
   const navigation = useNavigation()
 
@@ -116,7 +118,7 @@ export default function MerchantDetailScreen() {
     return (
       <View className="flex-1 bg-offwhite items-center justify-center px-5">
         <Text className="text-warm-400 text-base text-center">
-          Aanbieder niet gevonden.
+          {t('merchant.notFound')}
         </Text>
       </View>
     )
@@ -148,12 +150,12 @@ export default function MerchantDetailScreen() {
         <View className="flex-row gap-1 mt-2">
           {item.is_vegan && (
             <View className="bg-brand-100 rounded-lg px-2 py-0.5">
-              <Text className="text-xs text-brand-700">Vegan</Text>
+              <Text className="text-xs text-brand-700">{t('merchant.dishTags.vegan')}</Text>
             </View>
           )}
           {item.is_vegetarian && !item.is_vegan && (
             <View className="bg-brand-100 rounded-lg px-2 py-0.5">
-              <Text className="text-xs text-brand-700">Vega</Text>
+              <Text className="text-xs text-brand-700">{t('merchant.dishTags.vegetarianShort')}</Text>
             </View>
           )}
         </View>
@@ -178,7 +180,7 @@ export default function MerchantDetailScreen() {
             </View>
           )}
           <Text className="text-sm font-bold text-warm-800">
-            {review.profile?.display_name ?? 'Anoniem'}
+            {review.profile?.display_name ?? t('merchant.anonymous')}
           </Text>
         </View>
         <Text className="text-xs text-warm-400">
@@ -194,7 +196,7 @@ export default function MerchantDetailScreen() {
       {review.merchant_reply && (
         <View className="mt-3 rounded-xl bg-brand-50 p-3">
           <Text className="text-xs font-bold text-brand-700 mb-1">
-            Reactie van aanbieder
+            {t('merchant.merchantReply')}
           </Text>
           <Text className="text-sm text-brand-800">{review.merchant_reply}</Text>
         </View>
@@ -243,7 +245,7 @@ export default function MerchantDetailScreen() {
                 {merchant.avg_rating.toFixed(1)}
               </Text>
               <Text className="text-sm text-warm-500 ml-1">
-                ({merchant.review_count} {merchant.review_count === 1 ? 'beoordeling' : 'beoordelingen'})
+                ({t(merchant.review_count === 1 ? 'merchant.reviewCount.singular' : 'merchant.reviewCount.plural', { count: merchant.review_count })})
               </Text>
             </View>
           )}
@@ -257,7 +259,7 @@ export default function MerchantDetailScreen() {
 
           {/* Available dishes */}
           <Text className="text-lg font-bold text-warm-800 mb-3">
-            Beschikbare gerechten
+            {t('merchant.availableDishes')}
           </Text>
           {dishes.length > 0 ? (
             <View className="-mx-5">
@@ -273,7 +275,7 @@ export default function MerchantDetailScreen() {
           ) : (
             <View className="bg-white rounded-xl p-4">
               <Text className="text-sm text-warm-400 text-center">
-                Geen gerechten beschikbaar op dit moment.
+                {t('merchant.noDishesNow')}
               </Text>
             </View>
           )}
@@ -281,12 +283,12 @@ export default function MerchantDetailScreen() {
           {/* Reviews */}
           <View className="flex-row items-center justify-between mt-8 mb-3">
             <Text className="text-lg font-bold text-warm-800">
-              Beoordelingen
+              {t('merchant.reviewsHeading')}
             </Text>
             {reviews.length > 0 && (
               <Pressable onPress={() => router.push(`/merchant/${merchant.id}/reviews` as any)}>
                 <Text className="text-sm font-bold text-brand-600">
-                  Alles bekijken
+                  {t('merchant.seeAll')}
                 </Text>
               </Pressable>
             )}
@@ -300,7 +302,7 @@ export default function MerchantDetailScreen() {
                   onPress={() => router.push(`/merchant/${merchant.id}/reviews` as any)}
                 >
                   <Text className="text-sm font-bold text-brand-600">
-                    Alle {merchant.review_count} beoordelingen bekijken
+                    {t('merchant.seeAllCount', { count: merchant.review_count })}
                   </Text>
                 </Pressable>
               )}
@@ -308,7 +310,7 @@ export default function MerchantDetailScreen() {
           ) : (
             <View className="bg-white rounded-xl p-4">
               <Text className="text-sm text-warm-400 text-center">
-                Nog geen beoordelingen.
+                {t('merchant.noReviews')}
               </Text>
             </View>
           )}
