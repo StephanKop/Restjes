@@ -27,6 +27,8 @@ import {
   takePhoto as takePhotoFromLib,
   type ImagePickerAsset,
 } from '../../lib/image-picker'
+import { DishStepper } from '../../components/DishStepper'
+import { DateTimePickerField } from '../../components/DateTimePickerField'
 
 function parseTime(hhmm: string): Date {
   const d = new Date()
@@ -279,15 +281,13 @@ export default function CreateDishScreen() {
       let pickupStartDate: string | null = null
       let pickupEndDate: string | null = null
       if (pickupStart) {
-        const today = new Date().toISOString().split('T')[0]
-        const start = new Date(`${today}T${pickupStart}`)
+        const start = new Date(pickupStart)
         if (!isNaN(start.getTime())) {
           pickupStartDate = start.toISOString()
           if (pickupEnd) {
-            const end = new Date(`${today}T${pickupEnd}`)
+            const end = new Date(pickupEnd)
             if (!isNaN(end.getTime())) pickupEndDate = end.toISOString()
           } else {
-            // Default pickup end to +1 hour
             const end = new Date(start.getTime() + 3600000)
             pickupEndDate = end.toISOString()
           }
@@ -346,58 +346,7 @@ export default function CreateDishScreen() {
   }
 
   // ---- Step indicator ----
-  const renderStepIndicator = () => (
-    <View className="flex-row items-center justify-center px-10 pt-4 pb-2">
-      {STEP_LABELS.map((label, i) => {
-        const completed = i < step
-        const current = i === step
-        return (
-          <View key={label} className="flex-row items-center flex-1">
-            {i > 0 && (
-              <View
-                className={`flex-1 h-0.5 ${completed ? 'bg-brand-500' : 'bg-warm-200'}`}
-              />
-            )}
-            <View className="items-center">
-              <View
-                className={`w-9 h-9 rounded-full items-center justify-center ${
-                  completed
-                    ? 'bg-brand-500'
-                    : current
-                    ? 'bg-white border-2 border-brand-500'
-                    : 'bg-warm-100'
-                }`}
-              >
-                {completed ? (
-                  <Ionicons name="checkmark" size={18} color="#fff" />
-                ) : (
-                  <Text
-                    className={`text-sm font-bold ${
-                      current ? 'text-brand-600' : 'text-warm-400'
-                    }`}
-                  >
-                    {i + 1}
-                  </Text>
-                )}
-              </View>
-              <Text
-                className={`text-xs mt-1 ${
-                  current ? 'text-brand-600 font-bold' : 'text-warm-400'
-                }`}
-              >
-                {label}
-              </Text>
-            </View>
-            {i < STEP_LABELS.length - 1 && (
-              <View
-                className={`flex-1 h-0.5 ${completed && i + 1 <= step ? 'bg-brand-500' : 'bg-warm-200'}`}
-              />
-            )}
-          </View>
-        )
-      })}
-    </View>
-  )
+  const renderStepIndicator = () => <DishStepper labels={STEP_LABELS} step={step} />
 
   // ---- Step 1: Gerecht ----
   const renderStep0 = () => (
@@ -471,23 +420,24 @@ export default function CreateDishScreen() {
       </View>
 
       <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('dishForm.fields.pickupStartLabel')}</Text>
-      <TimePickerField
+      <DateTimePickerField
         value={pickupStart}
-        placeholder={t('dishForm.fields.pickupTimePlaceholder')}
-        onChange={(t) => {
-          setPickupStart(t)
-          if (!pickupEnd && /^\d{2}:\d{2}$/.test(t)) {
-            const [h, m] = t.split(':').map(Number)
-            const endH = (h + 1) % 24
-            setPickupEnd(`${String(endH).padStart(2, '0')}:${String(m).padStart(2, '0')}`)
+        placeholder={t('dishForm.fields.pickupDateTimePlaceholder')}
+        minimumDate={new Date()}
+        onChange={(iso) => {
+          setPickupStart(iso)
+          if (!pickupEnd) {
+            const end = new Date(new Date(iso).getTime() + 3600000)
+            setPickupEnd(end.toISOString())
           }
         }}
       />
 
       <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('dishForm.fields.pickupEndLabel')}</Text>
-      <TimePickerField
+      <DateTimePickerField
         value={pickupEnd}
-        placeholder={t('dishForm.fields.pickupTimePlaceholder')}
+        placeholder={t('dishForm.fields.pickupDateTimePlaceholder')}
+        minimumDate={pickupStart ? new Date(pickupStart) : new Date()}
         onChange={setPickupEnd}
       />
 

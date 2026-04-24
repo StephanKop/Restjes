@@ -78,14 +78,7 @@ export default function ImpactScreen() {
   const maxBucket = Math.max(1, ...buckets.map((b) => b.count))
 
   return (
-    <SafeAreaView className="flex-1 bg-offwhite" edges={['top', 'bottom']}>
-      <View className="flex-row items-center px-5 pt-2 pb-3">
-        <Pressable onPress={() => router.back()} className="-ml-1 mr-2 p-1">
-          <Ionicons name="chevron-back" size={28} color="#3d3833" />
-        </Pressable>
-        <Text className="text-2xl font-extrabold text-warm-800">{t('impact.title')}</Text>
-      </View>
-
+    <SafeAreaView className="flex-1 bg-offwhite" edges={['bottom']}>
       {loading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#22c55e" />

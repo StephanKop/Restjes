@@ -50,7 +50,8 @@ function RootStack() {
       <Stack.Screen name="merchant/[id]/reviews" options={{ ...headerOptions, headerTitle: t('nav.stackTitles.reviews') }} />
       <Stack.Screen name="chat/[conversationId]" options={{ ...headerOptions, headerTitle: '' }} />
       <Stack.Screen name="review/[reservationId]" options={{ ...headerOptions, headerTitle: t('nav.stackTitles.review') }} />
-      <Stack.Screen name="impact" options={{ headerShown: false }} />
+      <Stack.Screen name="impact" options={{ ...headerOptions, headerTitle: t('nav.stackTitles.impact') }} />
+      <Stack.Screen name="settings" options={{ ...headerOptions, headerTitle: t('nav.stackTitles.settings') }} />
       <Stack.Screen name="aanbieder/index" options={{ ...headerOptions, headerTitle: t('nav.stackTitles.myOffer') }} />
       <Stack.Screen name="aanbieder/dishes" options={{ ...headerOptions, headerTitle: t('nav.stackTitles.myDishes') }} />
       <Stack.Screen name="aanbieder/reservations" options={{ ...headerOptions, headerTitle: t('nav.stackTitles.reservations') }} />

@@ -8,6 +8,7 @@ import {
   Image,
   ScrollView,
   ActivityIndicator,
+  Linking,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
@@ -16,7 +17,6 @@ import { useAuth } from '../../lib/auth-context'
 import { supabase } from '../../lib/supabase'
 import { pickImage as pickImageFromLib } from '../../lib/image-picker'
 import { useTranslation } from '../../lib/i18n'
-import { LanguageSwitcher } from '../../components/LanguageSwitcher'
 
 interface ProfileData {
   display_name: string | null
@@ -205,8 +205,6 @@ export default function ProfileScreen() {
         <View className="px-5 pt-2 pb-8">
           <Text className="text-2xl font-extrabold text-warm-800 mb-6">{t('profile.title')}</Text>
 
-          <LanguageSwitcher />
-
           <View className="bg-white rounded-2xl p-5 mb-4">
             {/* Avatar + name */}
             <View className="flex-row items-center mb-4">
@@ -265,22 +263,6 @@ export default function ProfileScreen() {
             </Pressable>
           </View>
 
-          {/* Impact */}
-          <View className="bg-white rounded-2xl overflow-hidden mb-4">
-            <Pressable
-              onPress={() => router.push('/impact' as any)}
-              className="flex-row items-center px-5 py-4 active:bg-warm-100"
-            >
-              <View className="w-8 h-8 rounded-lg bg-brand-100 items-center justify-center mr-3">
-                <Ionicons name="leaf-outline" size={18} color="#22c55e" />
-              </View>
-              <Text className="text-warm-800 text-base font-bold flex-1">
-                Mijn impact
-              </Text>
-              <Ionicons name="chevron-forward" size={18} color="#b0a89e" />
-            </Pressable>
-          </View>
-
           {/* Merchant section */}
           <View className="bg-white rounded-2xl overflow-hidden mb-4">
             <Pressable
@@ -312,7 +294,7 @@ export default function ProfileScreen() {
           {/* App menu */}
           <View className="bg-white rounded-2xl overflow-hidden mb-4">
             <Pressable
-              onPress={() => {}}
+              onPress={() => router.push('/settings' as any)}
               className="flex-row items-center px-5 py-4 border-b border-warm-100 active:bg-warm-100"
             >
               <Ionicons name="settings-outline" size={20} color="#3d3833" />
@@ -322,7 +304,7 @@ export default function ProfileScreen() {
               <Ionicons name="chevron-forward" size={18} color="#b0a89e" />
             </Pressable>
             <Pressable
-              onPress={() => {}}
+              onPress={() => Linking.openURL('https://www.kliekjesclub.nl/faq')}
               className="flex-row items-center px-5 py-4 border-b border-warm-100 active:bg-warm-100"
             >
               <Ionicons name="help-circle-outline" size={20} color="#3d3833" />
@@ -332,7 +314,7 @@ export default function ProfileScreen() {
               <Ionicons name="chevron-forward" size={18} color="#b0a89e" />
             </Pressable>
             <Pressable
-              onPress={() => {}}
+              onPress={() => Linking.openURL('https://www.kliekjesclub.nl/about')}
               className="flex-row items-center px-5 py-4 active:bg-warm-100"
             >
               <Ionicons name="information-circle-outline" size={20} color="#3d3833" />

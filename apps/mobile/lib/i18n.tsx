@@ -77,6 +77,10 @@ const i18n = new I18n(translations, {
   defaultLocale,
 })
 
+// Match ICU-style placeholders like `{count}` used by next-intl on web so the
+// same message files work in both apps. i18n-js defaults to `%{name}` / `{{name}}`.
+i18n.placeholder = /\{(\w+)\}/g
+
 function detectInitialLocale(): Locale {
   const deviceLocale = Localization.getLocales()[0]?.languageCode ?? null
   return resolveLocale(deviceLocale)

@@ -12,12 +12,10 @@ import {
 } from 'react-native'
 import { Link, router } from 'expo-router'
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av'
-import * as WebBrowser from 'expo-web-browser'
-import { makeRedirectUri } from 'expo-auth-session'
 import { supabase } from '../../lib/supabase'
 import { useTranslation } from '../../lib/i18n'
-
-WebBrowser.maybeCompleteAuthSession()
+import { signInWithOAuthNative } from '../../lib/oauth'
+import { GoogleLogo } from '../../components/GoogleLogo'
 
 export default function LoginScreen() {
   const { t } = useTranslation()
@@ -63,48 +61,14 @@ export default function LoginScreen() {
     setError(null)
 
     try {
-      const redirectUri = makeRedirectUri({ scheme: 'kliekjesclub' })
-
-      const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: redirectUri,
-          skipBrowserRedirect: true,
-        },
-      })
-
-      if (oauthError || !data.url) {
-        setError(t('auth.mobile.errors.googleStartFailed'))
-        setGoogleLoading(false)
+      const result = await signInWithOAuthNative('google')
+      if (result.ok) {
+        router.replace('/(tabs)')
         return
       }
-
-      const result = await WebBrowser.openAuthSessionAsync(data.url, redirectUri)
-
-      if (result.type === 'success') {
-        const url = new URL(result.url)
-
-        // Handle both fragment and query params
-        const params = new URLSearchParams(
-          url.hash ? url.hash.substring(1) : url.search.substring(1)
-        )
-        const accessToken = params.get('access_token')
-        const refreshToken = params.get('refresh_token')
-
-        if (accessToken && refreshToken) {
-          const { error: sessionError } = await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-          })
-
-          if (!sessionError) {
-            router.replace('/(tabs)')
-            return
-          }
-        }
-
-        setError(t('auth.mobile.errors.sessionFailed'))
-      }
+      if (result.reason === 'start') setError(t('auth.mobile.errors.googleStartFailed'))
+      else if (result.reason === 'session') setError(t('auth.mobile.errors.sessionFailed'))
+      // 'cancelled' — user closed the browser, no message needed
     } catch {
       setError(t('auth.mobile.errors.googleGeneric'))
     } finally {
@@ -162,7 +126,7 @@ export default function LoginScreen() {
               <ActivityIndicator color="#3d3833" />
             ) : (
               <>
-                <GoogleIcon />
+                <GoogleLogo />
                 <Text className="text-warm-800 font-bold text-base ml-3">
                   {t('auth.mobile.continueWithGoogle')}
                 </Text>
@@ -231,16 +195,6 @@ export default function LoginScreen() {
           </View>
         </View>
       </KeyboardAvoidingView>
-    </View>
-  )
-}
-
-function GoogleIcon() {
-  // Inline SVG isn't available in RN, so use a text-based approach
-  // This renders the Google "G" logo using styled views
-  return (
-    <View style={{ width: 20, height: 20, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{ fontSize: 18, fontWeight: '700', color: '#4285F4' }}>G</Text>
     </View>
   )
 }

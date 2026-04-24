@@ -18,6 +18,13 @@ expo-env.d.ts
 *.key
 *.mobileprovision
 
+# EAS / Firebase credentials — contain service-account keys, never commit
+credentials.json
+google-services.json
+GoogleService-Info.plist
+# Any Firebase service-account key downloads (filename varies per project)
+*-firebase-adminsdk-*.json
+
 # Metro
 .metro-health-check*
 

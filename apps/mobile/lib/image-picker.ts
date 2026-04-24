@@ -69,6 +69,8 @@ export async function takePhoto(): Promise<ImagePickerAsset | null> {
     Alert.alert('Niet beschikbaar', UNAVAILABLE_MSG)
     return null
   }
+  const granted = await requestCameraPermission()
+  if (!granted) return null
   const result = await ImagePicker.launchCameraAsync({
     allowsEditing: true,
     aspect: [16, 9],

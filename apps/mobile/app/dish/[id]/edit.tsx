@@ -19,6 +19,7 @@ import { useAuth } from '../../../lib/auth-context'
 import { allergenLabel } from '../../../lib/format'
 import { pickImage as pickImageFromLib, takePhoto as takePhotoFromLib, type ImagePickerAsset } from '../../../lib/image-picker'
 import { useTranslation } from '../../../lib/i18n'
+import { DateTimePickerField } from '../../../components/DateTimePickerField'
 
 const ALL_ALLERGENS = [
   'gluten', 'crustaceans', 'eggs', 'fish', 'peanuts', 'soybeans',
@@ -67,11 +68,11 @@ export default function EditDishScreen() {
 
       if (d.pickup_start) {
         const s = new Date(d.pickup_start)
-        setPickupStart(s.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }))
+        if (!isNaN(s.getTime())) setPickupStart(s.toISOString())
       }
       if (d.pickup_end) {
         const e = new Date(d.pickup_end)
-        setPickupEnd(e.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }))
+        if (!isNaN(e.getTime())) setPickupEnd(e.toISOString())
       }
     }
 
@@ -170,9 +171,8 @@ export default function EditDishScreen() {
       let pickupStartDate: string | null = null
       let pickupEndDate: string | null = null
       if (pickupStart && pickupEnd) {
-        const today = new Date().toISOString().split('T')[0]
-        const start = new Date(`${today}T${pickupStart}`)
-        const end = new Date(`${today}T${pickupEnd}`)
+        const start = new Date(pickupStart)
+        const end = new Date(pickupEnd)
         if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
           pickupStartDate = start.toISOString()
           pickupEndDate = end.toISOString()
@@ -308,23 +308,26 @@ export default function EditDishScreen() {
             </View>
 
             {/* Pickup times */}
-            <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('dishForm.fields.pickupWindow')}</Text>
-            <View className="flex-row gap-3 mb-4">
-              <TextInput
-                className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800"
-                placeholder={t('dishForm.fields.pickupFromPlaceholder')}
-                placeholderTextColor="#b0a89e"
-                value={pickupStart}
-                onChangeText={setPickupStart}
-              />
-              <TextInput
-                className="flex-1 bg-white border border-warm-200 rounded-xl px-4 py-3 text-[16px] text-warm-800"
-                placeholder={t('dishForm.fields.pickupUntilPlaceholder')}
-                placeholderTextColor="#b0a89e"
-                value={pickupEnd}
-                onChangeText={setPickupEnd}
-              />
-            </View>
+            <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('dishForm.fields.pickupStartLabel')}</Text>
+            <DateTimePickerField
+              value={pickupStart}
+              placeholder={t('dishForm.fields.pickupDateTimePlaceholder')}
+              onChange={(iso) => {
+                setPickupStart(iso)
+                if (!pickupEnd) {
+                  const end = new Date(new Date(iso).getTime() + 3600000)
+                  setPickupEnd(end.toISOString())
+                }
+              }}
+            />
+
+            <Text className="text-sm font-bold text-warm-600 mb-1.5">{t('dishForm.fields.pickupEndLabel')}</Text>
+            <DateTimePickerField
+              value={pickupEnd}
+              placeholder={t('dishForm.fields.pickupDateTimePlaceholder')}
+              minimumDate={pickupStart ? new Date(pickupStart) : undefined}
+              onChange={setPickupEnd}
+            />
 
             {/* Toggle options */}
             <Text className="text-sm font-bold text-warm-600 mb-2">{t('dishForm.fields.optionsLabel')}</Text>

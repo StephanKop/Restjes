@@ -11,6 +11,7 @@ import {
   ScrollView,
   Modal,
   Animated,
+  Easing,
   Dimensions,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -79,17 +80,23 @@ export default function DiscoverScreen() {
   const slideAnim = useRef(new Animated.Value(SCREEN_WIDTH)).current
   const backdropAnim = useRef(new Animated.Value(0)).current
 
+  // iOS-style sheet curve: fast start, gentle settle. Feels more tactile than linear.
+  const PANEL_EASE_OUT = Easing.bezier(0.32, 0.72, 0, 1)
+  const PANEL_EASE_IN = Easing.bezier(0.4, 0, 0.68, 0.3)
+
   const openFilter = () => {
     setFilterOpen(true)
     Animated.parallel([
       Animated.timing(slideAnim, {
         toValue: 0,
-        duration: 280,
+        duration: 340,
+        easing: PANEL_EASE_OUT,
         useNativeDriver: true,
       }),
       Animated.timing(backdropAnim, {
         toValue: 1,
-        duration: 280,
+        duration: 260,
+        easing: Easing.out(Easing.quad),
         useNativeDriver: true,
       }),
     ]).start()
@@ -99,12 +106,14 @@ export default function DiscoverScreen() {
     Animated.parallel([
       Animated.timing(slideAnim, {
         toValue: SCREEN_WIDTH,
-        duration: 250,
+        duration: 240,
+        easing: PANEL_EASE_IN,
         useNativeDriver: true,
       }),
       Animated.timing(backdropAnim, {
         toValue: 0,
-        duration: 250,
+        duration: 220,
+        easing: Easing.in(Easing.quad),
         useNativeDriver: true,
       }),
     ]).start(() => setFilterOpen(false))

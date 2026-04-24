@@ -24,6 +24,7 @@
     "pickupStartLabel": "Ophalen vanaf *",
     "pickupEndLabel": "Ophalen tot",
     "pickupTimePlaceholder": "Kies een tijd",
+    "pickupDateTimePlaceholder": "Kies datum en tijd",
     "storageLabel": "Vers of ingevroren",
     "fresh": "Vers",
     "frozen": "Ingevroren",

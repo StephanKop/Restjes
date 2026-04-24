@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
 import { Nunito } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
@@ -22,7 +22,6 @@ export const metadata: Metadata = {
     icon: '/favicon.png',
     apple: '/favicon.png',
   },
-  themeColor: '#22c55e',
   title: {
     default: 'Kliekjesclub - Deel je kliekjes, maak iemand blij',
     template: '%s | Kliekjesclub',
@@ -45,6 +44,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#22c55e',
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

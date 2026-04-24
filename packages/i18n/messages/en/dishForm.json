@@ -24,6 +24,7 @@
     "pickupStartLabel": "Pickup from *",
     "pickupEndLabel": "Pickup until",
     "pickupTimePlaceholder": "Choose a time",
+    "pickupDateTimePlaceholder": "Choose date and time",
     "storageLabel": "Fresh or frozen",
     "fresh": "Fresh",
     "frozen": "Frozen",
