@@ -41,7 +41,6 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "./plugins/with-no-push-entitlement.js",
       "expo-router",
       [
         "expo-splash-screen",
