@@ -24,6 +24,7 @@ export async function Footer() {
     { href: '/browse', label: t('links.discover') },
     { href: '/restjes', label: t('links.citiesIndex') },
     { href: '/categorie', label: t('links.categoriesIndex') },
+    { href: '/kennisbank', label: t('links.kennisbank') },
     { href: '/reservations', label: t('links.reservations') },
     { href: '/messages', label: t('links.messages') },
     { href: '/aanbieder/dishes', label: t('links.myOffer') },
