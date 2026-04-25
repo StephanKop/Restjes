@@ -22,6 +22,7 @@ export async function Footer() {
 
   const navLinks = [
     { href: '/browse', label: t('links.discover') },
+    { href: '/restjes', label: t('links.citiesIndex') },
     { href: '/reservations', label: t('links.reservations') },
     { href: '/messages', label: t('links.messages') },
     { href: '/aanbieder/dishes', label: t('links.myOffer') },

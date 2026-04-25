@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { createServerComponentClient } from '@/lib/supabase-server'
 import { dishPath, merchantPath } from '@/lib/slug'
+import { DUTCH_CITIES, findCity } from '@/data/dutch-cities'
 
 const BASE_URL = 'https://kliekjesclub.nl'
 
@@ -17,7 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch all verified merchants
   const { data: merchants } = await supabase
     .from('merchants')
-    .select('id, business_name, updated_at')
+    .select('id, business_name, city, updated_at')
     .eq('is_verified', true)
 
   const staticPages: MetadataRoute.Sitemap = [
@@ -63,6 +64,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.5,
     },
+    {
+      url: `${BASE_URL}/restjes`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.85,
+    },
   ]
 
   const dishPages: MetadataRoute.Sitemap = (dishes ?? []).map((dish) => ({
@@ -79,5 +86,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  return [...staticPages, ...dishPages, ...merchantPages]
+  // City landing pages: every curated city is included so Google has a
+  // stable index to crawl. Cities that resolve from real merchant rows get
+  // higher priority (signals there's actual content there).
+  const citiesWithMerchants = new Set<string>()
+  for (const m of merchants ?? []) {
+    const c = findCity(m.city)
+    if (c) citiesWithMerchants.add(c.slug)
+  }
+  const cityPages: MetadataRoute.Sitemap = DUTCH_CITIES.map((city) => ({
+    url: `${BASE_URL}/restjes/${city.slug}`,
+    lastModified: new Date(),
+    changeFrequency: citiesWithMerchants.has(city.slug) ? 'daily' as const : 'weekly' as const,
+    priority: citiesWithMerchants.has(city.slug) ? 0.75 : 0.4,
+  }))
+
+  return [...staticPages, ...dishPages, ...merchantPages, ...cityPages]
 }

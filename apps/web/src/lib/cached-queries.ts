@@ -257,6 +257,85 @@ export const getCachedBrowseMerchants = unstable_cache(
 )
 
 /**
+ * All available dishes for a given city. Used by the SEO landing page at
+ * /restjes/[city]. Case-insensitive on the city column. Filters out
+ * unverified merchants.
+ */
+export const getCachedCityDishes = unstable_cache(
+  async (city: string) => {
+    const supabase = getPublicClient()
+    const { data } = await supabase
+      .from('dishes')
+      .select(
+        `
+        id, title, description, image_url, quantity_available,
+        pickup_start, pickup_end, bring_own_container, is_vegetarian, is_vegan,
+        merchant:merchants!inner (
+          id, business_name, city, latitude, longitude, is_verified
+        ),
+        dish_allergies (allergen)
+      `,
+      )
+      .eq('status', 'available')
+      .gt('quantity_available', 0)
+      .ilike('merchant.city', city)
+      .eq('merchant.is_verified', true)
+      .order('pickup_start', { ascending: true })
+      .limit(60)
+
+    return data ?? []
+  },
+  ['city-dishes'],
+  { revalidate: 300, tags: ['dishes'] },
+)
+
+/**
+ * Verified merchants in a given city for the city landing page.
+ */
+export const getCachedCityMerchants = unstable_cache(
+  async (city: string) => {
+    const supabase = getPublicClient()
+    const { data } = await supabase
+      .from('merchants')
+      .select(
+        `id, business_name, city, description, logo_url,
+         avg_rating, review_count, is_verified`,
+      )
+      .eq('is_verified', true)
+      .ilike('city', city)
+      .order('avg_rating', { ascending: false })
+      .limit(30)
+
+    return data ?? []
+  },
+  ['city-merchants'],
+  { revalidate: 600, tags: ['merchants'] },
+)
+
+/**
+ * Distinct cities that currently have at least one verified merchant.
+ * Used to drive the /restjes index page and sitemap.
+ */
+export const getCachedCitiesWithContent = unstable_cache(
+  async () => {
+    const supabase = getPublicClient()
+    const { data } = await supabase
+      .from('merchants')
+      .select('city')
+      .eq('is_verified', true)
+      .not('city', 'is', null)
+
+    const set = new Set<string>()
+    for (const row of data ?? []) {
+      if (row.city) set.add(row.city)
+    }
+    return Array.from(set)
+  },
+  ['cities-with-content'],
+  { revalidate: 1800, tags: ['merchants'] },
+)
+
+/**
  * Cached all reviews with dish titles — revalidates every 5 minutes.
  */
 export const getCachedMerchantReviewsFull = unstable_cache(
