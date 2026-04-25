@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next'
 import { createServerComponentClient } from '@/lib/supabase-server'
 import { dishPath, merchantPath } from '@/lib/slug'
 import { DUTCH_CITIES, findCity } from '@/data/dutch-cities'
+import { CATEGORIES } from '@/data/categories'
 
 const BASE_URL = 'https://kliekjesclub.nl'
 
@@ -70,6 +71,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 0.85,
     },
+    {
+      url: `${BASE_URL}/categorie`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.85,
+    },
   ]
 
   const dishPages: MetadataRoute.Sitemap = (dishes ?? []).map((dish) => ({
@@ -101,5 +108,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: citiesWithMerchants.has(city.slug) ? 0.75 : 0.4,
   }))
 
-  return [...staticPages, ...dishPages, ...merchantPages, ...cityPages]
+  const categoryPages: MetadataRoute.Sitemap = CATEGORIES.map((category) => ({
+    url: `${BASE_URL}/categorie/${category.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily' as const,
+    priority: 0.7,
+  }))
+
+  return [...staticPages, ...dishPages, ...merchantPages, ...cityPages, ...categoryPages]
 }

@@ -313,6 +313,63 @@ export const getCachedCityMerchants = unstable_cache(
 )
 
 /**
+ * Available dishes for a given category landing page (/categorie/[slug]).
+ * The category filter discriminates on `kind` and applies the right
+ * Supabase query. Allergen-free is post-filtered in JS, mirroring /browse.
+ */
+export type CategoryQueryFilter =
+  | { kind: 'boolean'; column: 'is_vegetarian' | 'is_vegan' | 'is_frozen'; value: boolean }
+  | { kind: 'keyword'; query: string }
+  | { kind: 'allergenFree'; allergens: readonly string[] }
+
+export const getCachedCategoryDishes = unstable_cache(
+  async (slug: string, filter: CategoryQueryFilter) => {
+    const supabase = getPublicClient()
+    let query = supabase
+      .from('dishes')
+      .select(
+        `
+        id, title, description, image_url, quantity_available,
+        pickup_start, pickup_end, bring_own_container, is_vegetarian, is_vegan,
+        merchant:merchants!inner (
+          id, business_name, city, latitude, longitude, is_verified
+        ),
+        dish_allergies (allergen)
+      `,
+      )
+      .eq('status', 'available')
+      .gt('quantity_available', 0)
+      .eq('merchant.is_verified', true)
+      .order('pickup_start', { ascending: true })
+      .limit(60)
+
+    if (filter.kind === 'boolean') {
+      query = query.eq(filter.column, filter.value)
+    } else if (filter.kind === 'keyword') {
+      query = query.textSearch('search_vector', filter.query, { type: 'websearch' })
+    }
+    // allergenFree: applied below as JS post-filter
+
+    const { data, error } = await query
+    if (error) {
+      console.error('[getCachedCategoryDishes]', slug, error)
+      return []
+    }
+
+    if (filter.kind === 'allergenFree' && data) {
+      return data.filter((dish) => {
+        const dishAllergens = (dish.dish_allergies as { allergen: string }[]).map((a) => a.allergen)
+        return !filter.allergens.some((a) => dishAllergens.includes(a))
+      })
+    }
+
+    return data ?? []
+  },
+  ['category-dishes'],
+  { revalidate: 300, tags: ['dishes'] },
+)
+
+/**
  * Distinct cities that currently have at least one verified merchant.
  * Used to drive the /restjes index page and sitemap.
  */
