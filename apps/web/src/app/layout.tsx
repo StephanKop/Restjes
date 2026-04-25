@@ -2,8 +2,7 @@ import { Suspense } from 'react'
 import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
 import { Nunito } from 'next/font/google'
-import { NextIntlClientProvider } from 'next-intl'
-import { getLocale, getMessages } from 'next-intl/server'
+import { getLocale } from 'next-intl/server'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { localeMeta, type Locale } from '@kliekjesclub/i18n'
@@ -73,10 +72,13 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: '/',
+    languages: {
+      'nl-NL': '/',
+      'en-US': '/en',
+      'x-default': '/',
+    },
   },
   verification: {
-    // TODO: Replace with the verification token from Google Search Console
-    // (Search Console → Property → Settings → Ownership verification → HTML tag)
     google: process.env.NEXT_PUBLIC_GSC_VERIFICATION,
   },
 }
@@ -86,12 +88,13 @@ export const viewport: Viewport = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // getLocale() reads the locale set by the next-intl middleware. Routes
+  // outside the [locale] segment (e.g. /not-found, /error) fall back to
+  // the default locale.
   const locale = (await getLocale()) as Locale
-  const messages = await getMessages()
   return (
     <html lang={localeMeta[locale]?.htmlLang ?? 'nl-NL'} className={nunito.variable}>
       <body suppressHydrationWarning className="min-h-screen bg-offwhite text-warm-800 antialiased">
-        <NextIntlClientProvider locale={locale} messages={messages}>
         <Script id="microsoft-clarity" strategy="afterInteractive">
           {`(function(c,l,a,r,i,t,y){
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -114,7 +117,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {children}
         <Analytics />
         <SpeedInsights />
-        </NextIntlClientProvider>
       </body>
     </html>
   )

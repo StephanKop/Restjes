@@ -1,8 +1,8 @@
 import { getRequestConfig } from 'next-intl/server'
-import { cookies, headers } from 'next/headers'
+import { hasLocale } from 'next-intl'
+import { routing } from './routing'
 import {
   defaultLocale,
-  resolveLocale,
   type Locale,
   messagesNlCommon,
   messagesEnCommon,
@@ -38,6 +38,8 @@ import {
   messagesEnStaticPages,
 } from '@kliekjesclub/i18n'
 
+// Cookie kept for backwards-compat with any client code that read it directly,
+// but locale is now driven by URL via the next-intl middleware.
 export const LOCALE_COOKIE = 'kc_locale'
 
 // Centralised message registry. Adding a new namespace is a one-line change here.
@@ -80,19 +82,12 @@ const messagesByLocale: Record<Locale, Record<string, unknown>> = {
   },
 }
 
-async function detectLocale(): Promise<Locale> {
-  const cookieStore = await cookies()
-  const fromCookie = cookieStore.get(LOCALE_COOKIE)?.value
-  if (fromCookie) return resolveLocale(fromCookie)
-
-  const headerStore = await headers()
-  const acceptLanguage = headerStore.get('accept-language') ?? ''
-  const preferred = acceptLanguage.split(',')[0]?.trim()
-  return resolveLocale(preferred) ?? defaultLocale
-}
-
-export default getRequestConfig(async () => {
-  const locale = await detectLocale()
+export default getRequestConfig(async ({ requestLocale }) => {
+  // The middleware sets [locale] in the URL; pages provide it via params.
+  const requested = await requestLocale
+  const locale: Locale = hasLocale(routing.locales, requested)
+    ? (requested as Locale)
+    : defaultLocale
   return {
     locale,
     messages: messagesByLocale[locale],

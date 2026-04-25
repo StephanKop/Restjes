@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import Image from 'next/image'
 import { formatPickupTime } from '@/lib/format'
 import type { DishCardData } from '@/components/DishCard'
