@@ -48,6 +48,7 @@ export default async function AboutPage() {
             muted
             playsInline
             preload="metadata"
+            poster="/hero-poster.jpg"
             className="absolute inset-0 h-full w-full object-cover"
             aria-hidden="true"
           >
@@ -102,6 +103,7 @@ export default async function AboutPage() {
             muted
             playsInline
             preload="metadata"
+            poster="/hero-poster.jpg"
             className="absolute inset-0 h-full w-full object-cover"
             aria-hidden="true"
           >

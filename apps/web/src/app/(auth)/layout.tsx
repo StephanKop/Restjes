@@ -12,6 +12,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             muted
             playsInline
             preload="metadata"
+            poster="/hero-poster.jpg"
             className="absolute inset-0 h-full w-full object-cover"
             aria-hidden="true"
           >

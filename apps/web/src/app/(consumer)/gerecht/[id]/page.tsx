@@ -145,7 +145,6 @@ export default async function DishPage({ params }: DishPageProps) {
               className="object-cover"
               priority
               sizes="(max-width: 1024px) 100vw, 70vw"
-              unoptimized
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-400 to-brand-600">
