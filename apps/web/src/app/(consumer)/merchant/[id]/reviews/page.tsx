@@ -1,18 +1,23 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { createServerComponentClient } from '@/lib/supabase-server'
 import { getCachedMerchant, getCachedMerchantReviewsFull } from '@/lib/cached-queries'
 import { ReviewList, type ReviewData } from '@/components/ReviewList'
 import { StarRating } from '@/components/StarRating'
 import { JsonLd } from '@/components/JsonLd'
+import { merchantPath, uuidFromParam } from '@/lib/slug'
 
 interface MerchantReviewsPageProps {
   params: Promise<{ id: string }>
 }
 
 export async function generateMetadata({ params }: MerchantReviewsPageProps): Promise<Metadata> {
-  const { id } = await params
+  const { id: rawId } = await params
+  const id = uuidFromParam(rawId)
+  if (!id) {
+    return { title: 'Beoordelingen - Kliekjesclub' }
+  }
   const supabase = await createServerComponentClient()
 
   const { data: merchant } = await supabase
@@ -31,7 +36,11 @@ export async function generateMetadata({ params }: MerchantReviewsPageProps): Pr
 }
 
 export default async function MerchantReviewsPage({ params }: MerchantReviewsPageProps) {
-  const { id } = await params
+  const { id: rawId } = await params
+  const id = uuidFromParam(rawId)
+  if (!id) {
+    notFound()
+  }
 
   const [merchant, reviews] = await Promise.all([
     getCachedMerchant(id),
@@ -40,6 +49,12 @@ export default async function MerchantReviewsPage({ params }: MerchantReviewsPag
 
   if (!merchant) {
     notFound()
+  }
+
+  const canonicalParent = merchantPath({ id, business_name: merchant.business_name })
+  const canonicalPath = `${canonicalParent}/reviews`
+  if (`/aanbieder/${rawId}/reviews` !== canonicalPath) {
+    redirect(canonicalPath)
   }
 
   const reviewList: ReviewData[] = (reviews ?? [])// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -68,7 +83,7 @@ export default async function MerchantReviewsPage({ params }: MerchantReviewsPag
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     name: merchant.business_name,
-    url: `https://kliekjesclub.nl/aanbieder/${id}`,
+    url: `https://kliekjesclub.nl${canonicalParent}`,
     ...(merchant.avg_rating !== null
       ? {
           aggregateRating: {
@@ -102,7 +117,7 @@ export default async function MerchantReviewsPage({ params }: MerchantReviewsPag
       <JsonLd data={reviewsJsonLd} />
       {/* Back link */}
       <Link
-        href={`/aanbieder/${id}`}
+        href={canonicalParent}
         className="mb-6 inline-flex items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700"
       >
         <span aria-hidden="true">&larr;</span> Terug naar {merchant.business_name}

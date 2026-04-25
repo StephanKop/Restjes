@@ -24,14 +24,16 @@ const nextConfig: NextConfig = {
     return {
       // Checked before file-system routes — empty so dashboard routes resolve first
       beforeFiles: [],
-      // Checked after file-system routes — catches /aanbieder/[uuid] that don't match dashboard pages
+      // Checked after file-system routes — catches /aanbieder/[slug-uuid|uuid]
+      // that don't match dashboard pages. Pattern accepts either a bare UUID or
+      // any kebab-cased slug ending in a UUID.
       afterFiles: [
         {
-          source: '/aanbieder/:id([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
+          source: '/aanbieder/:id([a-z0-9-]*[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
           destination: '/merchant/:id',
         },
         {
-          source: '/aanbieder/:id([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/reviews',
+          source: '/aanbieder/:id([a-z0-9-]*[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/reviews',
           destination: '/merchant/:id/reviews',
         },
       ],

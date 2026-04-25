@@ -22,6 +22,8 @@
     "empty": "No reviews yet."
   },
   "web": {
+    "breadcrumbDiscover": "Discover",
+    "otherMerchantsInCity": "Other merchants in {city}",
     "metadataNotFound": "Merchant not found - Kliekjesclub",
     "metadataTitle": "{name} - Kliekjesclub",
     "metadataDescriptionFallback": "View {name}'s profile on Kliekjesclub.",

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { createServerComponentClient } from '@/lib/supabase-server'
+import { dishPath, merchantPath } from '@/lib/slug'
 
 const BASE_URL = 'https://kliekjesclub.nl'
 
@@ -9,14 +10,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch all available dishes
   const { data: dishes } = await supabase
     .from('dishes')
-    .select('id, updated_at')
+    .select('id, title, updated_at')
     .eq('status', 'available')
     .gt('quantity_available', 0)
 
   // Fetch all verified merchants
   const { data: merchants } = await supabase
     .from('merchants')
-    .select('id, updated_at')
+    .select('id, business_name, updated_at')
     .eq('is_verified', true)
 
   const staticPages: MetadataRoute.Sitemap = [
@@ -57,28 +58,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.4,
     },
     {
-      url: `${BASE_URL}/login`,
+      url: `${BASE_URL}/contact`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
-      priority: 0.3,
-    },
-    {
-      url: `${BASE_URL}/signup`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.3,
+      priority: 0.5,
     },
   ]
 
   const dishPages: MetadataRoute.Sitemap = (dishes ?? []).map((dish) => ({
-    url: `${BASE_URL}/gerecht/${dish.id}`,
+    url: `${BASE_URL}${dishPath({ id: dish.id, title: dish.title })}`,
     lastModified: dish.updated_at ? new Date(dish.updated_at) : new Date(),
     changeFrequency: 'hourly' as const,
     priority: 0.8,
   }))
 
   const merchantPages: MetadataRoute.Sitemap = (merchants ?? []).map((merchant) => ({
-    url: `${BASE_URL}/aanbieder/${merchant.id}`,
+    url: `${BASE_URL}${merchantPath({ id: merchant.id, business_name: merchant.business_name })}`,
     lastModified: merchant.updated_at ? new Date(merchant.updated_at) : new Date(),
     changeFrequency: 'daily' as const,
     priority: 0.7,

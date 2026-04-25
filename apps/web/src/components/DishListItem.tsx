@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { formatPickupTime } from '@/lib/format'
 import type { DishCardData } from '@/components/DishCard'
 import { DishIcon, ClockIcon } from '@/components/icons'
+import { dishPath } from '@/lib/slug'
 
 interface DishListItemProps {
   dish: DishCardData
@@ -13,7 +14,7 @@ export function DishListItem({ dish }: DishListItemProps) {
 
   return (
     <Link
-      href={`/gerecht/${dish.id}`}
+      href={dishPath({ id: dish.id, title: dish.title })}
       className="group flex gap-4 overflow-hidden rounded-2xl bg-white p-3 shadow-card transition-all duration-150 hover:shadow-card-hover active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 sm:p-4"
     >
       {/* Image */}

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { createBrowserClient } from '@supabase/ssr'
 import { useTranslations } from 'next-intl'
 import { DishIcon } from '@/components/icons'
+import { dishPath } from '@/lib/slug'
 
 interface ChatReserveBannerProps {
   dishId: string
@@ -95,7 +96,7 @@ export function ChatReserveBanner({
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <Link href={`/gerecht/${dishId}`} className="text-sm font-semibold text-warm-800 hover:text-brand-600 line-clamp-1">
+          <Link href={dishPath({ id: dishId, title: dishTitle })} className="text-sm font-semibold text-warm-800 hover:text-brand-600 line-clamp-1">
             {dishTitle}
           </Link>
           <p className="text-xs text-warm-500">{t('remaining', { count: maxQuantity })}</p>

@@ -22,6 +22,8 @@
     "empty": "Nog geen beoordelingen."
   },
   "web": {
+    "breadcrumbDiscover": "Ontdekken",
+    "otherMerchantsInCity": "Andere aanbieders in {city}",
     "metadataNotFound": "Aanbieder niet gevonden - Kliekjesclub",
     "metadataTitle": "{name} - Kliekjesclub",
     "metadataDescriptionFallback": "Bekijk het profiel van {name} op Kliekjesclub.",

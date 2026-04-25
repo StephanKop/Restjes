@@ -11,6 +11,7 @@ import { ReservationActions } from '@/components/ReservationActions'
 import { ReservationReviewSection } from '@/components/ReservationReviewSection'
 import { ClipboardIcon, CookingPotIcon } from '@/components/icons'
 import { RealtimeRefresh } from '@/components/RealtimeRefresh'
+import { dishPath } from '@/lib/slug'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('reservations.web')
@@ -198,7 +199,7 @@ export default async function ConsumerReservationsPage({
                 <div className="flex flex-1 flex-col justify-between min-w-0">
                   <div>
                     <div className="mb-1 flex items-start justify-between gap-2">
-                      <Link href={`/gerecht/${dish.id}`}>
+                      <Link href={dishPath({ id: dish.id, title: dish.title })}>
                         <h3 className="font-bold text-warm-900 hover:text-brand-600 line-clamp-1">
                           {dish.title}
                         </h3>

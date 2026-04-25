@@ -50,6 +50,8 @@
   },
   "detail": {
     "breadcrumbDiscover": "Discover",
+    "moreFromMerchant": "More from {merchantName}",
+    "viewAllFromMerchant": "View all →",
     "metadataNotFound": "Dish not found - Kliekjesclub",
     "metadataTitle": "{dishTitle} at {merchantName} - Kliekjesclub",
     "metadataDescriptionFallback": "View {dishTitle} at {merchantName} on Kliekjesclub.",

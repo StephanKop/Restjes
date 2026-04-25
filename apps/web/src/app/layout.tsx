@@ -46,6 +46,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'nl_NL',
+    alternateLocale: ['en_US'],
     siteName: 'Kliekjesclub',
     title: 'Kliekjesclub - Deel je restjes, red eten en help mee tegen voedselverspilling',
     description:

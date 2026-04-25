@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { localeMeta, type Locale } from '@kliekjesclub/i18n'
 import { createServerComponentClient, getUser } from '@/lib/supabase-server'
-import { getCachedDish } from '@/lib/cached-queries'
+import { getCachedDish, getCachedOtherMerchantDishes } from '@/lib/cached-queries'
+import { DishCard, type DishCardData } from '@/components/DishCard'
+import { dishPath, merchantPath, uuidFromParam } from '@/lib/slug'
 import { formatPickupTime, allergenLabel } from '@/lib/format'
 import { ReserveButton } from '@/components/ReserveButton'
 import { StartChatButton } from '@/components/StartChatButton'
@@ -17,7 +19,11 @@ interface DishPageProps {
 }
 
 export async function generateMetadata({ params }: DishPageProps): Promise<Metadata> {
-  const { id } = await params
+  const { id: rawId } = await params
+  const id = uuidFromParam(rawId)
+  if (!id) {
+    return { title: 'Gerecht niet gevonden - Kliekjesclub' }
+  }
   const supabase = await createServerComponentClient()
   const t = await getTranslations('dish.detail')
 
@@ -36,17 +42,25 @@ export async function generateMetadata({ params }: DishPageProps): Promise<Metad
   return {
     title: t('metadataTitle', { dishTitle: dish.title, merchantName: merchant.business_name }),
     description: dish.description ?? t('metadataDescriptionFallback', { dishTitle: dish.title, merchantName: merchant.business_name }),
+    alternates: {
+      canonical: dishPath({ id, title: dish.title }),
+    },
     openGraph: {
       title: t('metadataTitle', { dishTitle: dish.title, merchantName: merchant.business_name }),
       description: dish.description ?? undefined,
       type: 'website',
+      url: `https://kliekjesclub.nl${dishPath({ id, title: dish.title })}`,
       images: dish.image_url ? [{ url: dish.image_url }] : undefined,
     },
   }
 }
 
 export default async function DishPage({ params }: DishPageProps) {
-  const { id } = await params
+  const { id: rawId } = await params
+  const id = uuidFromParam(rawId)
+  if (!id) {
+    notFound()
+  }
   const t = await getTranslations('dish')
   const locale = (await getLocale()) as Locale
   const dateLocale = localeMeta[locale]?.htmlLang ?? 'nl-NL'
@@ -56,6 +70,14 @@ export default async function DishPage({ params }: DishPageProps) {
   if (!dish) {
     notFound()
   }
+
+  // Redirect bare-UUID or stale-slug URLs to the canonical slug form.
+  const canonicalPath = dishPath({ id, title: dish.title })
+  if (`/gerecht/${rawId}` !== canonicalPath) {
+    redirect(canonicalPath)
+  }
+
+  const otherDishesRaw = await getCachedOtherMerchantDishes(dish.merchant_id, id, 3)
 
   const merchant = dish.merchant as unknown as {
     id: string
@@ -89,13 +111,38 @@ export default async function DishPage({ params }: DishPageProps) {
     isOwner = !!ownMerchant
   }
 
+  const breadcrumbJsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Kliekjesclub',
+        item: 'https://kliekjesclub.nl',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: t('detail.breadcrumbDiscover'),
+        item: 'https://kliekjesclub.nl/browse',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: dish.title,
+        item: `https://kliekjesclub.nl${canonicalPath}`,
+      },
+    ],
+  }
+
   const productJsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: dish.title,
     description: dish.description ?? undefined,
     image: dish.image_url ?? undefined,
-    url: `https://kliekjesclub.nl/gerecht/${dish.id}`,
+    url: `https://kliekjesclub.nl${canonicalPath}`,
     offers: {
       '@type': 'Offer',
       price: '0',
@@ -106,7 +153,7 @@ export default async function DishPage({ params }: DishPageProps) {
       seller: {
         '@type': 'Organization',
         name: merchant.business_name,
-        url: `https://kliekjesclub.nl/aanbieder/${merchant.id}`,
+        url: `https://kliekjesclub.nl${merchantPath({ id: merchant.id, business_name: merchant.business_name })}`,
       },
     },
     ...(merchant.avg_rating !== null && merchant.review_count > 0
@@ -124,6 +171,7 @@ export default async function DishPage({ params }: DishPageProps) {
 
   return (
     <div>
+      <JsonLd data={breadcrumbJsonLd} />
       <JsonLd data={productJsonLd} />
 
       {/* Breadcrumb */}
@@ -211,7 +259,7 @@ export default async function DishPage({ params }: DishPageProps) {
 
             {/* Merchant info */}
             <Link
-              href={`/aanbieder/${merchant.id}`}
+              href={merchantPath({ id: merchant.id, business_name: merchant.business_name })}
               className="flex items-center gap-4 rounded-xl border border-warm-200 bg-warm-50/50 p-4 transition-all duration-150 hover:border-brand-200 hover:bg-brand-50/50 active:scale-[0.98]"
             >
               {merchant.logo_url ? (
@@ -427,6 +475,45 @@ export default async function DishPage({ params }: DishPageProps) {
           </div>
         )}
       </div>
+
+      {/* Other dishes from this merchant — internal linking for SEO + discovery */}
+      {otherDishesRaw.length > 0 && (
+        <div className="mt-12" data-reveal>
+          <div className="mb-6 flex items-end justify-between">
+            <h2 className="text-2xl font-extrabold text-warm-900">
+              {t('detail.moreFromMerchant', { merchantName: merchant.business_name })}
+            </h2>
+            <Link
+              href={merchantPath({ id: merchant.id, business_name: merchant.business_name })}
+              className="text-sm font-semibold text-brand-600 hover:text-brand-700"
+            >
+              {t('detail.viewAllFromMerchant')}
+            </Link>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal-stagger>
+            {otherDishesRaw.map((d) => {
+              const card: DishCardData = {
+                id: d.id,
+                title: d.title,
+                description: d.description,
+                image_url: d.image_url,
+                quantity_available: d.quantity_available,
+                pickup_start: d.pickup_start,
+                pickup_end: d.pickup_end,
+                bring_own_container: d.bring_own_container,
+                is_vegetarian: d.is_vegetarian,
+                is_vegan: d.is_vegan,
+                merchant: {
+                  business_name: merchant.business_name,
+                  city: merchant.city,
+                },
+                allergen_count: (d.dish_allergies as { allergen: string }[]).length,
+              }
+              return <DishCard key={d.id} dish={card} />
+            })}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

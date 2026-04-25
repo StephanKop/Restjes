@@ -8,6 +8,7 @@ import { ReviewPageForm } from '@/components/ReviewPageForm'
 import { StarRating } from '@/components/StarRating'
 import { CookingPotIcon, StorefrontIcon, CheckBadgeIcon } from '@/components/icons'
 import { formatRelativeDate } from '@/lib/format'
+import { merchantPath } from '@/lib/slug'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('reviews.webPage')
@@ -170,7 +171,7 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
 
               <div className="text-center">
                 <Link
-                  href={`/aanbieder/${merchant.id}`}
+                  href={merchantPath({ id: merchant.id, business_name: merchant.business_name })}
                   className="text-sm font-semibold text-brand-600 hover:text-brand-700"
                 >
                   {t('viewMerchant', { name: merchant.business_name })}

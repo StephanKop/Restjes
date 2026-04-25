@@ -1,10 +1,16 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { createServerComponentClient } from '@/lib/supabase-server'
-import { getCachedMerchant, getCachedMerchantDishes, getCachedMerchantReviews } from '@/lib/cached-queries'
+import {
+  getCachedMerchant,
+  getCachedMerchantDishes,
+  getCachedMerchantReviews,
+  getCachedOtherMerchantsInCity,
+} from '@/lib/cached-queries'
+import { merchantPath, uuidFromParam } from '@/lib/slug'
 import { DishCard, type DishCardData } from '@/components/DishCard'
 import { ReviewList, type ReviewData } from '@/components/ReviewList'
 import { StarRating } from '@/components/StarRating'
@@ -16,9 +22,13 @@ interface MerchantPageProps {
 }
 
 export async function generateMetadata({ params }: MerchantPageProps): Promise<Metadata> {
-  const { id } = await params
-  const supabase = await createServerComponentClient()
+  const { id: rawId } = await params
+  const id = uuidFromParam(rawId)
   const t = await getTranslations('merchant.web')
+  if (!id) {
+    return { title: t('metadataNotFound') }
+  }
+  const supabase = await createServerComponentClient()
 
   const { data: merchant } = await supabase
     .from('merchants')
@@ -33,17 +43,25 @@ export async function generateMetadata({ params }: MerchantPageProps): Promise<M
   return {
     title: t('metadataTitle', { name: merchant.business_name }),
     description: merchant.description ?? t('metadataDescriptionFallback', { name: merchant.business_name }),
+    alternates: {
+      canonical: merchantPath({ id, business_name: merchant.business_name }),
+    },
     openGraph: {
       title: merchant.business_name,
       description: merchant.description ?? undefined,
       type: 'website',
+      url: `https://kliekjesclub.nl${merchantPath({ id, business_name: merchant.business_name })}`,
       images: merchant.logo_url ? [{ url: merchant.logo_url }] : undefined,
     },
   }
 }
 
 export default async function MerchantPage({ params }: MerchantPageProps) {
-  const { id } = await params
+  const { id: rawId } = await params
+  const id = uuidFromParam(rawId)
+  if (!id) {
+    notFound()
+  }
   const t = await getTranslations('merchant.web')
 
   const [merchant, dishes, latestReviews] = await Promise.all([
@@ -55,6 +73,14 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
   if (!merchant) {
     notFound()
   }
+
+  // Redirect bare-UUID or stale-slug URLs to canonical slug form.
+  const canonicalPath = merchantPath({ id, business_name: merchant.business_name })
+  if (`/aanbieder/${rawId}` !== canonicalPath) {
+    redirect(canonicalPath)
+  }
+
+  const otherMerchants = await getCachedOtherMerchantsInCity(merchant.city, id, 4)
 
   const reviewList: ReviewData[] = (latestReviews ?? [])// eslint-disable-next-line @typescript-eslint/no-explicit-any
   .map((r: any) => ({
@@ -85,9 +111,36 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
     allergen_count: (dish.dish_allergies as { allergen: string }[]).length,
   }))
 
+  const breadcrumbJsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Kliekjesclub',
+        item: 'https://kliekjesclub.nl',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: t('breadcrumbDiscover'),
+        item: 'https://kliekjesclub.nl/browse',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: merchant.business_name,
+        item: `https://kliekjesclub.nl${canonicalPath}`,
+      },
+    ],
+  }
+
   const foodEstablishmentJsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'FoodEstablishment',
+    '@id': `https://kliekjesclub.nl${canonicalPath}`,
+    url: `https://kliekjesclub.nl${canonicalPath}`,
     name: merchant.business_name,
     description: merchant.description ?? undefined,
     address: {
@@ -95,8 +148,21 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
       streetAddress: merchant.address_line1 ?? undefined,
       addressLocality: merchant.city ?? undefined,
       postalCode: merchant.postal_code ?? undefined,
-      addressCountry: 'NL',
+      addressCountry: merchant.country ?? 'NL',
     },
+    ...(merchant.latitude !== null && merchant.longitude !== null
+      ? {
+          geo: {
+            '@type': 'GeoCoordinates',
+            latitude: merchant.latitude,
+            longitude: merchant.longitude,
+          },
+        }
+      : {}),
+    ...(merchant.phone ? { telephone: merchant.phone } : {}),
+    ...(merchant.website ? { sameAs: [merchant.website] } : {}),
+    priceRange: 'Free',
+    servesCuisine: 'Leftovers',
     ...(merchant.avg_rating !== null
       ? {
           aggregateRating: {
@@ -113,7 +179,15 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
 
   return (
     <div>
+      <JsonLd data={breadcrumbJsonLd} />
       <JsonLd data={foodEstablishmentJsonLd} />
+
+      {/* Breadcrumb */}
+      <nav className="mb-4 flex items-center gap-2 text-sm text-warm-400" data-reveal>
+        <Link href="/browse" className="transition-colors hover:text-brand-600">{t('breadcrumbDiscover')}</Link>
+        <span>/</span>
+        <span className="text-warm-600">{merchant.business_name}</span>
+      </nav>
 
       {/* Banner */}
       <div className="relative -mx-6 -mt-8 mb-8 aspect-[16/5] w-[calc(100%+3rem)] overflow-hidden sm:rounded-2xl sm:mx-0 sm:mt-0 sm:w-full">
@@ -219,7 +293,7 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
           <h2 className="text-2xl font-extrabold text-warm-900">{t('reviewsHeading')}</h2>
           {reviewList.length > 0 && (
             <Link
-              href={`/aanbieder/${id}/reviews`}
+              href={`${canonicalPath}/reviews`}
               className="text-sm font-semibold text-brand-600 hover:text-brand-700"
             >
               {t('seeAllReviews')}
@@ -233,7 +307,7 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
             {(merchant.review_count ?? 0) > 3 && (
               <div className="mt-6 text-center">
                 <Link
-                  href={`/aanbieder/${id}/reviews`}
+                  href={`${canonicalPath}/reviews`}
                   className="inline-block rounded-xl bg-white px-6 py-3 font-bold text-brand-600 shadow-card transition-colors hover:bg-brand-50"
                 >
                   {t('seeAllCount', { count: merchant.review_count })}
@@ -247,6 +321,53 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
           </div>
         )}
       </div>
+
+      {/* Other merchants in the same city — internal linking for SEO + discovery */}
+      {otherMerchants.length > 0 && (
+        <div className="mt-12" data-reveal>
+          <h2 className="mb-6 text-2xl font-extrabold text-warm-900">
+            {t('otherMerchantsInCity', { city: merchant.city ?? '' })}
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-reveal-stagger>
+            {otherMerchants.map((m) => (
+              <Link
+                key={m.id}
+                href={merchantPath({ id: m.id, business_name: m.business_name })}
+                className="group flex items-center gap-3 rounded-2xl bg-white p-4 shadow-card transition-all duration-150 hover:shadow-card-hover active:scale-[0.98]"
+              >
+                {m.logo_url ? (
+                  <Image
+                    src={m.logo_url}
+                    alt={m.business_name}
+                    width={56}
+                    height={56}
+                    className="h-14 w-14 shrink-0 rounded-xl object-cover"
+                  />
+                ) : (
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-brand-100">
+                    <StorefrontIcon className="h-6 w-6 text-brand-600" />
+                  </div>
+                )}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1">
+                    <span className="truncate font-bold text-warm-900 group-hover:text-brand-700">
+                      {m.business_name}
+                    </span>
+                    {m.is_verified && <CheckBadgeIcon className="h-4 w-4 shrink-0 text-brand-500" />}
+                  </div>
+                  {m.avg_rating !== null && m.review_count > 0 && (
+                    <div className="text-sm text-warm-500">
+                      <span className="text-yellow-500">★</span>{' '}
+                      <span className="font-semibold text-warm-700">{m.avg_rating.toFixed(1)}</span>{' '}
+                      <span className="text-warm-400">({m.review_count})</span>
+                    </div>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -50,6 +50,8 @@
   },
   "detail": {
     "breadcrumbDiscover": "Ontdekken",
+    "moreFromMerchant": "Meer van {merchantName}",
+    "viewAllFromMerchant": "Alles bekijken →",
     "metadataNotFound": "Gerecht niet gevonden - Kliekjesclub",
     "metadataTitle": "{dishTitle} bij {merchantName} - Kliekjesclub",
     "metadataDescriptionFallback": "Bekijk {dishTitle} bij {merchantName} op Kliekjesclub.",

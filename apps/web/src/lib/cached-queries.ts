@@ -52,7 +52,8 @@ export const getCachedMerchant = unstable_cache(
     const { data } = await supabase
       .from('merchants')
       .select(
-        `id, business_name, description, address_line1, city, postal_code,
+        `id, business_name, description, address_line1, city, postal_code, country,
+         latitude, longitude, phone, website,
          logo_url, banner_url, avg_rating, review_count, is_verified`,
       )
       .eq('id', id)
@@ -86,6 +87,55 @@ export const getCachedMerchantDishes = unstable_cache(
   },
   ['merchant-dishes'],
   { revalidate: 60, tags: ['dishes'] },
+)
+
+/**
+ * Other available dishes from the same merchant, excluding `excludeDishId`.
+ * Used for internal linking on the dish detail page.
+ */
+export const getCachedOtherMerchantDishes = unstable_cache(
+  async (merchantId: string, excludeDishId: string, limit = 3) => {
+    const supabase = getPublicClient()
+    const { data } = await supabase
+      .from('dishes')
+      .select(
+        `id, title, description, image_url, quantity_available,
+         pickup_start, pickup_end, bring_own_container, is_vegetarian, is_vegan,
+         dish_allergies (allergen)`,
+      )
+      .eq('merchant_id', merchantId)
+      .eq('status', 'available')
+      .gt('quantity_available', 0)
+      .neq('id', excludeDishId)
+      .order('pickup_start', { ascending: true })
+      .limit(limit)
+
+    return data ?? []
+  },
+  ['other-merchant-dishes'],
+  { revalidate: 60, tags: ['dishes'] },
+)
+
+/**
+ * Other verified merchants in the same city. Used for internal linking
+ * on the merchant detail page.
+ */
+export const getCachedOtherMerchantsInCity = unstable_cache(
+  async (city: string | null, excludeMerchantId: string, limit = 4) => {
+    if (!city) return []
+    const supabase = getPublicClient()
+    const { data } = await supabase
+      .from('merchants')
+      .select(`id, business_name, city, logo_url, avg_rating, review_count, is_verified`)
+      .eq('is_verified', true)
+      .eq('city', city)
+      .neq('id', excludeMerchantId)
+      .limit(limit)
+
+    return data ?? []
+  },
+  ['other-merchants-in-city'],
+  { revalidate: 600, tags: ['merchants'] },
 )
 
 /**

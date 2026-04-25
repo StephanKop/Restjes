@@ -8,6 +8,7 @@ import { BrowseFilters } from '@/components/BrowseFilters'
 import { BrowseResults } from '@/components/BrowseResults'
 import type { DishCardData } from '@/components/DishCard'
 import { JsonLd } from '@/components/JsonLd'
+import { dishPath } from '@/lib/slug'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('browse.webPage')
@@ -147,13 +148,33 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
     itemListElement: cards.slice(0, 20).map((dish, i) => ({
       '@type': 'ListItem',
       position: i + 1,
-      url: `https://kliekjesclub.nl/gerecht/${dish.id}`,
+      url: `https://kliekjesclub.nl${dishPath({ id: dish.id, title: dish.title })}`,
       name: dish.title,
     })),
   }
 
+  const breadcrumbJsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Kliekjesclub',
+        item: 'https://kliekjesclub.nl',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: t('heading'),
+        item: 'https://kliekjesclub.nl/browse',
+      },
+    ],
+  }
+
   return (
     <div>
+      <JsonLd data={breadcrumbJsonLd} />
       <JsonLd data={itemListJsonLd} />
       <div className="mb-8">
         <h1 className="mb-2 text-3xl font-extrabold text-warm-900">{t('heading')}</h1>
