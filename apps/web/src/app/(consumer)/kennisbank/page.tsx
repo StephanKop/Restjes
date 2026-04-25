@@ -8,7 +8,10 @@ export const metadata: Metadata = {
   title: 'Kennisbank — alles over voedselverspilling, restjes en duurzaam eten',
   description:
     'Praktische tips, recepten en achtergrondartikelen over voedselverspilling, kliekjes en duurzaam eten. Schreven door het team van Kliekjesclub.',
-  alternates: { canonical: '/kennisbank' },
+  alternates: {
+    canonical: '/kennisbank',
+    types: { 'application/rss+xml': '/kennisbank/feed.xml' },
+  },
   openGraph: {
     type: 'website',
     title: 'Kennisbank — Kliekjesclub',

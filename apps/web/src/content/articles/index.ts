@@ -5,17 +5,23 @@ import { article as restjesInvriezen } from './restjes-invriezen'
 import { article as opwarmIdeeen } from './restjes-opwarmen-ideeen'
 import { article as restjesRecepten } from './recepten-met-restjes'
 import { article as duurzaamEten } from './duurzaam-eten-thuis'
+import { article as voedselbankVergelijking } from './voedselbank-vs-kliekjesclub'
+import { article as studentenGratisEten } from './studenten-gratis-eten'
+import { article as horecaOverschot } from './horeca-overgebleven-eten'
 
 export * from './types'
 
-// Newest first.
+// Newest first (drives /kennisbank ordering and RSS feed).
 export const ARTICLES: Article[] = [
+  horecaOverschot,
+  studentenGratisEten,
+  voedselbankVergelijking,
   voedselverspillingCijfers,
-  kliekjesGoed,
-  restjesInvriezen,
-  opwarmIdeeen,
-  restjesRecepten,
   duurzaamEten,
+  restjesRecepten,
+  restjesInvriezen,
+  kliekjesGoed,
+  opwarmIdeeen,
 ]
 
 const articleIndex = new Map(ARTICLES.map((a) => [a.slug, a]))

@@ -8,6 +8,7 @@ import { Footer } from '@/components/Footer'
 import { JsonLd } from '@/components/JsonLd'
 import { getPageContent } from '@/lib/cms'
 import { getHomepageDefaults, getHowItWorksDefaults } from '@/lib/cms-defaults'
+import { ARTICLES, ARTICLE_CATEGORY_LABEL } from '@/content/articles'
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = (await getLocale()) as Locale
@@ -100,6 +101,49 @@ export default async function HomePage() {
       </main>
 
       <HowItWorks content={howItWorksContent} />
+
+      {/* Kennisbank teaser — surfaces editorial content for crawlers and readers */}
+      <section className="bg-offwhite py-20" aria-labelledby="kennisbank-heading">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-4" data-reveal>
+            <div>
+              <p className="mb-2 text-sm font-bold uppercase tracking-wide text-brand-600">
+                Kennisbank
+              </p>
+              <h2 id="kennisbank-heading" className="text-3xl font-extrabold text-warm-900 sm:text-4xl">
+                Tips, recepten en cijfers over voedselverspilling
+              </h2>
+            </div>
+            <Link
+              href="/kennisbank"
+              className="text-sm font-semibold text-brand-600 hover:text-brand-700"
+            >
+              Alle artikelen →
+            </Link>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3" data-reveal-stagger>
+            {ARTICLES.slice(0, 3).map((a) => (
+              <Link
+                key={a.slug}
+                href={`/kennisbank/${a.slug}`}
+                className="group rounded-2xl bg-white p-6 shadow-card transition-all duration-150 hover:shadow-card-hover"
+              >
+                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-brand-600">
+                  {ARTICLE_CATEGORY_LABEL[a.category]}
+                </p>
+                <h3 className="mb-2 text-lg font-extrabold text-warm-900 group-hover:text-brand-700">
+                  {a.title}
+                </h3>
+                <p className="line-clamp-3 text-sm leading-relaxed text-warm-500">
+                  {a.description}
+                </p>
+                <p className="mt-3 text-xs text-warm-400">{a.readingMinutes} min. lezen</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <Footer />
     </div>

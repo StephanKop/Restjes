@@ -29,7 +29,10 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
   return {
     title: article.title,
     description: article.description,
-    alternates: { canonical: `/kennisbank/${article.slug}` },
+    alternates: {
+      canonical: `/kennisbank/${article.slug}`,
+      types: { 'application/rss+xml': '/kennisbank/feed.xml' },
+    },
     openGraph: {
       type: 'article',
       title: article.title,
