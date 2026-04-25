@@ -21,19 +21,33 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
+    // Public merchant profiles live at /aanbieder/[slug-uuid] but are
+    // implemented at [locale]/(consumer)/merchant/[id]/page.tsx so the
+    // dashboard pages at /aanbieder/dashboard etc. can stay untouched.
+    // After next-intl middleware rewrites incoming URLs to /[locale]/...,
+    // these rewrites pivot the public-facing /aanbieder path to the
+    // file-system /merchant path while preserving the locale segment.
+    const slugUuid =
+      '[a-z0-9-]*[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
     return {
-      // Checked before file-system routes — empty so dashboard routes resolve first
       beforeFiles: [],
-      // Checked after file-system routes — catches /aanbieder/[slug-uuid|uuid]
-      // that don't match dashboard pages. Pattern accepts either a bare UUID or
-      // any kebab-cased slug ending in a UUID.
       afterFiles: [
+        // Locale-prefixed (post next-intl middleware): /nl/aanbieder/... and /en/aanbieder/...
         {
-          source: '/aanbieder/:id([a-z0-9-]*[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
+          source: `/:locale(nl|en)/aanbieder/:id(${slugUuid})`,
+          destination: '/:locale/merchant/:id',
+        },
+        {
+          source: `/:locale(nl|en)/aanbieder/:id(${slugUuid})/reviews`,
+          destination: '/:locale/merchant/:id/reviews',
+        },
+        // Fallback: bare /aanbieder/... in case middleware ever skips the rewrite
+        {
+          source: `/aanbieder/:id(${slugUuid})`,
           destination: '/merchant/:id',
         },
         {
-          source: '/aanbieder/:id([a-z0-9-]*[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/reviews',
+          source: `/aanbieder/:id(${slugUuid})/reviews`,
           destination: '/merchant/:id/reviews',
         },
       ],
