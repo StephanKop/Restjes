@@ -9,7 +9,7 @@ function isActive(pathname: string, href: string): boolean {
 }
 
 export function AanbiederSubNav() {
-  const pathname = usePathname()
+  const pathname = usePathname() ?? ''
   const t = useTranslations('nav.aanbiederSub')
   const items = [
     { href: '/aanbieder/dishes', label: t('dishes') },

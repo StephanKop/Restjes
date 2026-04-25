@@ -41,7 +41,7 @@ function truncate(text: string, maxLength: number): string {
 
 export function ConversationList({ conversations: initial, basePath, currentUserId }: ConversationListProps) {
   const t = useTranslations('messages.conversationList')
-  const pathname = usePathname()
+  const pathname = usePathname() ?? ''
   const router = useRouter()
   const [conversations, setConversations] = useState(initial)
   const [deletingId, setDeletingId] = useState<string | null>(null)

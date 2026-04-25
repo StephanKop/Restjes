@@ -9,7 +9,7 @@ interface MessagesShellProps {
 }
 
 export function MessagesShell({ sidebar, children, basePath }: MessagesShellProps) {
-  const pathname = usePathname()
+  const pathname = usePathname() ?? ''
   const hasConversation = pathname !== basePath
 
   return (

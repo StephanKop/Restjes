@@ -22,7 +22,7 @@ function linkClass(active: boolean): string {
 }
 
 export function MainNavLinks({ unreadBadge }: { unreadBadge: ReactNode }) {
-  const pathname = usePathname()
+  const pathname = usePathname() ?? ''
   const t = useTranslations('nav')
   return (
     <>

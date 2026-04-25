@@ -14,8 +14,8 @@ interface BrowseFiltersProps {
 export function BrowseFilters({ userCity }: BrowseFiltersProps) {
   const t = useTranslations('browse')
   const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
+  const pathname = usePathname() ?? ''
+  const searchParams = useSearchParams() ?? new URLSearchParams()
   const [, startTransition] = useTransition()
 
   const vegetarian = searchParams.get('vegetarian') === '1'

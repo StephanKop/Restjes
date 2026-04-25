@@ -16,7 +16,7 @@ interface MobileMenuProps {
 
 export function MobileMenu({ isLoggedIn, displayName, initial, unreadCount }: MobileMenuProps) {
   const [open, setOpen] = useState(false)
-  const pathname = usePathname()
+  const pathname = usePathname() ?? ''
   const t = useTranslations('nav')
   const navItemsLoggedIn = [
     { href: '/browse', label: t('discover') },

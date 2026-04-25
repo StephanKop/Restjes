@@ -4,8 +4,8 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
 export function NavigationProgress() {
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
+  const pathname = usePathname() ?? ''
+  const searchParams = useSearchParams() ?? new URLSearchParams()
   const [progress, setProgress] = useState(0)
   const [visible, setVisible] = useState(false)
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null)

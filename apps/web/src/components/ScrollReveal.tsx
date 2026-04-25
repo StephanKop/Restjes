@@ -15,10 +15,10 @@ export function ScrollReveal() {
 }
 
 function ScrollRevealInner() {
-  const pathname = usePathname()
+  const pathname = usePathname() ?? ''
   // usePathname alone ignores query strings — include the search params so
   // tab-style navigation (same pathname, different ?tab=) also re-observes.
-  const search = useSearchParams().toString()
+  const search = (useSearchParams() ?? new URLSearchParams()).toString()
 
   useEffect(() => {
     const io = new IntersectionObserver(
