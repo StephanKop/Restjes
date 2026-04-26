@@ -22,7 +22,7 @@ export type OAuthResult =
 // Shared handler for native OAuth sign-in. Supports both PKCE (code) and
 // implicit (access_token/refresh_token) flows returned by Supabase.
 export async function signInWithOAuthNative(
-  provider: 'google',
+  provider: 'google' | 'apple',
 ): Promise<OAuthResult> {
   // Keep this path stable — it must exactly match a Redirect URL entry in
   // Supabase → Authentication → URL Configuration.

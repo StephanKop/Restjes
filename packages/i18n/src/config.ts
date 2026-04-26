@@ -4,9 +4,9 @@ export type Locale = (typeof locales)[number]
 
 export const defaultLocale: Locale = 'nl'
 
-export const localeMeta: Record<Locale, { name: string; flag: string; htmlLang: string }> = {
-  nl: { name: 'Nederlands', flag: '🇳🇱', htmlLang: 'nl-NL' },
-  en: { name: 'English', flag: '🇬🇧', htmlLang: 'en-US' },
+export const localeMeta: Record<Locale, { name: string; htmlLang: string }> = {
+  nl: { name: 'Nederlands', htmlLang: 'nl-NL' },
+  en: { name: 'English', htmlLang: 'en-US' },
 }
 
 export function isLocale(value: unknown): value is Locale {

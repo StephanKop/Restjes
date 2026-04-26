@@ -21,6 +21,7 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
 import { formatPickupTime, allergenLabel } from '../../lib/format'
 import { useTranslation } from '../../lib/i18n'
+import { ProfileAvatar } from '../../components/ProfileAvatar'
 
 interface Dish {
   id: string
@@ -266,66 +267,66 @@ export default function DiscoverScreen() {
 
   const renderDishCard = ({ item }: { item: Dish }) => (
     <Pressable
-      className="bg-white rounded-2xl mb-4 overflow-hidden shadow-sm"
+      className="bg-white rounded-2xl mb-4 overflow-hidden shadow-sm flex-row"
       onPress={() => router.push(`/dish/${item.id}`)}
     >
       {item.image_url ? (
         <Image
           source={{ uri: item.image_url }}
-          className="w-full h-44"
+          className="w-32 self-stretch"
           resizeMode="cover"
         />
       ) : (
-        <View className="w-full h-44 bg-brand-100 items-center justify-center">
-          <Ionicons name="restaurant-outline" size={48} color="#22c55e" />
+        <View className="w-32 self-stretch bg-brand-100 items-center justify-center">
+          <Ionicons name="restaurant-outline" size={40} color="#22c55e" />
         </View>
       )}
-      <View className="p-4">
-        <Text className="text-lg font-bold text-warm-800" numberOfLines={1}>
+      <View className="flex-1 p-3">
+        <Text className="text-base font-bold text-warm-800" numberOfLines={1}>
           {item.title}
         </Text>
         <View className="flex-row items-center mt-1">
-          <Ionicons name="storefront-outline" size={14} color="#8a8680" />
-          <Text className="text-sm text-warm-500 ml-1" numberOfLines={1}>
+          <Ionicons name="storefront-outline" size={13} color="#8a8680" />
+          <Text className="text-xs text-warm-500 ml-1 flex-1" numberOfLines={1}>
             {item.merchant.business_name} · {item.merchant.city}
           </Text>
         </View>
-        <View className="flex-row items-center mt-1.5">
-          <Ionicons name="time-outline" size={14} color="#8a8680" />
-          <Text className="text-sm text-warm-500 ml-1">
+        <View className="flex-row items-center mt-1">
+          <Ionicons name="time-outline" size={13} color="#8a8680" />
+          <Text className="text-xs text-warm-500 ml-1" numberOfLines={1}>
             {formatPickupTime(item.pickup_start, item.pickup_end)}
           </Text>
         </View>
-        <View className="flex-row flex-wrap mt-2.5 gap-1.5">
+        <View className="flex-row flex-wrap mt-2 gap-1">
           {item.is_vegan && (
-            <View className="bg-brand-100 rounded-lg px-2.5 py-1">
-              <Text className="text-xs font-bold text-brand-700">{t('dish.badges.vegan')}</Text>
+            <View className="bg-brand-100 rounded-md px-2 py-0.5">
+              <Text className="text-[11px] font-bold text-brand-700">{t('dish.badges.vegan')}</Text>
             </View>
           )}
           {item.is_vegetarian && !item.is_vegan && (
-            <View className="bg-brand-100 rounded-lg px-2.5 py-1">
-              <Text className="text-xs font-bold text-brand-700">{t('dish.badges.vegetarian')}</Text>
+            <View className="bg-brand-100 rounded-md px-2 py-0.5">
+              <Text className="text-[11px] font-bold text-brand-700">{t('dish.badges.vegetarian')}</Text>
             </View>
           )}
           {item.is_frozen && (
-            <View className="bg-blue-50 rounded-lg px-2.5 py-1">
-              <Text className="text-xs font-bold text-blue-700">{t('dish.badges.frozen')}</Text>
+            <View className="bg-blue-50 rounded-md px-2 py-0.5">
+              <Text className="text-[11px] font-bold text-blue-700">{t('dish.badges.frozen')}</Text>
             </View>
           )}
           {item.bring_own_container && (
-            <View className="bg-warm-100 rounded-lg px-2.5 py-1">
-              <Text className="text-xs font-bold text-warm-600">{t('dish.badges.bringOwnContainer')}</Text>
+            <View className="bg-warm-100 rounded-md px-2 py-0.5">
+              <Text className="text-[11px] font-bold text-warm-600">{t('dish.badges.bringOwnContainer')}</Text>
             </View>
           )}
           {item.dish_allergies?.length > 0 && (
-            <View className="bg-red-50 rounded-lg px-2.5 py-1">
-              <Text className="text-xs font-bold text-red-700">
+            <View className="bg-red-50 rounded-md px-2 py-0.5">
+              <Text className="text-[11px] font-bold text-red-700">
                 {t('dish.badges.allergensCount', { count: item.dish_allergies.length })}
               </Text>
             </View>
           )}
-          <View className="bg-warm-100 rounded-lg px-2.5 py-1">
-            <Text className="text-xs font-bold text-warm-600">
+          <View className="bg-warm-100 rounded-md px-2 py-0.5">
+            <Text className="text-[11px] font-bold text-warm-600">
               {t('dish.badges.remaining', { count: item.quantity_available })}
             </Text>
           </View>
@@ -381,7 +382,16 @@ export default function DiscoverScreen() {
   return (
     <SafeAreaView className="flex-1 bg-offwhite" edges={['top', 'bottom']}>
       <View className="flex-1 px-5 pt-2">
-        <Text className="text-2xl font-extrabold text-warm-800 mb-3">{t('browse.title')}</Text>
+        <View className="flex-row items-center justify-between mb-3">
+          <View style={{ width: 36 }} />
+          <Image
+            source={require('../../assets/images/logo.png')}
+            style={{ width: 48, height: 48 }}
+            resizeMode="contain"
+            accessibilityLabel={t('browse.title')}
+          />
+          <ProfileAvatar />
+        </View>
 
         {/* Search + Filter button */}
         <View className="flex-row items-center gap-2 mb-4">

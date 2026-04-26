@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <meta name="color-scheme" content="light only" />
+    <meta name="supported-color-schemes" content="light only" />
+    <title>Je bent uitgenodigd voor Kliekjesclub</title>
+    <!--[if mso]>
+    <style type="text/css">
+      body, table, td, p, a { font-family: Arial, sans-serif !important; }
+    </style>
+    <![endif]-->
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+      body { margin: 0; padding: 0; background-color: #f5f0e8; }
+      a { color: #16a34a; }
+      .btn:hover { background-color: #16a34a !important; }
+      @media (max-width: 600px) {
+        .container { width: 100% !important; }
+        .px { padding-left: 24px !important; padding-right: 24px !important; }
+        .py { padding-top: 32px !important; padding-bottom: 32px !important; }
+        .h1 { font-size: 26px !important; line-height: 32px !important; }
+      }
+    </style>
+  </head>
+  <body style="margin:0;padding:0;background-color:#f5f0e8;font-family:'Nunito',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#2a2520;-webkit-font-smoothing:antialiased;">
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
+      Iemand heeft je uitgenodigd om mee te doen aan Kliekjesclub.
+    </div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f0e8;">
+      <tr>
+        <td align="center" style="padding:32px 16px;">
+          <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;">
+            <tr>
+              <td align="center" style="padding:8px 0 24px 0;">
+                <a href="{{ .SiteURL }}" style="text-decoration:none;">
+                  <img src="https://hvewcizjvolijbjiqyfx.supabase.co/storage/v1/object/public/web-content/logo.webp" width="56" height="56" alt="Kliekjesclub" style="display:block;border:0;outline:none;width:56px;height:auto;" />
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td class="px py" style="background-color:#ffffff;border-radius:24px;padding:48px 48px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+                <span style="display:inline-block;padding:4px 12px;border-radius:9999px;background-color:#dcfce7;color:#15803d;font-size:12px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase;">
+                  Uitnodiging
+                </span>
+                <h1 class="h1" style="margin:16px 0 16px 0;font-family:'Nunito',sans-serif;font-size:30px;line-height:36px;font-weight:800;color:#2a2520;">
+                  Je bent uitgenodigd! 💚
+                </h1>
+                <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;color:#524d48;">
+                  Hoi,
+                </p>
+                <p style="margin:0 0 24px 0;font-size:16px;line-height:24px;color:#524d48;">
+                  Iemand heeft je uitgenodigd om mee te doen aan <strong style="color:#2a2520;">Kliekjesclub</strong> — het buurtplatform waar mensen eten dat over is met elkaar delen. Klik hieronder om je account te activeren en gelijk te beginnen.
+                </p>
+
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 28px 0;">
+                  <tr>
+                    <td align="center" style="border-radius:20px;background-color:#22c55e;box-shadow:0 2px 4px rgba(34,197,94,0.3);">
+                      <a class="btn" href="{{ .ConfirmationURL }}" style="display:inline-block;padding:14px 28px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:20px;background-color:#22c55e;">
+                        Uitnodiging accepteren
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+
+                <p style="margin:0 0 8px 0;font-size:14px;line-height:22px;color:#6b6660;">
+                  Werkt de knop niet? Plak deze link in je browser:
+                </p>
+                <p style="margin:0 0 28px 0;font-size:14px;line-height:22px;word-break:break-all;">
+                  <a href="{{ .ConfirmationURL }}" style="color:#16a34a;text-decoration:underline;">{{ .ConfirmationURL }}</a>
+                </p>
+
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 0 0;">
+                  <tr><td style="border-top:1px solid #e5e1dc;font-size:0;line-height:0;">&nbsp;</td></tr>
+                </table>
+
+                <p style="margin:24px 0 0 0;font-size:14px;line-height:22px;color:#8a8680;">
+                  Geen idee waarom je deze e-mail krijgt? Dan kun je 'm rustig negeren — er gebeurt niks zonder dat je het zelf doet.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style="padding:24px 16px 8px 16px;">
+                <p style="margin:0 0 6px 0;font-size:13px;line-height:20px;color:#8a8680;font-weight:700;">
+                  Kliekjesclub
+                </p>
+                <p style="margin:0;font-size:12px;line-height:18px;color:#b0a89e;">
+                  Deel je kliekjes, maak iemand blij. · <a href="{{ .SiteURL }}" style="color:#8a8680;text-decoration:none;">kliekjesclub.nl</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

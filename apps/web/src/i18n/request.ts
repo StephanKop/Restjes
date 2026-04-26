@@ -38,10 +38,6 @@ import {
   messagesEnStaticPages,
 } from '@kliekjesclub/i18n'
 
-// Cookie kept for backwards-compat with any client code that read it directly,
-// but locale is now driven by URL via the next-intl middleware.
-export const LOCALE_COOKIE = 'kc_locale'
-
 // Centralised message registry. Adding a new namespace is a one-line change here.
 const messagesByLocale: Record<Locale, Record<string, unknown>> = {
   nl: {

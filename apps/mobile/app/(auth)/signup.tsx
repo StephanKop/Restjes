@@ -18,6 +18,7 @@ import { supabase } from '../../lib/supabase'
 import { useTranslation } from '../../lib/i18n'
 import { signInWithOAuthNative } from '../../lib/oauth'
 import { GoogleLogo } from '../../components/GoogleLogo'
+import { AppleLogo } from '../../components/AppleLogo'
 
 export default function SignupScreen() {
   const { t } = useTranslation()
@@ -30,6 +31,7 @@ export default function SignupScreen() {
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [appleLoading, setAppleLoading] = useState(false)
 
   const handleSignup = async () => {
     if (!name || !city || !email || !password) {
@@ -86,6 +88,25 @@ export default function SignupScreen() {
       setError(t('auth.mobile.errors.googleGeneric'))
     } finally {
       setGoogleLoading(false)
+    }
+  }
+
+  const handleAppleLogin = async () => {
+    setAppleLoading(true)
+    setError(null)
+
+    try {
+      const result = await signInWithOAuthNative('apple')
+      if (result.ok) {
+        router.replace('/(tabs)')
+        return
+      }
+      if (result.reason === 'start') setError(t('auth.mobile.errors.appleStartFailed'))
+      else if (result.reason === 'session') setError(t('auth.mobile.errors.sessionFailed'))
+    } catch {
+      setError(t('auth.mobile.errors.appleGeneric'))
+    } finally {
+      setAppleLoading(false)
     }
   }
 
@@ -163,7 +184,7 @@ export default function SignupScreen() {
           {/* Google button */}
           <Pressable
             onPress={handleGoogleLogin}
-            disabled={googleLoading}
+            disabled={googleLoading || appleLoading}
             className="bg-white rounded-xl px-6 py-3.5 mb-3 flex-row items-center justify-center active:opacity-90"
           >
             {googleLoading ? (
@@ -178,6 +199,24 @@ export default function SignupScreen() {
             )}
           </Pressable>
 
+          {/* Apple button */}
+          <Pressable
+            onPress={handleAppleLogin}
+            disabled={googleLoading || appleLoading}
+            className="bg-black rounded-xl px-6 py-3.5 mb-3 flex-row items-center justify-center active:opacity-90"
+          >
+            {appleLoading ? (
+              <ActivityIndicator color="#ffffff" />
+            ) : (
+              <>
+                <AppleLogo />
+                <Text className="text-white font-bold text-base ml-3">
+                  {t('auth.mobile.continueWithApple')}
+                </Text>
+              </>
+            )}
+          </Pressable>
+
           {/* Divider */}
           <View className="flex-row items-center my-4">
             <View className="flex-1 h-px bg-white/20" />
@@ -187,24 +226,24 @@ export default function SignupScreen() {
 
           <View className="gap-3 mb-4">
             <TextInput
-              className="bg-white/15 border border-white/20 rounded-xl px-4 py-3 text-white text-[16px]"
+              className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-[16px]"
               placeholder={t('auth.fields.nameLabel')}
-              placeholderTextColor="rgba(255,255,255,0.5)"
+              placeholderTextColor="#b0a89e"
               value={name}
               onChangeText={setName}
               autoComplete="name"
             />
             <TextInput
-              className="bg-white/15 border border-white/20 rounded-xl px-4 py-3 text-white text-[16px]"
+              className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-[16px]"
               placeholder={t('auth.mobile.signup.cityLabel')}
-              placeholderTextColor="rgba(255,255,255,0.5)"
+              placeholderTextColor="#b0a89e"
               value={city}
               onChangeText={setCity}
             />
             <TextInput
-              className="bg-white/15 border border-white/20 rounded-xl px-4 py-3 text-white text-[16px]"
+              className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-[16px]"
               placeholder={t('auth.fields.emailLabel')}
-              placeholderTextColor="rgba(255,255,255,0.5)"
+              placeholderTextColor="#b0a89e"
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
@@ -212,9 +251,9 @@ export default function SignupScreen() {
               autoComplete="email"
             />
             <TextInput
-              className="bg-white/15 border border-white/20 rounded-xl px-4 py-3 text-white text-[16px]"
+              className="bg-white border border-warm-200 rounded-xl px-4 py-3 text-warm-800 text-[16px]"
               placeholder={t('auth.fields.passwordLabel')}
-              placeholderTextColor="rgba(255,255,255,0.5)"
+              placeholderTextColor="#b0a89e"
               value={password}
               onChangeText={setPassword}
               secureTextEntry

@@ -15,6 +15,15 @@ import { useAuth } from '../../../lib/auth-context'
 import { formatPickupTime, allergenLabel } from '../../../lib/format'
 import { useTranslation } from '../../../lib/i18n'
 import { localeMeta, type Locale } from '@kliekjesclub/i18n'
+import { ProfileAvatar } from '../../../components/ProfileAvatar'
+
+const softShadow = {
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 1 },
+  shadowOpacity: 0.025,
+  shadowRadius: 8,
+  elevation: 1,
+} as const
 
 interface DishDetail {
   id: string
@@ -92,7 +101,6 @@ export default function DishDetailScreen() {
     if (dishRes.data) {
       const d = dishRes.data as unknown as DishDetail
       setDish(d)
-      navigation.setOptions({ headerTitle: d.title })
 
       // Check if this is the user's own dish
       if (user) {
@@ -112,6 +120,20 @@ export default function DishDetailScreen() {
   useEffect(() => {
     fetchDish().finally(() => setLoading(false))
   }, [fetchDish])
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <Image
+          source={require('../../../assets/images/logo.png')}
+          style={{ width: 36, height: 36 }}
+          resizeMode="contain"
+        />
+      ),
+      headerRight: () => <ProfileAvatar size={36} bare />,
+      headerRightContainerStyle: { paddingRight: 12 },
+    })
+  }, [navigation])
 
   const handleReserve = async () => {
     if (!dish || !user) return
@@ -220,21 +242,32 @@ export default function DishDetailScreen() {
     <View className="flex-1 bg-offwhite">
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Image */}
-        {dish.image_url ? (
-          <Image
-            source={{ uri: dish.image_url }}
-            className="w-full h-64"
-            resizeMode="cover"
-          />
-        ) : (
-          <View className="w-full h-64 bg-brand-100 items-center justify-center">
-            <Ionicons name="restaurant-outline" size={64} color="#22c55e" />
-          </View>
-        )}
+        <View
+          className="mx-4 mt-4 rounded-3xl overflow-hidden bg-warm-100"
+          style={{
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.04,
+            shadowRadius: 16,
+            elevation: 2,
+          }}
+        >
+          {dish.image_url ? (
+            <Image
+              source={{ uri: dish.image_url }}
+              className="w-full h-64"
+              resizeMode="cover"
+            />
+          ) : (
+            <View className="w-full h-64 bg-brand-100 items-center justify-center">
+              <Ionicons name="restaurant-outline" size={64} color="#22c55e" />
+            </View>
+          )}
+        </View>
 
-        <View className="px-5 pt-5 pb-32">
+        <View className="px-5 pt-6 pb-32">
           {/* Title + description */}
-          <Text className="text-2xl font-bold text-warm-800">{dish.title}</Text>
+          <Text className="text-3xl font-extrabold text-warm-800 tracking-tight">{dish.title}</Text>
           {dish.description && (
             <Text className="text-base text-warm-600 mt-2 leading-6">
               {dish.description}
@@ -243,8 +276,8 @@ export default function DishDetailScreen() {
 
           {/* Info cards */}
           <View className="mt-5 gap-3">
-            <View className="bg-white rounded-xl p-4 flex-row items-center">
-              <View className="bg-brand-100 rounded-lg p-2 mr-3">
+            <View className="bg-white rounded-2xl p-4 flex-row items-center" style={softShadow}>
+              <View className="bg-brand-100 rounded-full p-2.5 mr-3">
                 <Ionicons name="time-outline" size={20} color="#22c55e" />
               </View>
               <View className="flex-1">
@@ -255,8 +288,8 @@ export default function DishDetailScreen() {
               </View>
             </View>
 
-            <View className="bg-white rounded-xl p-4 flex-row items-center">
-              <View className="bg-brand-100 rounded-lg p-2 mr-3">
+            <View className="bg-white rounded-2xl p-4 flex-row items-center" style={softShadow}>
+              <View className="bg-brand-100 rounded-full p-2.5 mr-3">
                 <Ionicons name="layers-outline" size={20} color="#22c55e" />
               </View>
               <View className="flex-1">
@@ -267,8 +300,8 @@ export default function DishDetailScreen() {
               </View>
             </View>
 
-            <View className="bg-white rounded-xl p-4 flex-row items-center">
-              <View className={`${dish.is_frozen ? 'bg-blue-100' : 'bg-orange-100'} rounded-lg p-2 mr-3`}>
+            <View className="bg-white rounded-2xl p-4 flex-row items-center" style={softShadow}>
+              <View className={`${dish.is_frozen ? 'bg-blue-100' : 'bg-orange-100'} rounded-full p-2.5 mr-3`}>
                 <Ionicons name={dish.is_frozen ? 'snow-outline' : 'sunny-outline'} size={20} color={dish.is_frozen ? '#1d4ed8' : '#ea580c'} />
               </View>
               <View className="flex-1">
@@ -280,8 +313,8 @@ export default function DishDetailScreen() {
             </View>
 
             {!dish.is_frozen && dish.expires_at && (
-              <View className="bg-white rounded-xl p-4 flex-row items-center">
-                <View className="bg-red-100 rounded-lg p-2 mr-3">
+              <View className="bg-white rounded-2xl p-4 flex-row items-center" style={softShadow}>
+                <View className="bg-red-100 rounded-full p-2.5 mr-3">
                   <Ionicons name="time-outline" size={20} color="#dc2626" />
                 </View>
                 <View className="flex-1">
@@ -294,8 +327,8 @@ export default function DishDetailScreen() {
             )}
 
             {dish.bring_own_container && (
-              <View className="bg-white rounded-xl p-4 flex-row items-center">
-                <View className="bg-amber-100 rounded-lg p-2 mr-3">
+              <View className="bg-white rounded-2xl p-4 flex-row items-center" style={softShadow}>
+                <View className="bg-amber-100 rounded-full p-2.5 mr-3">
                   <Ionicons name="cube-outline" size={20} color="#d97706" />
                 </View>
                 <View className="flex-1">
@@ -359,6 +392,7 @@ export default function DishDetailScreen() {
           {/* Merchant card */}
           <Pressable
             className="bg-white rounded-2xl p-4 mt-6 flex-row items-center"
+            style={softShadow}
             onPress={() => router.push(`/merchant/${dish.merchant.id}`)}
           >
             {dish.merchant.logo_url ? (
@@ -400,7 +434,16 @@ export default function DishDetailScreen() {
       </ScrollView>
 
       {/* Bottom actions */}
-      <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-warm-200 px-5 pt-4 pb-8">
+      <View
+        className="absolute bottom-0 left-0 right-0 bg-white border-t border-warm-200 px-5 pt-4 pb-8"
+        style={{
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.03,
+          shadowRadius: 16,
+          elevation: 3,
+        }}
+      >
         {isOwnDish ? (
           <Pressable
             className="bg-brand-500 rounded-xl py-4 items-center"

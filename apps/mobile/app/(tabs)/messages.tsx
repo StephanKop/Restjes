@@ -15,6 +15,7 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
 import { formatRelativeDate } from '../../lib/format'
 import { useTranslation } from '../../lib/i18n'
+import { ProfileAvatar } from '../../components/ProfileAvatar'
 
 interface Conversation {
   id: string
@@ -193,12 +194,17 @@ export default function MessagesScreen() {
   return (
     <SafeAreaView className="flex-1 bg-offwhite" edges={['top', 'bottom']}>
       <View className="flex-1 px-5 pt-2">
-        <Text className="text-2xl font-extrabold text-warm-800 mb-1">
-          {t('messages.title')}
-        </Text>
-        <Text className="text-base text-warm-500 mb-4">
-          {t('messages.subtitle')}
-        </Text>
+        <View className="flex-row items-start justify-between mb-1">
+          <View className="flex-1">
+            <Text className="text-2xl font-extrabold text-warm-800 mb-1">
+              {t('messages.title')}
+            </Text>
+            <Text className="text-base text-warm-500 mb-4">
+              {t('messages.subtitle')}
+            </Text>
+          </View>
+          <ProfileAvatar />
+        </View>
 
         {loading ? (
           <View className="flex-1 items-center justify-center">

@@ -112,7 +112,14 @@ export default function MerchantDishesScreen() {
   }
 
   const renderDish = ({ item }: { item: MerchantDish }) => {
-    const status = STATUS_STYLE[item.status] ?? STATUS_STYLE.available
+    // The DB has an `expired` status in the dish_status enum but no scheduled
+    // job promotes rows once pickup_end passes, so we derive it here. A
+    // `collected` dish keeps its own badge — that transaction is already done.
+    const isPastPickup =
+      item.pickup_end != null && new Date(item.pickup_end).getTime() < Date.now()
+    const effectiveStatus: DishStatus =
+      isPastPickup && item.status !== 'collected' ? 'expired' : item.status
+    const status = STATUS_STYLE[effectiveStatus] ?? STATUS_STYLE.available
 
     return (
       <View className="bg-white rounded-2xl overflow-hidden mb-4">

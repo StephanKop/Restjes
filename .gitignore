@@ -59,3 +59,7 @@ coverage/
 # Stray expo-prebuild at repo root (real native projects live under apps/mobile/)
 /ios/
 /android/
+
+
+# Apple secret
+scripts/apple-secret.mjs

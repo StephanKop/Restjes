@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Redirect, Tabs, router } from 'expo-router'
 import { ActivityIndicator, View, Text, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
@@ -11,6 +11,11 @@ export default function TabsLayout() {
   const { session, user, loading } = useAuth()
   const [unreadMessages, setUnreadMessages] = useState(0)
   const [reservationAlerts, setReservationAlerts] = useState(0)
+
+  // Per-mount unique suffix so multiple TabsLayout instances (e.g. while a
+  // pushed stack screen is on top) don't collide on the same channel name and
+  // hit "cannot add postgres_changes callbacks after subscribe()".
+  const mountKey = useRef(`${Date.now()}-${Math.floor(Math.random() * 1e9)}`).current
 
   const fetchUnreadCount = useCallback(async () => {
     if (!user) return
@@ -31,7 +36,7 @@ export default function TabsLayout() {
 
     // Listen for new messages in realtime
     const channel = supabase
-      .channel('tab-unread')
+      .channel(`tab-unread-${mountKey}`)
       .on(
         'postgres_changes',
         {
@@ -70,7 +75,7 @@ export default function TabsLayout() {
     if (!user) return
 
     const channel = supabase
-      .channel('tab-reservations')
+      .channel(`tab-reservations-${mountKey}`)
       .on(
         'postgres_changes',
         {
@@ -223,12 +228,25 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="my-dishes"
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault()
+            router.push('/aanbieder/dishes')
+          },
+        }}
+        options={{
+          title: t('nav.stackTitles.myDishes'),
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="restaurant-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: t('profile.title'),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
-          ),
+          href: null,
         }}
       />
     </Tabs>

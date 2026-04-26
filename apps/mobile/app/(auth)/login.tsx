@@ -16,6 +16,7 @@ import { supabase } from '../../lib/supabase'
 import { useTranslation } from '../../lib/i18n'
 import { signInWithOAuthNative } from '../../lib/oauth'
 import { GoogleLogo } from '../../components/GoogleLogo'
+import { AppleLogo } from '../../components/AppleLogo'
 
 export default function LoginScreen() {
   const { t } = useTranslation()
@@ -25,6 +26,7 @@ export default function LoginScreen() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [appleLoading, setAppleLoading] = useState(false)
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -76,6 +78,25 @@ export default function LoginScreen() {
     }
   }
 
+  const handleAppleLogin = async () => {
+    setAppleLoading(true)
+    setError(null)
+
+    try {
+      const result = await signInWithOAuthNative('apple')
+      if (result.ok) {
+        router.replace('/(tabs)')
+        return
+      }
+      if (result.reason === 'start') setError(t('auth.mobile.errors.appleStartFailed'))
+      else if (result.reason === 'session') setError(t('auth.mobile.errors.sessionFailed'))
+    } catch {
+      setError(t('auth.mobile.errors.appleGeneric'))
+    } finally {
+      setAppleLoading(false)
+    }
+  }
+
   return (
     <View style={styles.container}>
       {/* Video background */}
@@ -119,7 +140,7 @@ export default function LoginScreen() {
           {/* Google button */}
           <Pressable
             onPress={handleGoogleLogin}
-            disabled={googleLoading}
+            disabled={googleLoading || appleLoading}
             className="bg-white rounded-xl px-6 py-3.5 mb-3 flex-row items-center justify-center active:opacity-90"
           >
             {googleLoading ? (
@@ -129,6 +150,24 @@ export default function LoginScreen() {
                 <GoogleLogo />
                 <Text className="text-warm-800 font-bold text-base ml-3">
                   {t('auth.mobile.continueWithGoogle')}
+                </Text>
+              </>
+            )}
+          </Pressable>
+
+          {/* Apple button */}
+          <Pressable
+            onPress={handleAppleLogin}
+            disabled={googleLoading || appleLoading}
+            className="bg-black rounded-xl px-6 py-3.5 mb-3 flex-row items-center justify-center active:opacity-90"
+          >
+            {appleLoading ? (
+              <ActivityIndicator color="#ffffff" />
+            ) : (
+              <>
+                <AppleLogo />
+                <Text className="text-white font-bold text-base ml-3">
+                  {t('auth.mobile.continueWithApple')}
                 </Text>
               </>
             )}
