@@ -18,13 +18,19 @@ export function MobileMenu({ isLoggedIn, displayName, initial, unreadCount }: Mo
   const [open, setOpen] = useState(false)
   const pathname = usePathname() ?? ''
   const t = useTranslations('nav')
+  // Mirrors the desktop top-nav order so mobile and desktop expose the
+  // same primary navigation.
   const navItemsLoggedIn = [
     { href: '/browse', label: t('discover') },
-    { href: '/messages', label: t('messages') },
-    { href: '/reservations', label: t('reservations') },
     { href: '/aanbieder/dishes', label: t('myOffer') },
-    { href: '/aanbieder/reservations', label: t('mobileMenu.reservationsMerchant') },
-    { href: '/profile', label: t('mobileMenu.myProfile') },
+    { href: '/reservations', label: t('reservations') },
+    { href: '/messages', label: t('messages') },
+  ]
+  // Mirrors the desktop avatar dropdown — items that don't fit in the
+  // primary nav but should still be reachable on mobile.
+  const userMenuItems = [
+    { href: '/profile', label: t('viewProfile') },
+    { href: '/impact', label: t('impact') },
   ]
   const navItemsLoggedOut = [
     { href: '/browse', label: t('discover') },
@@ -115,6 +121,7 @@ export function MobileMenu({ isLoggedIn, displayName, initial, unreadCount }: Mo
             <div className="flex-1 overflow-y-auto px-3 py-4">
               {isLoggedIn ? (
                 <div className="space-y-1">
+                  {/* Primary nav — same items as desktop top nav */}
                   {navItemsLoggedIn.map((item) => {
                     const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
                     return (
@@ -137,7 +144,7 @@ export function MobileMenu({ isLoggedIn, displayName, initial, unreadCount }: Mo
                     )
                   })}
 
-                  {/* Highlighted CTA */}
+                  {/* Highlighted CTA — desktop equivalent of the "+ New dish" button */}
                   <Link
                     href="/aanbieder/dishes/new"
                     className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-brand-600"
@@ -147,6 +154,28 @@ export function MobileMenu({ isLoggedIn, displayName, initial, unreadCount }: Mo
                     </svg>
                     {t('createDish')}
                   </Link>
+
+                  {/* Secondary section — items the desktop avatar dropdown
+                      surfaces. Visually separated so it's clear these are
+                      account links, not navigation. */}
+                  <div className="mt-5 border-t border-warm-100 pt-3 space-y-1">
+                    {userMenuItems.map((item) => {
+                      const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={`block rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
+                            isActive
+                              ? 'bg-brand-50 text-brand-700'
+                              : 'text-warm-700 hover:bg-warm-50'
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
+                      )
+                    })}
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-1">

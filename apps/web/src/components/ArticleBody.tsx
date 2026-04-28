@@ -28,7 +28,7 @@ function Stat({ value, label }: { value: string; label: string }) {
 // into named hast elements so they can be mapped via react-markdown's
 // `components` prop. Unknown directives pass through untouched.
 function remarkArticleDirectives() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   return (tree: any) => {
     visit(tree, (node: any) => {
       if (
@@ -51,6 +51,7 @@ function remarkArticleDirectives() {
       }
     })
   }
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 }
 
 interface ArticleBodyProps {
