@@ -258,8 +258,9 @@ export const getCachedBrowseMerchants = unstable_cache(
 
 /**
  * All available dishes for a given city. Used by the SEO landing page at
- * /restjes/[city]. Case-insensitive on the city column. Filters out
- * unverified merchants.
+ * /restjes/[city]. Case-insensitive on the city column. Includes dishes
+ * from both verified and unverified merchants — the consumer can still
+ * see who they're dealing with on the dish detail page.
  */
 export const getCachedCityDishes = unstable_cache(
   async (city: string) => {
@@ -279,7 +280,6 @@ export const getCachedCityDishes = unstable_cache(
       .eq('status', 'available')
       .gt('quantity_available', 0)
       .ilike('merchant.city', city)
-      .eq('merchant.is_verified', true)
       .order('pickup_start', { ascending: true })
       .limit(60)
 
@@ -339,7 +339,6 @@ export const getCachedCategoryDishes = unstable_cache(
       )
       .eq('status', 'available')
       .gt('quantity_available', 0)
-      .eq('merchant.is_verified', true)
       .order('pickup_start', { ascending: true })
       .limit(60)
 

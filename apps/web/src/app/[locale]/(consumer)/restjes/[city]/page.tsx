@@ -194,7 +194,7 @@ export default async function CityPage({ params }: CityPageProps) {
       </header>
 
       {/* Available dishes */}
-      {dishCards.length > 0 && (
+      {dishCards.length > 0 ? (
         <section className="mb-14" data-reveal>
           <h2 className="mb-6 text-2xl font-extrabold text-warm-900">
             Beschikbare gerechten in {city.name}
@@ -215,7 +215,40 @@ export default async function CityPage({ params }: CityPageProps) {
             </div>
           )}
         </section>
-      )}
+      ) : merchants.length > 0 ? (
+        // Merchants exist in this city but none have available dishes right
+        // now — make the gap explicit instead of just hiding the section.
+        <section className="mb-14" data-reveal>
+          <h2 className="mb-6 text-2xl font-extrabold text-warm-900">
+            Beschikbare gerechten in {city.name}
+          </h2>
+          <div className="rounded-3xl border border-warm-100 bg-white p-8 text-center shadow-card">
+            <DishIcon className="mx-auto mb-3 h-10 w-10 text-warm-300" />
+            <h3 className="mb-2 text-lg font-bold text-warm-900">
+              Op dit moment geen gerechten in {city.name}
+            </h3>
+            <p className="mx-auto mb-5 max-w-md text-sm text-warm-500">
+              {merchants.length === 1
+                ? `${merchants[0].business_name} is hier actief, maar heeft op dit moment geen restjes openstaan. Kom later terug of bekijk wat er elders te halen is.`
+                : `Er zijn ${merchants.length} aanbieders in ${city.name}, maar op dit moment staan er geen gerechten open. Kom later terug of bekijk wat er elders te halen is.`}
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link
+                href="/browse"
+                className="inline-flex items-center rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand-600"
+              >
+                Bekijk alle gerechten
+              </Link>
+              <Link
+                href="/aanbieder/dishes/new"
+                className="inline-flex items-center rounded-xl border border-warm-200 bg-white px-5 py-2.5 text-sm font-bold text-warm-700 transition-colors hover:border-warm-300"
+              >
+                Zelf restjes aanbieden
+              </Link>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {/* Active merchants in this city */}
       {merchants.length > 0 && (
