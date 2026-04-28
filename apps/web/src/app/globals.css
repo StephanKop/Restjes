@@ -78,6 +78,14 @@ select,
 [data-reveal="scale"] {
   transform: scale(0.92);
 }
+/* "rise" — combines a soft scale-up with the upward translate. Used for cards
+   we want to feel like they're stepping forward rather than just fading in. */
+[data-reveal="rise"] {
+  transform: translateY(36px) scale(0.95);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
 [data-reveal].revealed {
   opacity: 1;
   transform: none;
