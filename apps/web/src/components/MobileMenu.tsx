@@ -26,6 +26,12 @@ export function MobileMenu({ isLoggedIn, displayName, initial, unreadCount }: Mo
     { href: '/aanbieder/reservations', label: t('mobileMenu.reservationsMerchant') },
     { href: '/profile', label: t('mobileMenu.myProfile') },
   ]
+  const navItemsLoggedOut = [
+    { href: '/browse', label: t('discover') },
+    { href: '/categorie', label: t('categories') },
+    { href: '/restjes', label: t('leftoversByCity') },
+    { href: '/about', label: t('aboutUs') },
+  ]
 
   // Close on navigation
   useEffect(() => {
@@ -144,12 +150,22 @@ export function MobileMenu({ isLoggedIn, displayName, initial, unreadCount }: Mo
                 </div>
               ) : (
                 <div className="space-y-1">
-                  <Link
-                    href="/browse"
-                    className="block rounded-xl px-4 py-3 text-sm font-semibold text-warm-700 hover:bg-warm-50"
-                  >
-                    {t('discover')}
-                  </Link>
+                  {navItemsLoggedOut.map((item) => {
+                    const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={`block rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
+                          isActive
+                            ? 'bg-brand-50 text-brand-700'
+                            : 'text-warm-700 hover:bg-warm-50'
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    )
+                  })}
                 </div>
               )}
             </div>

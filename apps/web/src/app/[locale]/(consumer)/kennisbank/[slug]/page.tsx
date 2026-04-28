@@ -1,28 +1,39 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
 import { notFound } from 'next/navigation'
 import {
-  ARTICLES,
+  getAllArticles,
   findArticle,
   relatedArticles,
+  bodyForLocale,
   ARTICLE_CATEGORY_LABEL,
-} from '@/content/articles'
+} from '@/lib/articles'
+import type { Locale } from '@kliekjesclub/i18n'
+import { ArticleBody } from '@/components/ArticleBody'
 import { JsonLd } from '@/components/JsonLd'
 
 interface ArticlePageProps {
-  params: Promise<{ slug: string }>
+  params: Promise<{ locale: Locale; slug: string }>
 }
 
 export async function generateStaticParams() {
-  return ARTICLES.map((a) => ({ slug: a.slug }))
+  const all = await getAllArticles()
+  return all.map((a) => ({ slug: a.slug }))
 }
 
-// Curated, finite list — unknown slugs 404.
-export const dynamicParams = false
+// Allow on-demand rendering for slugs created in the admin after the last
+// build. The page itself calls `findArticle()` and falls through to
+// `notFound()` when the slug really doesn't exist.
+export const dynamicParams = true
+
+// Re-render every hour as a safety net so admin edits propagate even if the
+// explicit revalidate hook from the admin save is missed.
+export const revalidate = 3600
 
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
   const { slug } = await params
-  const article = findArticle(slug)
+  const article = await findArticle(slug)
   if (!article) {
     return { title: 'Artikel niet gevonden - Kliekjesclub' }
   }
@@ -39,18 +50,19 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       description: article.description,
       url: `https://kliekjesclub.nl/kennisbank/${article.slug}`,
       publishedTime: article.publishedAt,
-      ...(article.updatedAt ? { modifiedTime: article.updatedAt } : {}),
-      images: [{ url: article.image ?? '/og-image.png', width: 1200, height: 630 }],
+      modifiedTime: article.updatedAt,
+      images: [{ url: article.imageUrl ?? '/og-image.png', width: 1200, height: 630 }],
     },
   }
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
-  const { slug } = await params
-  const article = findArticle(slug)
+  const { slug, locale } = await params
+  const article = await findArticle(slug)
   if (!article) notFound()
 
-  const related = relatedArticles(article, 3)
+  const related = await relatedArticles(article, 3)
+  const body = bodyForLocale(article, locale)
 
   const breadcrumbJsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
@@ -62,6 +74,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     ],
   }
 
+  const ogImage = article.imageUrl
+    ? article.imageUrl.startsWith('http')
+      ? article.imageUrl
+      : `https://kliekjesclub.nl${article.imageUrl}`
+    : 'https://kliekjesclub.nl/og-image.png'
+
   const articleJsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -69,10 +87,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     headline: article.title,
     description: article.description,
     url: `https://kliekjesclub.nl/kennisbank/${article.slug}`,
-    inLanguage: 'nl-NL',
+    inLanguage: locale === 'en' && article.bodyMdEn ? 'en' : 'nl-NL',
     datePublished: article.publishedAt,
-    ...(article.updatedAt ? { dateModified: article.updatedAt } : {}),
-    image: `https://kliekjesclub.nl${article.image ?? '/og-image.png'}`,
+    dateModified: article.updatedAt,
+    image: ogImage,
     author: {
       '@type': 'Organization',
       name: 'Kliekjesclub',
@@ -94,8 +112,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     articleSection: ARTICLE_CATEGORY_LABEL[article.category],
   }
 
-  const Body = article.Body
-  const publishedDate = new Date(article.publishedAt).toLocaleDateString('nl-NL', {
+  const dateFormatLocale = locale === 'en' ? 'en-GB' : 'nl-NL'
+  const publishedDate = new Date(article.publishedAt).toLocaleDateString(dateFormatLocale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -114,6 +132,27 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         <span className="line-clamp-1 text-warm-600">{article.title}</span>
       </nav>
 
+      {article.imageUrl && (
+        <figure className="mb-8 overflow-hidden rounded-3xl bg-warm-100" data-reveal>
+          <div className="relative aspect-[16/9] w-full">
+            <Image
+              src={article.imageUrl}
+              alt={article.imageAlt ?? article.title}
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 768px"
+              className="object-cover"
+              unoptimized={article.imageUrl.startsWith('http')}
+            />
+          </div>
+          {article.imageCredit && (
+            <figcaption className="px-4 py-2 text-xs text-warm-400">
+              {article.imageCredit}
+            </figcaption>
+          )}
+        </figure>
+      )}
+
       <header className="mb-10" data-reveal>
         <p className="mb-3 text-sm font-bold uppercase tracking-wide text-brand-600">
           {ARTICLE_CATEGORY_LABEL[article.category]}
@@ -123,19 +162,21 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         </h1>
         <p className="mb-6 text-lg text-warm-500">{article.description}</p>
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-warm-400">
-          <span>Gepubliceerd op {publishedDate}</span>
+          <span>{locale === 'en' ? 'Published on' : 'Gepubliceerd op'} {publishedDate}</span>
           <span>·</span>
-          <span>{article.readingMinutes} min. lezen</span>
+          <span>{article.readingMinutes} min. {locale === 'en' ? 'read' : 'lezen'}</span>
         </div>
       </header>
 
       <div className="prose-style" data-reveal>
-        <Body />
+        <ArticleBody markdown={body} />
       </div>
 
       {related.length > 0 && (
         <section className="mt-16 border-t border-warm-100 pt-10" data-reveal>
-          <h2 className="mb-6 text-2xl font-extrabold text-warm-900">Meer in de Kennisbank</h2>
+          <h2 className="mb-6 text-2xl font-extrabold text-warm-900">
+            {locale === 'en' ? 'More in the Kennisbank' : 'Meer in de Kennisbank'}
+          </h2>
           <div className="grid gap-4 sm:grid-cols-3" data-reveal-stagger>
             {related.map((a) => (
               <Link

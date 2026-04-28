@@ -21,9 +21,35 @@ function linkClass(active: boolean): string {
   return `${base} text-inherit hover:text-brand-300 group-data-[scrolled]/header:hover:text-brand-600 active:text-brand-700`
 }
 
-export function MainNavLinks({ unreadBadge }: { unreadBadge: ReactNode }) {
+export function MainNavLinks({
+  isLoggedIn,
+  unreadBadge,
+}: {
+  isLoggedIn: boolean
+  unreadBadge: ReactNode
+}) {
   const pathname = usePathname() ?? ''
   const t = useTranslations('nav')
+
+  if (!isLoggedIn) {
+    return (
+      <>
+        <Link href="/browse" className={linkClass(isActive(pathname, '/browse'))}>
+          {t('discover')}
+        </Link>
+        <Link href="/categorie" className={linkClass(isActive(pathname, '/categorie'))}>
+          {t('categories')}
+        </Link>
+        <Link href="/restjes" className={linkClass(isActive(pathname, '/restjes'))}>
+          {t('leftoversByCity')}
+        </Link>
+        <Link href="/about" className={linkClass(isActive(pathname, '/about'))}>
+          {t('aboutUs')}
+        </Link>
+      </>
+    )
+  }
+
   return (
     <>
       <Link href="/browse" className={linkClass(isActive(pathname, '/browse'))}>

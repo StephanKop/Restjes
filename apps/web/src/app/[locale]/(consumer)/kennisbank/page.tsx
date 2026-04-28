@@ -1,8 +1,11 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
-import { ARTICLES, ARTICLE_CATEGORY_LABEL } from '@/content/articles'
-import type { ArticleCategory } from '@/content/articles'
+import { getAllArticles, ARTICLE_CATEGORY_LABEL } from '@/lib/articles'
+import type { Article, ArticleCategory } from '@/lib/articles'
 import { JsonLd } from '@/components/JsonLd'
+
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'Kennisbank — alles over voedselverspilling, restjes en duurzaam eten',
@@ -23,14 +26,15 @@ export const metadata: Metadata = {
 
 const CATEGORY_ORDER: ArticleCategory[] = ['voedselverspilling', 'praktisch', 'recepten', 'duurzaamheid']
 
-export default function KennisbankIndexPage() {
-  const grouped: Record<ArticleCategory, typeof ARTICLES> = {
+export default async function KennisbankIndexPage() {
+  const articles = await getAllArticles()
+  const grouped: Record<ArticleCategory, Article[]> = {
     voedselverspilling: [],
     praktisch: [],
     recepten: [],
     duurzaamheid: [],
   }
-  for (const a of ARTICLES) grouped[a.category].push(a)
+  for (const a of articles) grouped[a.category].push(a)
 
   const breadcrumbJsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
@@ -56,12 +60,12 @@ export default function KennisbankIndexPage() {
       url: 'https://kliekjesclub.nl',
       logo: 'https://kliekjesclub.nl/logo.png',
     },
-    blogPost: ARTICLES.map((a) => ({
+    blogPost: articles.map((a) => ({
       '@type': 'BlogPosting',
       headline: a.title,
       url: `https://kliekjesclub.nl/kennisbank/${a.slug}`,
       datePublished: a.publishedAt,
-      ...(a.updatedAt ? { dateModified: a.updatedAt } : {}),
+      dateModified: a.updatedAt,
       description: a.description,
     })),
   }
@@ -101,17 +105,31 @@ export default function KennisbankIndexPage() {
                   <Link
                     key={a.slug}
                     href={`/kennisbank/${a.slug}`}
-                    className="group rounded-2xl bg-white p-5 shadow-card transition-all duration-150 hover:shadow-card-hover"
+                    className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-card transition-all duration-150 hover:shadow-card-hover"
                   >
-                    <h3 className="mb-2 text-lg font-extrabold text-warm-900 group-hover:text-brand-700">
-                      {a.title}
-                    </h3>
-                    <p className="mb-3 line-clamp-3 text-sm leading-relaxed text-warm-500">
-                      {a.description}
-                    </p>
-                    <p className="text-xs text-warm-400">
-                      {a.readingMinutes} min. lezen
-                    </p>
+                    {a.imageUrl && (
+                      <div className="relative aspect-[16/9] w-full bg-warm-100">
+                        <Image
+                          src={a.imageUrl}
+                          alt={a.imageAlt ?? a.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          className="object-cover"
+                          unoptimized={a.imageUrl.startsWith('http')}
+                        />
+                      </div>
+                    )}
+                    <div className="flex flex-1 flex-col p-5">
+                      <h3 className="mb-2 text-lg font-extrabold text-warm-900 group-hover:text-brand-700">
+                        {a.title}
+                      </h3>
+                      <p className="mb-3 line-clamp-3 text-sm leading-relaxed text-warm-500">
+                        {a.description}
+                      </p>
+                      <p className="mt-auto text-xs text-warm-400">
+                        {a.readingMinutes} min. lezen
+                      </p>
+                    </div>
                   </Link>
                 ))}
               </div>

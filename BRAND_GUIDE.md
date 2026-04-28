@@ -25,8 +25,13 @@ Kliekjesclub verbindt mensen die eten over hebben met mensen die er blij mee zij
 The Kliekjesclub logo features a friendly character composed of food containers (a jar, cups, a bowl, a fork and spoon) arranged in a circular composition with the brand name "KLIEKJESCLUB.NL" integrated into the design.
 
 ### Logo Files
-- **Primary (green on transparent):** `/apps/web/public/logo.png`
-- **Favicon:** `/apps/web/public/favicon.png`
+All web assets in `apps/web/public/` are served from the root of the production domain, so they are retrievable via public URL.
+
+| Asset | Repo path | Public URL |
+|-------|-----------|------------|
+| Primary logo (green on transparent) | `apps/web/public/logo.png` | https://kliekjesclub.nl/logo.png |
+| Favicon | `apps/web/public/favicon.png` | https://kliekjesclub.nl/favicon.png |
+| Open Graph image | `apps/web/public/og-image.png` | https://kliekjesclub.nl/og-image.png |
 
 ### Logo Usage Rules
 - Minimum clear space: equal to the height of the "K" in the wordmark
@@ -342,16 +347,36 @@ Subtle, warm shadows that create depth without harshness.
 
 ## 15. File Locations
 
+### Code & config
 | Asset | Path |
 |-------|------|
 | Web colors | `apps/web/src/app/globals.css` |
 | Tailwind preset | `packages/config/tailwind/index.ts` |
 | Mobile config | `apps/mobile/tailwind.config.js` |
 | Theme export | `packages/ui/src/theme.ts` |
-| Logo (web) | `apps/web/public/logo.png` |
-| Logo (mobile) | `apps/mobile/assets/images/logo.png` |
-| Favicon | `apps/web/public/favicon.png` |
-| Hero video | `apps/web/public/hero.mp4` |
+
+### Public web assets
+Files in `apps/web/public/` are served at the root of `https://kliekjesclub.nl` — use the public URL when you need to embed a brand asset from outside the web app (mobile, email, marketing, store listings, etc.).
+
+| Asset | Repo path | Public URL |
+|-------|-----------|------------|
+| Logo | `apps/web/public/logo.png` | https://kliekjesclub.nl/logo.png |
+| Favicon | `apps/web/public/favicon.png` | https://kliekjesclub.nl/favicon.png |
+| Open Graph image | `apps/web/public/og-image.png` | https://kliekjesclub.nl/og-image.png |
+| Hero poster | `apps/web/public/hero-poster.jpg` | https://kliekjesclub.nl/hero-poster.jpg |
+| Hero video | `apps/web/public/hero.mp4` | https://kliekjesclub.nl/hero.mp4 |
+| Auth background video | `apps/web/public/auth-bg.mp4` | https://kliekjesclub.nl/auth-bg.mp4 |
+| Community photo | `apps/web/public/community.jpg` | https://kliekjesclub.nl/community.jpg |
+| CTA section image | `apps/web/public/cta-section.png` | https://kliekjesclub.nl/cta-section.png |
+
+### Mobile assets (bundled into the app, not served via URL)
+| Asset | Repo path |
+|-------|-----------|
+| Logo | `apps/mobile/assets/images/logo.png` |
+| App icon | `apps/mobile/assets/images/icon.png` |
+| Adaptive icon (Android) | `apps/mobile/assets/images/adaptive-icon.png` |
+| Splash icon | `apps/mobile/assets/images/splash-icon.png` |
+| Favicon (web preview) | `apps/mobile/assets/images/favicon.png` |
 
 ---
 

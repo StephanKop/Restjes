@@ -1,5 +1,8 @@
 {
   "discover": "Discover",
+  "categories": "Categories",
+  "leftoversByCity": "Leftovers by city",
+  "aboutUs": "About us",
   "myOffer": "My listings",
   "reservations": "Reservations",
   "messages": "Messages",

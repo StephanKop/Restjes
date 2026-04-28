@@ -1,4 +1,4 @@
-import { ARTICLES, ARTICLE_CATEGORY_LABEL } from '@/content/articles'
+import { getAllArticles, ARTICLE_CATEGORY_LABEL } from '@/lib/articles'
 
 const SITE = 'https://kliekjesclub.nl'
 
@@ -14,12 +14,14 @@ function escapeXml(input: string): string {
 export const dynamic = 'force-static'
 export const revalidate = 3600
 
-export function GET() {
-  const lastBuildDate = ARTICLES.length > 0
-    ? new Date(ARTICLES[0].updatedAt ?? ARTICLES[0].publishedAt).toUTCString()
+export async function GET() {
+  const articles = await getAllArticles()
+
+  const lastBuildDate = articles.length > 0
+    ? new Date(articles[0].updatedAt).toUTCString()
     : new Date().toUTCString()
 
-  const items = ARTICLES.map((article) => {
+  const items = articles.map((article) => {
     const url = `${SITE}/kennisbank/${article.slug}`
     const pubDate = new Date(article.publishedAt).toUTCString()
     return `

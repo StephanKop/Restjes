@@ -16,6 +16,11 @@ async function UnreadBadge() {
   return <RealtimeUnreadBadge userId={user.id} />
 }
 
+async function NavLinks() {
+  const user = await getUser()
+  return <MainNavLinks isLoggedIn={!!user} unreadBadge={<UnreadBadge />} />
+}
+
 async function Notifications() {
   const user = await getUser()
   if (!user) return null
@@ -104,7 +109,10 @@ export function MainNav({ transparent = false }: { transparent?: boolean }) {
           />
         </Link>
         <nav className="flex items-center gap-3 sm:gap-4">
-          <MainNavLinks unreadBadge={<UnreadBadge />} />
+          {/* Nav links — depend on auth, so streamed via Suspense */}
+          <Suspense fallback={null}>
+            <NavLinks />
+          </Suspense>
           {/* Notification bell — icon renders instantly, data streams in */}
           <Suspense fallback={
             <div className="relative flex h-9 w-9 items-center justify-center rounded-full text-inherit opacity-50">

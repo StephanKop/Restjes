@@ -23,13 +23,42 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           aria-label={t('selectLanguage')}
           disabled={isPending}
           value={current}
-          onChange={(e) => {
+          onChange={async (e) => {
             const next = e.target.value as Locale
+            if (process.env.NODE_ENV !== 'production') {
+              console.log('[LanguageSwitcher] change', {
+                current,
+                next,
+                pathname,
+                rawHref: typeof window !== 'undefined' ? window.location.href : '',
+              })
+            }
             if (next === current) return
+
+            // 1. Write the `kc_locale` cookie via the server action FIRST.
+            //    If we navigated before this resolved, the middleware would
+            //    still see the old cookie and (with `localeDetection: true`)
+            //    bounce us back to the previous locale prefix.
+            try {
+              await setLocaleAction(next)
+              if (process.env.NODE_ENV !== 'production') {
+                console.log('[LanguageSwitcher] setLocaleAction resolved')
+              }
+            } catch (err) {
+              if (process.env.NODE_ENV !== 'production') {
+                console.warn('[LanguageSwitcher] setLocaleAction failed', err)
+              }
+            }
+
+            // 2. Now trigger the navigation. The middleware will see the
+            //    fresh cookie and won't redirect us back.
             startTransition(() => {
-              // Persist preference (cookie + DB profile) for cross-device consistency.
-              setLocaleAction(next)
-              // Navigate to the same path under the new locale prefix.
+              if (process.env.NODE_ENV !== 'production') {
+                console.log('[LanguageSwitcher] router.replace', {
+                  pathname,
+                  locale: next,
+                })
+              }
               router.replace(pathname, { locale: next })
             })
           }}

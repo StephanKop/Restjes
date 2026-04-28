@@ -8,7 +8,7 @@ import { Footer } from '@/components/Footer'
 import { JsonLd } from '@/components/JsonLd'
 import { getPageContent } from '@/lib/cms'
 import { getHomepageDefaults, getHowItWorksDefaults } from '@/lib/cms-defaults'
-import { ARTICLES, ARTICLE_CATEGORY_LABEL } from '@/content/articles'
+import { getAllArticles, ARTICLE_CATEGORY_LABEL } from '@/lib/articles'
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = (await getLocale()) as Locale
@@ -26,9 +26,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   const locale = (await getLocale()) as Locale
-  const [content, howItWorksContent] = await Promise.all([
+  const [content, howItWorksContent, articles] = await Promise.all([
     getPageContent('homepage', getHomepageDefaults(locale)),
     getPageContent('how-it-works', getHowItWorksDefaults(locale)),
+    getAllArticles(),
   ])
 
   return (
@@ -123,7 +124,7 @@ export default async function HomePage() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-3" data-reveal-stagger>
-            {ARTICLES.slice(0, 3).map((a) => (
+            {articles.slice(0, 3).map((a) => (
               <Link
                 key={a.slug}
                 href={`/kennisbank/${a.slug}`}

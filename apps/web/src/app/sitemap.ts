@@ -3,7 +3,7 @@ import { createServerComponentClient } from '@/lib/supabase-server'
 import { dishPath, merchantPath } from '@/lib/slug'
 import { DUTCH_CITIES, findCity } from '@/data/dutch-cities'
 import { CATEGORIES } from '@/data/categories'
-import { ARTICLES } from '@/content/articles'
+import { getAllArticles } from '@/lib/articles'
 
 const BASE_URL = 'https://kliekjesclub.nl'
 
@@ -99,13 +99,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     alternates: bilingual(`/categorie/${category.slug}`),
   }))
 
-  // Kennisbank articles — Dutch-only editorial. Don't claim EN variants.
-  const articlePages: MetadataRoute.Sitemap = ARTICLES.map((article) => ({
+  // Kennisbank articles — Dutch-only editorial by default. We mark EN as
+  // bilingual only when the article has an English body.
+  const articles = await getAllArticles()
+  const articlePages: MetadataRoute.Sitemap = articles.map((article) => ({
     url: `${BASE_URL}/kennisbank/${article.slug}`,
-    lastModified: new Date(article.updatedAt ?? article.publishedAt),
+    lastModified: new Date(article.updatedAt),
     changeFrequency: 'monthly' as const,
     priority: 0.7,
-    alternates: nlOnly(`/kennisbank/${article.slug}`),
+    alternates: article.bodyMdEn && article.bodyMdEn.trim() !== ''
+      ? bilingual(`/kennisbank/${article.slug}`)
+      : nlOnly(`/kennisbank/${article.slug}`),
   }))
 
   return [
