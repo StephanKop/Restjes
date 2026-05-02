@@ -2,6 +2,7 @@ import '../global.css'
 import { useEffect, useMemo } from 'react'
 import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { AuthProvider, useAuth } from '../lib/auth-context'
 import { LocaleProvider, useTranslation } from '../lib/i18n'
 import {
@@ -63,12 +64,14 @@ function RootStack() {
 
 export default function RootLayout() {
   return (
-    <LocaleProvider>
-      <AuthProvider>
-        <StatusBar style="dark" />
-        <NotificationSetup />
-        <RootStack />
-      </AuthProvider>
-    </LocaleProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <LocaleProvider>
+        <AuthProvider>
+          <StatusBar style="dark" />
+          <NotificationSetup />
+          <RootStack />
+        </AuthProvider>
+      </LocaleProvider>
+    </GestureHandlerRootView>
   )
 }

@@ -54,6 +54,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/privacy`, lastModified: now, changeFrequency: 'monthly', priority: 0.4, alternates: bilingual('/privacy') },
     { url: `${BASE_URL}/terms`, lastModified: now, changeFrequency: 'monthly', priority: 0.4, alternates: bilingual('/terms') },
     { url: `${BASE_URL}/contact`, lastModified: now, changeFrequency: 'monthly', priority: 0.5, alternates: bilingual('/contact') },
+    { url: `${BASE_URL}/app`, lastModified: now, changeFrequency: 'monthly', priority: 0.7, alternates: bilingual('/app') },
     { url: `${BASE_URL}/restjes`, lastModified: now, changeFrequency: 'daily', priority: 0.85, alternates: bilingual('/restjes') },
     { url: `${BASE_URL}/categorie`, lastModified: now, changeFrequency: 'daily', priority: 0.85, alternates: bilingual('/categorie') },
     { url: `${BASE_URL}/kennisbank`, lastModified: now, changeFrequency: 'weekly', priority: 0.8, alternates: nlOnly('/kennisbank') },

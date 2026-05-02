@@ -32,6 +32,7 @@ export async function Footer() {
 
   const infoLinks = [
     { href: '/about', label: t('links.about') },
+    { href: '/app', label: t('links.downloadApp') },
     { href: '/faq', label: t('links.faq') },
     { href: '/contact', label: t('links.contact') },
     { href: '/privacy', label: t('links.privacy') },

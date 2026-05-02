@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import {
   View,
   Text,
@@ -7,9 +7,11 @@ import {
   Image,
   ActivityIndicator,
   RefreshControl,
+  Alert,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { router } from 'expo-router'
+import { Swipeable, RectButton } from 'react-native-gesture-handler'
+import { router, useFocusEffect } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
@@ -22,6 +24,8 @@ interface Conversation {
   merchant_id: string
   consumer_id: string
   last_message_at: string | null
+  merchant_deleted_at: string | null
+  consumer_deleted_at: string | null
   merchant: {
     id: string
     business_name: string
@@ -64,6 +68,7 @@ export default function MessagesScreen() {
       .select(
         `
         id, merchant_id, consumer_id, last_message_at,
+        merchant_deleted_at, consumer_deleted_at,
         merchant:merchants!merchant_id (id, business_name, logo_url),
         consumer:profiles!consumer_id (id, display_name, avatar_url)
       `
@@ -80,9 +85,18 @@ export default function MessagesScreen() {
 
     if (error || !convos) return
 
+    // Hide threads the current side has soft-deleted, unless a newer message arrived since.
+    const visible = (convos as unknown as Conversation[]).filter((c) => {
+      const isMerchantSide = c.consumer_id !== user.id
+      const deletedAt = isMerchantSide ? c.merchant_deleted_at : c.consumer_deleted_at
+      if (!deletedAt) return true
+      if (!c.last_message_at) return false
+      return new Date(c.last_message_at) > new Date(deletedAt)
+    })
+
     // Fetch last message and unread count for each conversation
     const enriched = await Promise.all(
-      (convos as unknown as Conversation[]).map(async (convo) => {
+      visible.map(async (convo) => {
         const [lastMsgRes, unreadRes] = await Promise.all([
           supabase
             .from('messages')
@@ -107,19 +121,74 @@ export default function MessagesScreen() {
       })
     )
 
+    // Unread first, then by recency within each group.
+    enriched.sort((a, b) => {
+      const aUnread = a.unread_count > 0 ? 1 : 0
+      const bUnread = b.unread_count > 0 ? 1 : 0
+      if (aUnread !== bUnread) return bUnread - aUnread
+      const aTime = a.last_message_at ? new Date(a.last_message_at).getTime() : 0
+      const bTime = b.last_message_at ? new Date(b.last_message_at).getTime() : 0
+      return bTime - aTime
+    })
+
     setConversations(enriched)
   }, [user])
 
-  useEffect(() => {
-    setLoading(true)
-    fetchConversations().finally(() => setLoading(false))
-  }, [fetchConversations])
+  const hasFetchedRef = useRef(false)
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!hasFetchedRef.current) {
+        setLoading(true)
+        fetchConversations().finally(() => {
+          hasFetchedRef.current = true
+          setLoading(false)
+        })
+      } else {
+        fetchConversations()
+      }
+    }, [fetchConversations])
+  )
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
     await fetchConversations()
     setRefreshing(false)
   }, [fetchConversations])
+
+  const swipeRefs = useRef<Map<string, Swipeable | null>>(new Map())
+
+  const handleDelete = useCallback(
+    (item: Conversation) => {
+      Alert.alert(
+        t('messages.conversationList.deleteTitle'),
+        t('messages.conversationList.deleteBody'),
+        [
+          {
+            text: t('messages.conversationList.cancel'),
+            style: 'cancel',
+            onPress: () => swipeRefs.current.get(item.id)?.close(),
+          },
+          {
+            text: t('messages.conversationList.confirmDelete'),
+            style: 'destructive',
+            onPress: async () => {
+              const previous = conversations
+              setConversations((prev) => prev.filter((c) => c.id !== item.id))
+              const { error } = await supabase.rpc('soft_delete_conversation', {
+                conv_id: item.id,
+              })
+              if (error) {
+                setConversations(previous)
+              }
+              swipeRefs.current.delete(item.id)
+            },
+          },
+        ]
+      )
+    },
+    [conversations, t]
+  )
 
   const renderConversation = ({ item }: { item: Conversation }) => {
     const hasUnread = item.unread_count > 0
@@ -133,7 +202,35 @@ export default function MessagesScreen() {
       ? item.consumer?.avatar_url
       : item.merchant?.logo_url
 
+    const renderRightActions = () => (
+      <RectButton
+        style={{
+          backgroundColor: '#ef4444',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: 88,
+          marginBottom: 12,
+          borderTopRightRadius: 16,
+          borderBottomRightRadius: 16,
+        }}
+        onPress={() => handleDelete(item)}
+      >
+        <Ionicons name="trash-outline" size={22} color="white" />
+        <Text className="text-white text-xs font-semibold mt-1">
+          {t('messages.conversationList.confirmDelete')}
+        </Text>
+      </RectButton>
+    )
+
     return (
+      <Swipeable
+        ref={(ref) => {
+          swipeRefs.current.set(item.id, ref)
+        }}
+        renderRightActions={renderRightActions}
+        overshootRight={false}
+        rightThreshold={40}
+      >
       <Pressable
         className="bg-white rounded-2xl p-4 mb-3 flex-row items-center"
         onPress={() => router.push(`/chat/${item.id}`)}
@@ -188,6 +285,7 @@ export default function MessagesScreen() {
           )}
         </View>
       </Pressable>
+      </Swipeable>
     )
   }
 
